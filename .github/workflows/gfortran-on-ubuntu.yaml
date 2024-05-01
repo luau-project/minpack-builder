@@ -9,7 +9,7 @@ jobs:
         USE_DOWNLOAD: ['ON', 'OFF']
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
     steps:
-      - name: Checkout repository to LuaCMake directory
+      - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
