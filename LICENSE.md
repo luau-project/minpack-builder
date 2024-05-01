@@ -1,4 +1,4 @@
-Copyright (c) 2024 luau-project https://github.com/luau-project/minpackex
+Copyright (c) 2024 luau-project https://github.com/luau-project/minpack-builder
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
