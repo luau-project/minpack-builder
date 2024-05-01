@@ -1,0 +1,15 @@
+LIBRARY "minpack.dll"
+EXPORTS
+chkder_
+dpmpar_
+enorm_
+hybrd1_
+hybrd_
+hybrj1_
+hybrj_
+lmder1_
+lmder_
+lmdif1_
+lmdif_
+lmstr1_
+lmstr_

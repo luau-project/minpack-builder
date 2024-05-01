@@ -1,0 +1,115 @@
+#                                                                             #
+#                                                                             #
+###############################################################################
+# License                                                                     #
+###############################################################################
+#                                                                             #
+# Copyright (c) 2024 luau-project https://github.com/luau-project/minpackex   #
+#                                                                             #
+# Redistribution and use in source and binary forms, with or without          #
+# modification, are permitted provided that the following conditions are met: #
+#                                                                             #
+# 1. Redistributions of source code must retain the above copyright notice,   #
+# this list of conditions and the following disclaimer.                       #
+#                                                                             #
+# 2. Redistributions in binary form must reproduce the above copyright        #
+# notice, this list of conditions and the following disclaimer in the         #
+# documentation and/or other materials provided with the distribution.        #
+#                                                                             #
+# 3. Neither the name of the copyright holder nor the names of its            #
+# contributors may be used to endorse or promote products derived from this   #
+# software without specific prior written permission.                         #
+#                                                                             #
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” #
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,       #
+# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR      #
+# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR           #
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,       #
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,         #
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; #
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,    #
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR     #
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF      #
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                                  #
+#                                                                             #
+###############################################################################
+# Start(Description of variables)                                             #
+###############################################################################
+#                                                                             #
+#     minpack_FOUND .............. True if library and headers were found     #
+#     minpack_ROOT_DIR ........... Root directory of minpack                  #
+#     minpack_INSTALL_PREFIX ..... Root directory of minpack                  #
+#     minpack_LIBRARY ............ Path to minpack library                    #
+#     minpack_LIBRARIES .......... minpack libraries to link against          #
+#     minpack_INCLUDE_DIR ........ Directory where header files are stored    #
+#     minpack_INCLUDE_DIRS ....... List of include dirs needed to use minpack #
+#     minpack_VERSION_MAJOR ...... Major version of minpack, if present       #
+#     minpack_VERSION_MINOR ...... Minor version of minpack, if present       #
+#     minpack_VERSION_PATCH ...... Patch version of minpack, if present       #
+#     minpack_VERSION ............ Full version of minpack                    #
+#     minpack_RUNTIME ............ Directory of .dll files on Windows         #
+#     minpack_PKGCONFIG_DIR ...... Directory of minpack.pc, if present        #
+#                                                                             #
+###############################################################################
+# End(Description of variables)                                               #
+###############################################################################
+#                                                                             #
+#                                                                             #
+###############################################################################
+###############################################################################
+##                                 Body                                      ##
+###############################################################################
+###############################################################################
+#                                                                             #
+#                                                                             #
+
+get_filename_component(_dir "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(_prefix "${_dir}/../.." ABSOLUTE)
+
+find_library(
+    minpack_LIBRARY
+    NAMES @minpack_library_name@
+    HINTS "${_prefix}/@MINPACK_INSTALL_LIBDIR@"
+    NO_DEFAULT_PATH
+)
+
+find_path(
+    minpack_INCLUDE_DIR
+    NAMES @minpack_header@
+    HINTS "${_prefix}/@MINPACK_INSTALL_INCLUDEDIR@"
+    NO_DEFAULT_PATH
+)
+
+set(minpack_LIBRARIES ${minpack_LIBRARY})
+set(minpack_INCLUDE_DIRS ${minpack_INCLUDE_DIR})
+
+mark_as_advanced(minpack_LIBRARY)
+
+if (DEFINED minpack_LIBRARY AND DEFINED minpack_INCLUDE_DIR)
+    set(minpack_FOUND TRUE)
+    set(minpack_INSTALL_PREFIX ${_prefix})
+    set(minpack_ROOT_DIR ${_prefix})        
+
+    foreach(minpack_needed_lib "@minpack_LIBRARIES@")
+        list(APPEND minpack_LIBRARIES "${minpack_needed_lib}")
+    endforeach()
+endif()
+
+if (DEFINED minpack_LIBRARY AND EXISTS "${minpack_LIBRARY}/@minpack_library_name@-@MINPACK_VERSION@/@minpack_library_name@-targets.cmake")
+    # Import the targets.
+    include("${minpack_LIBRARY}/@minpack_library_name@-@MINPACK_VERSION@/@minpack_library_name@-targets.cmake")
+    
+    set(minpack_VERSION_MAJOR @MINPACK_VERSION_MAJOR@)
+    set(minpack_VERSION_MINOR @MINPACK_VERSION_MINOR@)
+    set(minpack_VERSION_PATCH @MINPACK_VERSION_PATCH@)
+endif()
+
+if (WIN32)
+    set(minpack_RUNTIME "${_prefix}/@MINPACK_INSTALL_BINDIR@")
+endif()
+
+if (EXISTS "${_prefix}/@MINPACK_INSTALL_PKGCONFIG_DIR@/@minpack_library_name@.pc")
+    set(minpack_PKGCONFIG_DIR "${_prefix}/@MINPACK_INSTALL_PKGCONFIG_DIR@")
+endif()
+
+set(minpack_VERSION @MINPACK_VERSION@)

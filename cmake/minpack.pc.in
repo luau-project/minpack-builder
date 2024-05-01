@@ -1,0 +1,18 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=@CMAKE_INSTALL_PREFIX@
+lib_name=@minpack_library_name@
+libdir=${exec_prefix}/@MINPACK_INSTALL_LIBDIR@
+includedir=${prefix}/@MINPACK_INSTALL_INCLUDEDIR@
+version=@MINPACK_VERSION@
+version_major=@MINPACK_VERSION_MAJOR@
+version_minor=@MINPACK_VERSION_MINOR@
+version_patch=@MINPACK_VERSION_PATCH@
+cmakeconfigdir=${libdir}/${lib_name}-${version}
+
+Name: @minpack_library_name@
+Description: A software for solving nonlinear equations and nonlinear least squares problems.
+Version: ${version}
+Requires:
+Libs: -L${libdir} -l${lib_name}
+Libs.private: @minpack_LIBRARIES_FOR_PKGCONFIG@
+Cflags: -I${includedir}
