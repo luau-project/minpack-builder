@@ -10,7 +10,7 @@ jobs:
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         toolchain:
           - {compiler: intel, version: '2024.1'}
-          - {compiler: intel-classic, version: '2024.1'}
+          # - {compiler: intel-classic, version: '2024.1'}
     steps:
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         toolchain:
           - {compiler: intel, version: '2024.1'}
-          - {compiler: intel-classic, version: '2024.1'}
+          # - {compiler: intel-classic, version: '2024.1'}
     steps:
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
