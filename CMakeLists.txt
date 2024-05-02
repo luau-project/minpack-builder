@@ -82,6 +82,31 @@
 #         Note: This value only makes sense                                   #
 #             if USE_DOWNLOAD is ON.                                          #
 #                                                                             #
+#     MINPACK_INSTALL_BINDIR (type: PATH, default value:                      #
+#                             ${CMAKE_INSTALL_BINDIR})                        #
+#         Description: Installation directory for executables.                #
+#         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
+#                                                                             #
+#     MINPACK_INSTALL_LIBDIR (type: PATH, default value:                      #
+#                             ${CMAKE_INSTALL_LIBDIR})                        #
+#         Description: Installation directory for libraries.                  #
+#         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
+#                                                                             #
+#     MINPACK_INSTALL_INCLUDEDIR (type: PATH, default value:                  #
+#                                 ${CMAKE_INSTALL_INCLUDEDIR})                #
+#         Description: Installation directory for header files.               #
+#         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
+#                                                                             #
+#     MINPACK_INSTALL_DOCDIR (type: PATH, default value:                      #
+#                             ${CMAKE_INSTALL_DOCDIR})                        #
+#         Description: Installation directory for documentation.              #
+#         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
+#                                                                             #
+#     MINPACK_INSTALL_PKGCONFIG_DIR (type: PATH, default value:               #
+#                                    ${MINPACK_INSTALL_LIBDIR}/pkgconfig)     #
+#         Description: Installation directory for pkg-config (.pc) files.     #
+#         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
+#                                                                             #
 ###############################################################################
 # End(Description of parameters)                                              #
 ###############################################################################
@@ -137,6 +162,54 @@ project(minpack
     VERSION "${MINPACK_VERSION}"
     LANGUAGES Fortran
 )
+
+# use GNU directories convention
+include(GNUInstallDirs)
+
+if (NOT DEFINED MINPACK_INSTALL_BINDIR)
+    # "Installation directory for binaries."
+    set(MINPACK_INSTALL_BINDIR ${CMAKE_INSTALL_BINDIR})
+endif()
+
+if (NOT DEFINED MINPACK_INSTALL_LIBDIR)
+    # "Installation directory for libraries."
+    set(MINPACK_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
+endif()
+
+if (NOT DEFINED MINPACK_INSTALL_INCLUDEDIR)
+    # "Installation directory for header files."
+    set(MINPACK_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR})
+endif()
+
+if (NOT DEFINED MINPACK_INSTALL_DOCDIR)
+    # "Installation directory for documentation."
+    set(MINPACK_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR})
+endif()
+
+if (NOT DEFINED MINPACK_INSTALL_PKGCONFIG_DIR)
+    # "Installation directory for pkg-config file."
+    set(MINPACK_INSTALL_PKGCONFIG_DIR "${MINPACK_INSTALL_LIBDIR}/pkgconfig")
+endif()
+
+if (IS_ABSOLUTE "${MINPACK_INSTALL_BINDIR}")
+    message(FATAL_ERROR "MINPACK_INSTALL_BINDIR must be a relative path.")
+endif()
+
+if (IS_ABSOLUTE "${MINPACK_INSTALL_LIBDIR}")
+    message(FATAL_ERROR "MINPACK_INSTALL_LIBDIR must be a relative path.")
+endif()
+
+if (IS_ABSOLUTE "${MINPACK_INSTALL_INCLUDEDIR}")
+    message(FATAL_ERROR "MINPACK_INSTALL_INCLUDEDIR must be a relative path.")
+endif()
+
+if (IS_ABSOLUTE "${MINPACK_INSTALL_DOCDIR}")
+    message(FATAL_ERROR "MINPACK_INSTALL_DOCDIR must be a relative path.")
+endif()
+
+if (IS_ABSOLUTE "${MINPACK_INSTALL_PKGCONFIG_DIR}")
+    message(FATAL_ERROR "MINPACK_INSTALL_PKGCONFIG_DIR must be a relative path.")
+endif()
 
 include("cmake/MinpackSources.cmake")
 
@@ -215,38 +288,6 @@ set(minpack_pkg_config "${CMAKE_CURRENT_BINARY_DIR}/${minpack_library_name}.pc")
 
 # minpack targets destination file
 set(minpack_targets_export "${minpack_library_name}-targets")
-
-# use GNU directories convention
-include(GNUInstallDirs)
-
-# if MINPACK_INSTALL_BINDIR was not provided by the user
-if (NOT DEFINED MINPACK_INSTALL_BINDIR)
-    # use the one provided by GNUInstallDirs
-    set(MINPACK_INSTALL_BINDIR ${CMAKE_INSTALL_BINDIR})
-endif()
-
-# if MINPACK_INSTALL_LIBDIR was not provided by the user
-if (NOT DEFINED MINPACK_INSTALL_LIBDIR)
-    # use the one provided by GNUInstallDirs
-    set(MINPACK_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
-endif()
-
-# if MINPACK_INSTALL_INCLUDEDIR was not provided by the user
-if (NOT DEFINED MINPACK_INSTALL_INCLUDEDIR)
-    # use the one provided by GNUInstallDirs
-    set(MINPACK_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR})
-endif()
-
-# if MINPACK_INSTALL_DOCDIR was not provided by the user
-if (NOT DEFINED MINPACK_INSTALL_DOCDIR)
-    # use the one provided by GNUInstallDirs
-    set(MINPACK_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR})
-endif()
-
-# if MINPACK_INSTALL_PKGCONFIG_DIR was not provided by the user
-if (NOT DEFINED MINPACK_INSTALL_PKGCONFIG_DIR)
-    set(MINPACK_INSTALL_PKGCONFIG_DIR "${MINPACK_INSTALL_LIBDIR}/pkgconfig")
-endif()
 
 # additional vendor-specific Fortran flags
 set(minpack_Fflags "")
@@ -367,9 +408,19 @@ install(
 message(STATUS "")
 message(STATUS " ${minpack_library_name} ${MINPACK_VERSION} configuration summary:")
 message(STATUS "")
-message(STATUS "     Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "   Build options:")
+message(STATUS "")
 message(STATUS "     Build type ...................... : ${CMAKE_BUILD_TYPE}")
 message(STATUS "     Build shared libs ............... : ${BUILD_SHARED_LIBS}")
 message(STATUS "     Build static libs ............... : ${BUILD_STATIC_LIBS}")
+message(STATUS " ")
+message(STATUS "   Install directories:")
+message(STATUS " ")
+message(STATUS "     Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "     Binary dir ...................... : ${MINPACK_INSTALL_BINDIR}")
+message(STATUS "     Lib dir ......................... : ${MINPACK_INSTALL_LIBDIR}")
+message(STATUS "     Include dir ..................... : ${MINPACK_INSTALL_INCLUDEDIR}")
+message(STATUS "     Doc dir ......................... : ${MINPACK_INSTALL_DOCDIR}")
+message(STATUS "     pkg-config dir .................. : ${MINPACK_INSTALL_PKGCONFIG_DIR}")
 message(STATUS "")
 message(STATUS "")

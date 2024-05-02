@@ -41,17 +41,17 @@ Under construction.
 
 ## References
 
-1. Official minpack website: [https://www.netlib.org/minpack](https://www.netlib.org/minpack);
-2. CMake: [https://cmake.org/](https://cmake.org/);
+1. minpack. Accessed May 2, 2024. [https://www.netlib.org/minpack](https://www.netlib.org/minpack);
+2. CMake. Accessed May 2, 2024. [https://cmake.org/](https://cmake.org/);
 3. Moré, Jorge J., Burton S. Garbow, and Kenneth E. Hillstrom. *User guide for MINPACK-1.[In FORTRAN]*. No. ANL-80-74. Argonne National Lab.(ANL), Argonne, IL (United States), 1980. DOI: [10.2172/6997568](https://doi.org/10.2172/6997568);
-4. minpack on SciPy: [https://github.com/scipy/scipy/tree/main/scipy/optimize/minpack](https://github.com/scipy/scipy/tree/main/scipy/optimize/minpack);
-5. minpack on Eigen: [https://eigen.tuxfamily.org/dox/unsupported/index.html](https://eigen.tuxfamily.org/dox/unsupported/index.html);
-6. minpack on Linux operating systems: [https://repology.org/project/minpack](https://repology.org/project/minpack);
-7. gfortran: [https://gcc.gnu.org/wiki/GFortran](https://gcc.gnu.org/wiki/GFortran);
-8. MSYS2 project: [https://www.msys2.org/](https://www.msys2.org/);
-9. minpack introduction on MSYS2: [https://github.com/msys2/MINGW-packages/pull/20643](https://github.com/msys2/MINGW-packages/pull/20643);
-10. minpack as a MSYS2 package: [https://packages.msys2.org/base/mingw-w64-libminpack](https://packages.msys2.org/base/mingw-w64-libminpack);
-11. LLVM Flang: [https://flang.llvm.org/docs/](https://flang.llvm.org/docs/);
-12. Microsoft Visual C/C++ (MSVC) build tools: [https://visualstudio.microsoft.com/visual-cpp-build-tools](https://visualstudio.microsoft.com/visual-cpp-build-tools);
-13. Intel® Fortran Compiler: [https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html);
-14. pkg-config: [https://gitlab.freedesktop.org/pkg-config/pkg-config](https://gitlab.freedesktop.org/pkg-config/pkg-config).
+4. SciPy. Accessed May 2, 2024. [https://github.com/scipy/scipy/tree/main/scipy/optimize/minpack](https://github.com/scipy/scipy/tree/main/scipy/optimize/minpack);
+5. Eigen. Accessed May 2, 2024. [https://eigen.tuxfamily.org/dox/unsupported/index.html](https://eigen.tuxfamily.org/dox/unsupported/index.html);
+6. minpack on repology. Accessed May 2, 2024. [https://repology.org/project/minpack](https://repology.org/project/minpack);
+7. GFortran. Accessed May 2, 2024. [https://gcc.gnu.org/wiki/GFortran](https://gcc.gnu.org/wiki/GFortran);
+8. MSYS2 project. Accessed May 2, 2024. [https://www.msys2.org/](https://www.msys2.org/);
+9. minpack insertion on MSYS2. Accessed May 2, 2024. [https://github.com/msys2/MINGW-packages/pull/20643](https://github.com/msys2/MINGW-packages/pull/20643);
+10. MSYS2 package for minpack. Accessed May 2, 2024. [https://packages.msys2.org/base/mingw-w64-libminpack](https://packages.msys2.org/base/mingw-w64-libminpack);
+11. LLVM Flang. Accessed May 2, 2024. [https://flang.llvm.org/docs/](https://flang.llvm.org/docs/);
+12. Microsoft Visual C/C++ (MSVC) build tools. Accessed May 2, 2024. [https://visualstudio.microsoft.com/visual-cpp-build-tools](https://visualstudio.microsoft.com/visual-cpp-build-tools);
+13. Intel® Fortran Compiler. Accessed May 2, 2024. [https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html);
+14. pkg-config. Accessed May 2, 2024. [https://gitlab.freedesktop.org/pkg-config/pkg-config](https://gitlab.freedesktop.org/pkg-config/pkg-config).
