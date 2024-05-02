@@ -248,6 +248,9 @@ if (NOT DEFINED MINPACK_INSTALL_PKGCONFIG_DIR)
     set(MINPACK_INSTALL_PKGCONFIG_DIR "${MINPACK_INSTALL_LIBDIR}/pkgconfig")
 endif()
 
+# additional vendor-specific Fortran flags
+set(minpack_Fflags "")
+
 # hold targets to install
 set(targets_to_install "")
 
@@ -261,10 +264,11 @@ if (BUILD_SHARED_LIBS)
     if ("${Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
         if (WIN32)
             target_sources(minpack_SHARED PRIVATE ${minpack_def_file})
-            target_compile_options(minpack_SHARED PRIVATE "/assume:underscore" "/names:lowercase")
+            list(APPEND minpack_Fflags "/assume:underscore" "/names:lowercase")
         else()
-            target_compile_options(minpack_SHARED PRIVATE "-assume" "underscore" "-names" "lowercase")
+            list(APPEND minpack_Fflags "-assume" "underscore" "-names" "lowercase")
         endif()
+        target_compile_options(minpack_SHARED PRIVATE ${minpack_Fflags})
     elseif("${Fortran_COMPILER_NAME}" MATCHES "flang(\\-new)?")
         if (WIN32)
             target_sources(minpack_SHARED PRIVATE ${minpack_def_file})
@@ -289,6 +293,24 @@ if (BUILD_STATIC_LIBS)
     add_library(minpack_STATIC STATIC "")
     target_sources(minpack_STATIC PRIVATE ${minpack_source_files})
 
+    get_filename_component(Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
+    
+    if ("${Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
+        if (WIN32)
+            set(wanted_Fflags "/assume:underscore" "/names:lowercase")
+        else()
+            set(wanted_Fflags "-assume" "underscore" "-names" "lowercase")
+        endif()
+
+        foreach(wanted_flag ${wanted_Fflags})
+            if (NOT (${wanted_flag} IN_LIST minpack_Fflags))
+                list(APPEND minpack_Fflags ${wanted_flag})
+            endif()
+        endforeach()
+
+        target_compile_options(minpack_SHARED PRIVATE ${minpack_Fflags})
+    endif()
+
     set_target_properties(minpack_STATIC
         PROPERTIES
         OUTPUT_NAME ${minpack_library_name}
@@ -302,6 +324,8 @@ install(TARGETS ${targets_to_install} EXPORT ${minpack_targets_export}
     LIBRARY DESTINATION "${MINPACK_INSTALL_LIBDIR}"
     ARCHIVE DESTINATION "${MINPACK_INSTALL_LIBDIR}"
 )
+
+list(JOIN minpack_Fflags " " minpack_Fflags_for_pkgconfig)
 
 configure_file(
     ${minpack_pkg_config_in}

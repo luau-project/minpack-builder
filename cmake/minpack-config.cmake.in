@@ -44,6 +44,7 @@
 #     minpack_LIBRARIES .......... minpack libraries to link against          #
 #     minpack_INCLUDE_DIR ........ Directory where header files are stored    #
 #     minpack_INCLUDE_DIRS ....... List of include dirs needed to use minpack #
+#     minpack_FORTRAN_FLAGS ...... List of Fortran flags to compile           #
 #     minpack_VERSION_MAJOR ...... Major version of minpack, if present       #
 #     minpack_VERSION_MINOR ...... Minor version of minpack, if present       #
 #     minpack_VERSION_PATCH ...... Patch version of minpack, if present       #
@@ -95,6 +96,12 @@ find_path(
 
 set(minpack_LIBRARIES ${minpack_LIBRARY})
 set(minpack_INCLUDE_DIRS ${minpack_INCLUDE_DIR})
+
+get_filename_component(__Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
+    
+if ("${__Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
+    set(minpack_FORTRAN_FLAGS "@minpack_Fflags@")
+endif()
 
 mark_as_advanced(minpack_LIBRARY)
 

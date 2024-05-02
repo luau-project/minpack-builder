@@ -8,6 +8,7 @@ version_major=@MINPACK_VERSION_MAJOR@
 version_minor=@MINPACK_VERSION_MINOR@
 version_patch=@MINPACK_VERSION_PATCH@
 cmakeconfigdir=${libdir}/${lib_name}-${version}
+Fflags=@minpack_Fflags_for_pkgconfig@
 
 Name: ${lib_name}
 Description: A software for solving nonlinear equations and nonlinear least squares problems.
