@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        USE_DOWNLOAD: ['ON', 'OFF']
+        USE_DOWNLOAD: ['OFF']
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         BUILD_STATIC_LIBS: ['ON', 'OFF']
         toolchain:
@@ -22,7 +22,9 @@ jobs:
           echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do wget https://www.netlib.org/minpack/${current_file} -P minpack-builder; done
+        run: |
+          git clone --branch=assets-ci-v1 ${{ github.repositoryUrl }} assets
+          for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
@@ -38,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        USE_DOWNLOAD: ['ON', 'OFF']
+        USE_DOWNLOAD: ['OFF']
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         BUILD_SHARED_LIBS: ['OFF']
         toolchain:
@@ -54,7 +56,9 @@ jobs:
           echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do wget https://www.netlib.org/minpack/${current_file} -P minpack-builder; done
+        run: |
+          git clone --branch=assets-ci-v1 ${{ github.repositoryUrl }} assets
+          for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:

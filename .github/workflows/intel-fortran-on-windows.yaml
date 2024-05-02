@@ -6,7 +6,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        USE_DOWNLOAD: ['ON', 'OFF']
+        USE_DOWNLOAD: ['OFF']
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         toolchain:
           - {compiler: intel, version: '2024.1'}
@@ -22,7 +22,9 @@ jobs:
         shell: powershell
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Invoke-WebRequest -Uri "https://www.netlib.org/minpack/$current_file" -OutFile "minpack-builder\$current_file"; }
+        run: |
+          git clone --branch=assets-ci-v1 ${{ github.repositoryUrl }} assets
+          foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
         shell: powershell
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
@@ -42,7 +44,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        USE_DOWNLOAD: ['ON', 'OFF']
+        USE_DOWNLOAD: ['OFF']
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         toolchain:
           - {compiler: intel, version: '2024.1'}
@@ -58,7 +60,9 @@ jobs:
         shell: powershell
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Invoke-WebRequest -Uri "https://www.netlib.org/minpack/$current_file" -OutFile "minpack-builder\$current_file"; }
+        run: |
+          git clone --branch=assets-ci-v1 ${{ github.repositoryUrl }} assets
+          foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
         shell: powershell
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
