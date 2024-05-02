@@ -308,7 +308,7 @@ if (BUILD_STATIC_LIBS)
             endif()
         endforeach()
 
-        target_compile_options(minpack_SHARED PRIVATE ${minpack_Fflags})
+        target_compile_options(minpack_STATIC PRIVATE ${minpack_Fflags})
     endif()
 
     set_target_properties(minpack_STATIC
