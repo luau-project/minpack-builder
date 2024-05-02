@@ -1,6 +1,9 @@
 name: LLVM Flang on Ubuntu
 run-name: minpack compiled with LLVM Flang on Ubuntu
-on: [push]
+on:
+  pull_request:
+    branches:
+      - main
 jobs:
   shared-build:
     runs-on: ubuntu-22.04

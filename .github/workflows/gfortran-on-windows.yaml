@@ -1,6 +1,9 @@
 name: GFortran on Windows
-run-name: minpack compiled with latest GFortran from MSYS2 on Windows
-on: [push]
+run-name: minpack compiled with GFortran from MSYS2 on Windows
+on:
+  pull_request:
+    branches:
+      - main
 jobs:
   shared-build:
     runs-on: windows-latest

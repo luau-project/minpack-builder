@@ -23,7 +23,7 @@ The original minpack [[1]](https://www.netlib.org/minpack) is a battle-tested **
 
 ### Why minpack-builder is needed?
 
-On a wide range of Linux operating systems [[6]](https://repology.org/project/minpack), due the widespread adoption of gfortran [[7]](https://gcc.gnu.org/wiki/GFortran) as robust and free option for a Fortran compiler, minpack can be installed by the official package manager of the distribution. On Windows, through the great MSYS2 ecosystem [[8]](https://www.msys2.org/) which keeps that feeling of the Linux world, I authored with contributions [[9]](https://github.com/msys2/MINGW-packages/pull/20643) the initial integration of minpack as a package on MSYS2 [[10]](https://packages.msys2.org/base/mingw-w64-libminpack) to deliver Windows developers access to native binaries compiled by the free Fortran compilers gfortran [[7]](https://gcc.gnu.org/wiki/GFortran) and LLVM Flang [[11]](https://flang.llvm.org/docs/).
+On a wide range of Linux operating systems [[6]](https://repology.org/project/minpack), due the widespread adoption of gfortran [[7]](https://gcc.gnu.org/wiki/GFortran) as robust and free option for a Fortran compiler, minpack can be installed by the official package manager of the distribution. On Windows, through the great MSYS2 ecosystem [[8]](https://www.msys2.org/) which keeps that feeling of the Linux world, I authored with contributions [[9]](https://github.com/msys2/MINGW-packages/pull/20643) the initial integration of minpack as a package on MSYS2 [[10]](https://packages.msys2.org/base/mingw-w64-libminpack). The insertion of minpack into MSYS2 repositories allowed Windows developers to have access to native binaries, compiled either by the free Fortran compilers gfortran [[7]](https://gcc.gnu.org/wiki/GFortran) and LLVM Flang [[11]](https://flang.llvm.org/docs/).
 
 While MSYS2 is an excellent choice for people working with GCC-like toolchains, Microsoft Visual C/C++ (MSVC) build tools [[12]](https://visualstudio.microsoft.com/visual-cpp-build-tools) are extremely popular among Windows developers. Whenever someone is looking for a Fortran compiler (Intel® Fortran Compiler [[13]](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html) and LLVM Flang [[11]](https://flang.llvm.org/docs/)) that integrates nicely with MSVC build tools, the developer will have to build minpack from the source code on its own. Moreover, Fortran compilers often export symbols with different naming conventions, leading to different C APIs if standard compiler options were applied.
 
@@ -33,7 +33,13 @@ In order to provide an unified C API for minpack, we use CMake [[2]](https://cma
 
 ## Supported Platforms
 
-Under construction.
+At the moment, the continuous integration on github is able to build and install minpack in the following platform / compiler toolchain
+
+| Fortran Compiler | Windows 11 | Ubuntu 22.04 |
+|------------------|------------|--------------|
+| GFortran         |![gfortran-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-windows.yaml/badge.svg?branch=main)|![gfortran-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-ubuntu.yaml/badge.svg?branch=main)|
+| Intel Fortran (ifx) | ![ifx-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-windows.yaml/badge.svg?branch=main) | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
+| LLVM Flang-new   | ![llvm-flang-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
 
 ## Usage
 

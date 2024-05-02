@@ -1,6 +1,9 @@
 name: GFortran on Ubuntu
 run-name: minpack compiled with GFortran on Ubuntu
-on: [push]
+on:
+  pull_request:
+    branches:
+      - main
 jobs:
   shared-build:
     runs-on: ubuntu-latest

@@ -1,6 +1,9 @@
 name: Intel Fortran Compiler (ifx) on Ubuntu
 run-name: minpack compiled with Intel Fortran Compiler (ifx) on Ubuntu
-on: [push]
+on:
+  pull_request:
+    branches:
+      - main
 jobs:
   shared-build:
     runs-on: ubuntu-latest
