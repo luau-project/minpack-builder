@@ -183,7 +183,7 @@ else()
 endif()
 
 if (WIN32)
-    if (CMAKE_Fortran_SIMULATE_ID MATCHES "MSVC")
+    if ("${CMAKE_Fortran_SIMULATE_ID}" MATCHES "MSVC")
         # .def file for MSVC-like shared library
         set(minpack_def_file "${minpack_library_name}.def")
     else()
