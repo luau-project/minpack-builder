@@ -57,6 +57,18 @@
 #                                                                             #
 #                                                                             #
 ###############################################################################
+# Start(Description of targets)                                               #
+###############################################################################
+#                                                                             #
+#     minpack_SHARED ............. The shared library target, if present      #
+#     minpack_STATIC ............. The static library target, if present      #
+#                                                                             #
+###############################################################################
+# End(Description of targets)                                                 #
+###############################################################################
+#                                                                             #
+#                                                                             #
+###############################################################################
 ###############################################################################
 ##                                 Body                                      ##
 ###############################################################################
@@ -89,11 +101,7 @@ mark_as_advanced(minpack_LIBRARY)
 if (DEFINED minpack_LIBRARY AND DEFINED minpack_INCLUDE_DIR)
     set(minpack_FOUND TRUE)
     set(minpack_INSTALL_PREFIX ${_prefix})
-    set(minpack_ROOT_DIR ${_prefix})        
-
-    foreach(minpack_needed_lib "@minpack_LIBRARIES@")
-        list(APPEND minpack_LIBRARIES "${minpack_needed_lib}")
-    endforeach()
+    set(minpack_ROOT_DIR ${_prefix})
 endif()
 
 if (DEFINED minpack_LIBRARY AND EXISTS "${minpack_LIBRARY}/@minpack_library_name@-@MINPACK_VERSION@/@minpack_library_name@-targets.cmake")
@@ -106,7 +114,12 @@ if (DEFINED minpack_LIBRARY AND EXISTS "${minpack_LIBRARY}/@minpack_library_name
 endif()
 
 if (WIN32)
-    set(minpack_RUNTIME "${_prefix}/@MINPACK_INSTALL_BINDIR@")
+    find_path(
+        minpack_RUNTIME
+        NAMES "@minpack_library_name@.dll;lib@minpack_library_name@.dll"
+        HINTS "${_prefix}/@MINPACK_INSTALL_BINDIR@"
+        NO_DEFAULT_PATH
+    )
 endif()
 
 if (EXISTS "${_prefix}/@MINPACK_INSTALL_PKGCONFIG_DIR@/@minpack_library_name@.pc")

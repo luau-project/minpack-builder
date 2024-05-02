@@ -216,13 +216,6 @@ set(minpack_pkg_config "${CMAKE_CURRENT_BINARY_DIR}/${minpack_library_name}.pc")
 # minpack targets destination file
 set(minpack_targets_export "${minpack_library_name}-targets")
 
-# minpack libraries to link against
-set(minpack_LIBRARIES "")
-
-if (UNIX)
-    list(APPEND minpack_LIBRARIES "m")
-endif()
-
 # use GNU directories convention
 include(GNUInstallDirs)
 
@@ -266,10 +259,6 @@ if (BUILD_SHARED_LIBS)
     get_filename_component(Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
     
     if ("${Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
-        if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
-            list(APPEND minpack_LIBRARIES "ifport" "ifcoremt" "imf" "svml" "intlc")
-        endif()
-
         if (WIN32)
             target_sources(minpack_SHARED PRIVATE ${minpack_def_file})
             target_compile_options(minpack_SHARED PRIVATE "/assume:underscore" "/names:lowercase")
@@ -313,12 +302,6 @@ install(TARGETS ${targets_to_install} EXPORT ${minpack_targets_export}
     LIBRARY DESTINATION "${MINPACK_INSTALL_LIBDIR}"
     ARCHIVE DESTINATION "${MINPACK_INSTALL_LIBDIR}"
 )
-
-set(minpack_LIBRARIES_FOR_PKGCONFIG_LIST "")
-foreach(minpack_LIB_FOR_PKGCONFIG ${minpack_LIBRARIES})
-    list(APPEND minpack_LIBRARIES_FOR_PKGCONFIG_LIST "-l${minpack_LIB_FOR_PKGCONFIG}")
-endforeach()
-list(JOIN minpack_LIBRARIES_FOR_PKGCONFIG_LIST " " minpack_LIBRARIES_FOR_PKGCONFIG)
 
 configure_file(
     ${minpack_pkg_config_in}
