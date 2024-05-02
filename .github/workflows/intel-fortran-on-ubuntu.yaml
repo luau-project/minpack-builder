@@ -12,6 +12,12 @@ jobs:
         toolchain:
           - {compiler: intel, version: '2024.1'}
     steps:
+      - name: Checkout assets
+        uses: actions/checkout@v4
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
@@ -22,9 +28,7 @@ jobs:
           echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: |
-          git clone --branch=assets-ci-v1 ${{ github.repositoryUrl }} assets
-          for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
+        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
@@ -46,6 +50,12 @@ jobs:
         toolchain:
           - {compiler: intel, version: '2024.1'}
     steps:
+      - name: Checkout assets
+        uses: actions/checkout@v4
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
@@ -56,9 +66,7 @@ jobs:
           echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: |
-          git clone --branch=assets-ci-v1 ${{ github.repositoryUrl }} assets
-          for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
+        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
