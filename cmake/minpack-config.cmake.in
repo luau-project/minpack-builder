@@ -98,9 +98,13 @@ set(minpack_LIBRARIES ${minpack_LIBRARY})
 set(minpack_INCLUDE_DIRS ${minpack_INCLUDE_DIR})
 
 get_filename_component(__Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-    
+
 if ("${__Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
-    set(minpack_FORTRAN_FLAGS "@minpack_Fflags@")
+    if (WIN32)
+        set(minpack_FORTRAN_FLAGS "@minpack_intel_specific_Fflags_for_Win@")
+    else()
+        set(minpack_FORTRAN_FLAGS "@minpack_intel_specific_Fflags_for_Unix@")
+    endif()
 endif()
 
 mark_as_advanced(minpack_LIBRARY)

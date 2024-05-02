@@ -251,6 +251,9 @@ endif()
 # additional vendor-specific Fortran flags
 set(minpack_Fflags "")
 
+set(minpack_intel_specific_Fflags_for_Win "/assume:underscore" "/names:lowercase")
+set(minpack_intel_specific_Fflags_for_Unix "-assume" "underscore" "-names" "lowercase")
+
 # hold targets to install
 set(targets_to_install "")
 
@@ -264,9 +267,9 @@ if (BUILD_SHARED_LIBS)
     if ("${Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
         if (WIN32)
             target_sources(minpack_SHARED PRIVATE ${minpack_def_file})
-            list(APPEND minpack_Fflags "/assume:underscore" "/names:lowercase")
+            list(APPEND minpack_Fflags ${minpack_intel_specific_Fflags_for_Win})
         else()
-            list(APPEND minpack_Fflags "-assume" "underscore" "-names" "lowercase")
+            list(APPEND minpack_Fflags ${minpack_intel_specific_Fflags_for_Unix})
         endif()
         target_compile_options(minpack_SHARED PRIVATE ${minpack_Fflags})
     elseif("${Fortran_COMPILER_NAME}" MATCHES "flang(\\-new)?")
@@ -297,9 +300,9 @@ if (BUILD_STATIC_LIBS)
     
     if ("${Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
         if (WIN32)
-            set(wanted_Fflags "/assume:underscore" "/names:lowercase")
+            set(wanted_Fflags ${minpack_intel_specific_Fflags_for_Win})
         else()
-            set(wanted_Fflags "-assume" "underscore" "-names" "lowercase")
+            set(wanted_Fflags ${minpack_intel_specific_Fflags_for_Unix})
         endif()
 
         foreach(wanted_flag ${wanted_Fflags})
