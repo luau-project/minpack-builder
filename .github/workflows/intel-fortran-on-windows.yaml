@@ -1,5 +1,5 @@
-name: Intel Fortran Compilers on Windows
-run-name: minpack compiled with Intel Fortran Compilers on Windows
+name: Intel Fortran Compiler (ifx) on Windows
+run-name: minpack compiled with Intel Fortran Compiler (ifx) on Windows
 on: [push]
 jobs:
   shared-build:
@@ -10,7 +10,6 @@ jobs:
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         toolchain:
           - {compiler: intel, version: '2024.1'}
-          # - {compiler: intel-classic, version: '2024.1'}
     steps:
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
@@ -47,7 +46,6 @@ jobs:
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         toolchain:
           - {compiler: intel, version: '2024.1'}
-          # - {compiler: intel-classic, version: '2024.1'}
     steps:
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
