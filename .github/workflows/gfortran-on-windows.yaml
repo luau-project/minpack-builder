@@ -19,8 +19,8 @@ jobs:
           C:\msys64\usr\bin\bash.exe -lc "pacman -Syuu --noconfirm --overwrite *"
           C:\msys64\usr\bin\bash.exe -lc "pacman -Syuu --noconfirm --overwrite *"
         shell: cmd
-      - name: Install GFortran
-        run: C:\msys64\usr\bin\bash.exe -lc "pacman -S mingw-w64-${{ matrix.MSYS2_CONFIG.env }}-fc --noconfirm --overwrite *"
+      - name: Install GFortran + GNU Make
+        run: C:\msys64\usr\bin\bash.exe -lc "pacman -S mingw-w64-${{ matrix.MSYS2_CONFIG.env }}-fc mingw-w64-${{ matrix.MSYS2_CONFIG.env }}-make --noconfirm --overwrite *"
         shell: cmd
       - name: Add GFortran compiler to system environment PATH 
         run: Add-Content $env:GITHUB_PATH "C:\msys64\${{ matrix.MSYS2_CONFIG.sys }}\bin"
@@ -35,7 +35,7 @@ jobs:
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Invoke-WebRequest -Uri "https://www.netlib.org/minpack/$current_file" -OutFile "minpack-builder\$current_file"; }
         shell: powershell
       - name: Configure the build of minpack (USE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }})
-        run: cmake -G Ninja "-DCMAKE_Fortran_COMPILER=${{ matrix.MSYS2_CONFIG.fc }}" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
+        run: cmake -G "MinGW Makefiles" "-DCMAKE_Fortran_COMPILER=${{ matrix.MSYS2_CONFIG.fc }}" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
         shell: cmd
       - name: Build minpack
         run: cmake --build %BUILDDIR% --config ${{ matrix.CMAKE_BUILD_TYPE }}
@@ -60,8 +60,8 @@ jobs:
           C:\msys64\usr\bin\bash.exe -lc "pacman -Syuu --noconfirm --overwrite *"
           C:\msys64\usr\bin\bash.exe -lc "pacman -Syuu --noconfirm --overwrite *"
         shell: cmd
-      - name: Install GFortran
-        run: C:\msys64\usr\bin\bash.exe -lc "pacman -S mingw-w64-${{ matrix.MSYS2_CONFIG.env }}-fc --noconfirm --overwrite *"
+      - name: Install GFortran + GNU Make
+        run: C:\msys64\usr\bin\bash.exe -lc "pacman -S mingw-w64-${{ matrix.MSYS2_CONFIG.env }}-fc mingw-w64-${{ matrix.MSYS2_CONFIG.env }}-make --noconfirm --overwrite *"
         shell: cmd
       - name: Add GFortran compiler to system environment PATH 
         run: Add-Content $env:GITHUB_PATH "C:\msys64\${{ matrix.MSYS2_CONFIG.sys }}\bin"
@@ -76,7 +76,7 @@ jobs:
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Invoke-WebRequest -Uri "https://www.netlib.org/minpack/$current_file" -OutFile "minpack-builder\$current_file"; }
         shell: powershell
       - name: Configure the build of minpack (USE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }})
-        run: cmake -G Ninja "-DCMAKE_Fortran_COMPILER=${{ matrix.MSYS2_CONFIG.fc }}" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
+        run: cmake -G "MinGW Makefiles" "-DCMAKE_Fortran_COMPILER=${{ matrix.MSYS2_CONFIG.fc }}" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
         shell: cmd
       - name: Build minpack
         run: cmake --build %BUILDDIR% --config ${{ matrix.CMAKE_BUILD_TYPE }}
