@@ -29,7 +29,7 @@ The original minpack [[1]](https://www.netlib.org/minpack) is a battle-tested **
 
 > [!IMPORTANT]
 > 
-> Do not confuse our project with Modernized Minpack [[6]](https://github.com/fortran-lang/minpack). Here, we compile the original (old) minpack library directly from the source code provided by netlib. On the other hand, modern minpack [[6]](https://github.com/fortran-lang/minpack) ported the original minpack library to newer Fortran standards. If you are a Fortran programmer, you definitely should take a look at modern minpack.
+> Do not confuse the original minpack [[1]](https://www.netlib.org/minpack) written in Fortran 77 with Modernized Minpack [[6]](https://github.com/fortran-lang/minpack). Here, we compile the original (old) minpack library directly from the source code provided by netlib. On the other hand, modern minpack [[6]](https://github.com/fortran-lang/minpack) ported the original code to newer Fortran standards. If you are a Fortran programmer, you definitely should take a look at modern minpack.
 
 ### Why minpack-builder is needed?
 
