@@ -167,27 +167,27 @@ project(minpack
 include(GNUInstallDirs)
 
 if (NOT DEFINED MINPACK_INSTALL_BINDIR)
-    # "Installation directory for binaries."
+    # Installation directory for binaries.
     set(MINPACK_INSTALL_BINDIR ${CMAKE_INSTALL_BINDIR})
 endif()
 
 if (NOT DEFINED MINPACK_INSTALL_LIBDIR)
-    # "Installation directory for libraries."
+    # Installation directory for libraries.
     set(MINPACK_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
 endif()
 
 if (NOT DEFINED MINPACK_INSTALL_INCLUDEDIR)
-    # "Installation directory for header files."
+    # Installation directory for header files.
     set(MINPACK_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
 if (NOT DEFINED MINPACK_INSTALL_DOCDIR)
-    # "Installation directory for documentation."
+    # "Installation directory for documentation.
     set(MINPACK_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR})
 endif()
 
 if (NOT DEFINED MINPACK_INSTALL_PKGCONFIG_DIR)
-    # "Installation directory for pkg-config file."
+    # Installation directory for pkg-config file.
     set(MINPACK_INSTALL_PKGCONFIG_DIR "${MINPACK_INSTALL_LIBDIR}/pkgconfig")
 endif()
 
