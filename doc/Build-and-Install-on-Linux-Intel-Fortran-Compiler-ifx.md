@@ -22,6 +22,10 @@ For this tutorial, we are going to use Debian 12 stable in a terminal-only fashi
 
 ### Pre-installation steps
 
+> [!TIP]
+>
+> If you already have Intel Fortran Compiler (ifx) installed, you can skip this section.
+
 > [!NOTE]
 > 
 > The guide presented here follows Intel instructions for Debian-based 64-bit distributions, which at the time of writing, you can find at [https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2024-1/apt.html](https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2024-1/apt.html). If you are running a 32-bit distribution, replace ```intel-basekit``` for ```intel-basekit-32bit```, and ```intel-hpckit``` for ```intel-hpckit-32bit``` everywhere in this guide.
