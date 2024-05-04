@@ -7,7 +7,7 @@
     * [What is minpack?](#what-is-minpack)
     * [Why minpack-builder is needed?](#why-minpack-builder-is-needed)
     * [How to solve the problem?](#how-to-solve-the-problem)
-* [Supported Platforms](#supported-platforms)
+* [Continuous Integration](#continuous-integration)
     * [Windows 11](#windows-11)
     * [Ubuntu 22.04](#ubuntu-2204)
 * [Documentation](#documentation)
@@ -43,9 +43,9 @@ While MSYS2 is an excellent choice for people working with GCC-like toolchains, 
 
 In order to provide an unified C API for minpack, we use CMake [[2]](https://cmake.org/) as a build system to download the source code directly from the official minpack website [[1]](https://www.netlib.org/minpack). Then, we handle vendor-specific parameters of the Fortran compiler to build the library conforming to the API seen on Linux operating systems. Finally, we install it on a suitable location defined by the developer, making the minpack binaries easily discoverable as a CMake [[2]](https://cmake.org/) module or pkg-config [[15]](https://gitlab.freedesktop.org/pkg-config/pkg-config) module.
 
-## Supported Platforms
+## Continuous Integration
 
-At the moment, the continuous integration on github is able to build and install minpack in the following platform / compiler toolchain
+At the moment, the continuous integration on github is able to build and install minpack in the following combination of platform / compiler toolchain.
 
 > [!NOTE]
 > 
