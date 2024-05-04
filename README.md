@@ -10,7 +10,7 @@
 * [Supported Platforms](#supported-platforms)
     * [Windows 11](#windows-11)
     * [Ubuntu 22.04](#ubuntu-2204)
-* [Usage](#usage)
+* [Documentation](#documentation)
 * [References](#references)
 
 ## Introduction
@@ -67,11 +67,13 @@ At the moment, the continuous integration on github is able to build and install
 | Intel LLVM ifx (*GCC-like*) | 2024.1.0 | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
 | LLVM Flang-new (*GCC-like*) | 18.1.3 |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
 
-## Usage
+## Documentation
 
-At the moment, the documentation is in early stages.
+> [!IMPORTANT]
+>
+> At the moment, the documentation is in early stages.
 
-For now, you can check the usage on Linux in the [Wiki](../../wiki), building minpack with GFortran on Debian 12 stable.
+Have a look in the [Wiki](../../wiki).
 
 ## References
 
