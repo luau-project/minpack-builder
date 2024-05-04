@@ -15,7 +15,7 @@ For this tutorial, we are going to use Debian 12 stable in a terminal-only fashi
 2. Terminal opened;
 3. Internet connection;
 4. Tools:
-   * ifx (latest version from Intel apt repositories);
+   * ifx (latest version provided by Intel apt repositories);
    * git;
    * make;
    * cmake (>= 3.17).
@@ -42,7 +42,27 @@ For this tutorial, we are going to use Debian 12 stable in a terminal-only fashi
 
 3. If gpg was installed, the last lines ouf the command above should be more or less like this
 
-<!-- image here -->
+    ![Screenshot from 2024-05-04 11-36-10](https://github.com/luau-project/minpack-builder/assets/18295115/6e2b5ceb-77e1-42dc-9f41-a88c9342d73e)
+
+4. Download Intel's key to system keyring
+
+    ```bash
+    wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+    ```
+
+5. Add signed entry to apt sources and configure the APT client to use Intel repository 
+
+    ```bash
+    echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+    ```
+    
+    ![Screenshot from 2024-05-04 11-47-36](https://github.com/luau-project/minpack-builder/assets/18295115/81634d13-7b78-4568-87a2-cce8e49399ae)
+
+6. Update packages list and repository index
+
+    ```bash
+    sudo apt update
+    ```
 
 ### Install the required tools
 
@@ -72,7 +92,8 @@ cmake --version
 
 The result on terminal should be more or less like this:
 
-<!-- image here -->
+![Screenshot from 2024-05-04 12-37-35](https://github.com/luau-project/minpack-builder/assets/18295115/29ec35bb-333a-4634-ac9c-888bf9e74809)
+
 
 ## Build and Install minpack
 
@@ -93,7 +114,7 @@ The result on terminal should be more or less like this:
 
 3. Clone minpack-builder by running ```git clone https://github.com/luau-project/minpack-builder```
 
-<!-- image here -->
+    ![Screenshot from 2024-05-04 12-43-51](https://github.com/luau-project/minpack-builder/assets/18295115/c2bafde5-9fab-49e6-bb38-85996a91a3bf)
 
 4. By default, minpack-builder downloads (optional param ```USE_DOWNLOAD``` is ```ON```) minpack source code to the same directory of minpack-builder (provided by optional param ```DOWNLOAD_DIR```).
 
@@ -107,7 +128,7 @@ The result on terminal should be more or less like this:
 
 5. Review the configuration summary and proceed to build
 
-<!-- image here -->
+    ![Screenshot from 2024-05-04 12-44-56](https://github.com/luau-project/minpack-builder/assets/18295115/5602010d-ba63-4e0a-a32c-14d0812e5695)
 
 6. Build the library. 
 
@@ -115,7 +136,8 @@ The result on terminal should be more or less like this:
     cmake --build $BUILD_DIR
     ```
 
-<!-- image here -->
+    ![Screenshot from 2024-05-04 12-45-28](https://github.com/luau-project/minpack-builder/assets/18295115/88152fd4-fc28-41ca-8a5f-7aed67128b12)
+
 
 > [!NOTE]
 > 
@@ -127,7 +149,7 @@ The result on terminal should be more or less like this:
     cmake --install $BUILD_DIR
     ```
 
-<!-- image here -->
+    ![Screenshot from 2024-05-04 12-46-02](https://github.com/luau-project/minpack-builder/assets/18295115/e9591e67-ed59-4295-81b3-fceb50d46c04)
 
 ---
 [Documentation](README.md)
