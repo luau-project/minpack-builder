@@ -8,9 +8,12 @@ Welcome to the minpack-builder documentation! Here, you can find all the possibl
 > 
 > At the moment, the documentation for usage is in early stages.
 
-The build-and-install usage is split by platform and Fortran compiler. For now, you can check the usage on Linux, building minpack with GFortran.
+The build-and-install usage is split by platform and Fortran compiler. For now, you can check the usage on Linux, building minpack with GFortran or Intel Fortran Compiler (ifx).
 
-* [Build and Install on Linux (GFortran)](Build-and-Install-on-Linux-GFortran.md)
+* Windows (documentation not available yet)
+* Linux
+    * [Build and install minpack on Linux with GFortran](Build-and-Install-on-Linux-GFortran.md)
+    * [Build and install minpack on Linux with Intel Fortran Compiler (ifx)](Build-and-Install-on-Linux-Intel-Fortran-Compiler-ifx.md)
 
 ## Configuration Options
 
