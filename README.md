@@ -69,7 +69,7 @@ At the moment, the continuous integration on github is able to build and install
 
 ## Documentation
 
-Have a look in the [Wiki](../../wiki).
+Browse the [documation](doc/Home.md).
 
 ## References
 
