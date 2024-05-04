@@ -1,6 +1,6 @@
 # Documentation
 
-Welcome to the minpack-builder wiki! Here, you can find all the possible configuration options supported by ```minpack-builder```, and detailed build-and-install instructions for minpack on different combinations of platform / Fortran compiler toolchain. Moreover, we provide documentation to use minpack as a CMake package after you installed it through ```minpack-builder```.
+Welcome to the minpack-builder documentation! Here, you can find all the possible configuration options supported by ```minpack-builder```, and detailed build-and-install instructions for minpack on different combinations of platform / Fortran compiler toolchain. Moreover, we provide documentation to use minpack as a CMake package after you installed it through ```minpack-builder```.
 
 ## Build and Install Usage
 

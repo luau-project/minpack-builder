@@ -1,5 +1,7 @@
 # minpack-builder
 
+Build scripts for minpack.
+
 ## Table of Contents
 
 * [Introduction](#introduction)
