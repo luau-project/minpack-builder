@@ -1,3 +1,5 @@
+# Configuration Options
+
 > [!TIP]
 > 
 > Each parameter below can be set by adding ```"-D<PARAMETER>=<VALUE>"``` in the command line.
@@ -104,3 +106,6 @@
 * Type: PATH
 * Default value: ${MINPACK_INSTALL_LIBDIR}/pkgconfig
 * Note: This value must be a relative path to ${CMAKE_INSTALL_PREFIX}.
+
+---
+[Documentation](Home.md)

@@ -10,7 +10,7 @@ Welcome to the minpack-builder wiki! Here, you can find all the possible configu
 
 The build-and-install usage is split by platform and Fortran compiler. For now, you can check the usage on Linux, building minpack with GFortran.
 
-* [Linux: building minpack with GFortran](Build-and-Install-on-Linux.md)
+* [Build and Install on Linux (GFortran)](Build-and-Install-on-Linux-GFortran.md)
 
 ## Configuration Options
 

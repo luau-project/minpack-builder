@@ -1,3 +1,5 @@
+# CMake Package
+
 ## Table of Contents
 * [Description](#description)
 * [Variables](#variables)
@@ -94,3 +96,6 @@ else()
     message(FATAL_ERROR "minpack was not found.")
 endif()
 ``` 
+
+---
+[Documentation](Home.md)

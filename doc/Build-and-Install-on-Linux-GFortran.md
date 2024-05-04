@@ -1,4 +1,4 @@
-# Usage on Linux
+# Build and Install on Linux (GFortran)
 
 For this tutorial, we are going to use Debian 12 stable in a terminal-only fashion, compiling the library with GFortran provided the by package manager.
 
@@ -95,3 +95,6 @@ The result on terminal should be more or less like this:
     ```
 
     ![Screenshot from 2024-05-03 15-52-36](https://github.com/luau-project/minpack-builder/assets/18295115/84130dec-f122-4594-a8d1-25100bbaff49)
+
+---
+[Documentation](Home.md)
