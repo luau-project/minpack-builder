@@ -97,4 +97,4 @@ The result on terminal should be more or less like this:
     ![Screenshot from 2024-05-03 15-52-36](https://github.com/luau-project/minpack-builder/assets/18295115/84130dec-f122-4594-a8d1-25100bbaff49)
 
 ---
-[Documentation](Home.md)
+[Documentation](README.md)
