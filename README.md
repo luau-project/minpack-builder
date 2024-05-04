@@ -69,10 +69,6 @@ At the moment, the continuous integration on github is able to build and install
 
 ## Documentation
 
-> [!IMPORTANT]
->
-> At the moment, the documentation is in early stages.
-
 Have a look in the [Wiki](../../wiki).
 
 ## References

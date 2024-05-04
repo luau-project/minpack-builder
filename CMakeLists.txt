@@ -102,8 +102,8 @@
 #         Description: Installation directory for documentation.              #
 #         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
 #                                                                             #
-#     MINPACK_INSTALL_PKGCONFIG_DIR (type: PATH, default value:               #
-#                                    ${MINPACK_INSTALL_LIBDIR}/pkgconfig)     #
+#     MINPACK_INSTALL_PKGCONFIGDIR (type: PATH, default value:                #
+#                                   ${MINPACK_INSTALL_LIBDIR}/pkgconfig)      #
 #         Description: Installation directory for pkg-config (.pc) files.     #
 #         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
 #                                                                             #
@@ -186,9 +186,9 @@ if (NOT DEFINED MINPACK_INSTALL_DOCDIR)
     set(MINPACK_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR})
 endif()
 
-if (NOT DEFINED MINPACK_INSTALL_PKGCONFIG_DIR)
+if (NOT DEFINED MINPACK_INSTALL_PKGCONFIGDIR)
     # Installation directory for pkg-config file.
-    set(MINPACK_INSTALL_PKGCONFIG_DIR "${MINPACK_INSTALL_LIBDIR}/pkgconfig")
+    set(MINPACK_INSTALL_PKGCONFIGDIR "${MINPACK_INSTALL_LIBDIR}/pkgconfig")
 endif()
 
 if (IS_ABSOLUTE "${MINPACK_INSTALL_BINDIR}")
@@ -207,8 +207,8 @@ if (IS_ABSOLUTE "${MINPACK_INSTALL_DOCDIR}")
     message(FATAL_ERROR "MINPACK_INSTALL_DOCDIR must be a relative path.")
 endif()
 
-if (IS_ABSOLUTE "${MINPACK_INSTALL_PKGCONFIG_DIR}")
-    message(FATAL_ERROR "MINPACK_INSTALL_PKGCONFIG_DIR must be a relative path.")
+if (IS_ABSOLUTE "${MINPACK_INSTALL_PKGCONFIGDIR}")
+    message(FATAL_ERROR "MINPACK_INSTALL_PKGCONFIGDIR must be a relative path.")
 endif()
 
 include("cmake/MinpackSources.cmake")
@@ -386,7 +386,7 @@ configure_file(
 
 install(
     FILES ${minpack_pkg_config}
-    DESTINATION "${MINPACK_INSTALL_PKGCONFIG_DIR}"
+    DESTINATION "${MINPACK_INSTALL_PKGCONFIGDIR}"
 )
 install(
     FILES ${minpack_header}
@@ -421,6 +421,6 @@ message(STATUS "     Binary dir ...................... : ${MINPACK_INSTALL_BINDI
 message(STATUS "     Lib dir ......................... : ${MINPACK_INSTALL_LIBDIR}")
 message(STATUS "     Include dir ..................... : ${MINPACK_INSTALL_INCLUDEDIR}")
 message(STATUS "     Doc dir ......................... : ${MINPACK_INSTALL_DOCDIR}")
-message(STATUS "     pkg-config dir .................. : ${MINPACK_INSTALL_PKGCONFIG_DIR}")
+message(STATUS "     pkg-config dir .................. : ${MINPACK_INSTALL_PKGCONFIGDIR}")
 message(STATUS "")
 message(STATUS "")

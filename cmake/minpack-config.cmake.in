@@ -133,8 +133,8 @@ if (WIN32)
     )
 endif()
 
-if (EXISTS "${_prefix}/@MINPACK_INSTALL_PKGCONFIG_DIR@/@minpack_library_name@.pc")
-    set(minpack_PKGCONFIG_DIR "${_prefix}/@MINPACK_INSTALL_PKGCONFIG_DIR@")
+if (EXISTS "${_prefix}/@MINPACK_INSTALL_PKGCONFIGDIR@/@minpack_library_name@.pc")
+    set(minpack_PKGCONFIG_DIR "${_prefix}/@MINPACK_INSTALL_PKGCONFIGDIR@")
 endif()
 
 set(minpack_VERSION @MINPACK_VERSION@)
