@@ -21,7 +21,7 @@ Below, you can find a list of all exported CMake variables in the configuration 
 
 | Variable | Type | Description |
 |----------|------|-------------|
-| minpack_FOUND | STRING | True if library and headers were found. |
+| minpack_FOUND | BOOL | True if library and headers were found. |
 | minpack_ROOT_DIR | PATH | Root directory of minpack. |
 | minpack_INSTALL_PREFIX | PATH | Root directory of minpack. |
 | minpack_LIBRARY | PATH | Path to minpack library. |
