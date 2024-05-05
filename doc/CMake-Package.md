@@ -33,8 +33,8 @@ Below, you can find a list of all exported CMake variables in the configuration 
 | minpack_VERSION_MINOR | STRING | Minor version of minpack, if present. |
 | minpack_VERSION_PATCH | STRING | Patch version of minpack, if present. |
 | minpack_VERSION | STRING | Full version of minpack. |
-| minpack_RUNTIME | PATH | Directory pointing to .dll files on Windows. |
-| minpack_PKGCONFIG_DIR | PATH | Directory pointing to minpack.pc, if present. |
+| minpack_RUNTIME | PATH | Directory holding .dll files on Windows. |
+| minpack_PKGCONFIG_DIR | PATH | Directory holding minpack.pc, if present. |
 
 ## Usage
 

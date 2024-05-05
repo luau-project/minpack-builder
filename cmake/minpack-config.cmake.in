@@ -49,8 +49,8 @@
 #     minpack_VERSION_MINOR ...... Minor version of minpack, if present       #
 #     minpack_VERSION_PATCH ...... Patch version of minpack, if present       #
 #     minpack_VERSION ............ Full version of minpack                    #
-#     minpack_RUNTIME ............ Directory of .dll files on Windows         #
-#     minpack_PKGCONFIG_DIR ...... Directory of minpack.pc, if present        #
+#     minpack_RUNTIME ............ Directory holding .dll files on Windows    #
+#     minpack_PKGCONFIG_DIR ...... Directory holding minpack.pc, if present   #
 #                                                                             #
 ###############################################################################
 # End(Description of variables)                                               #
