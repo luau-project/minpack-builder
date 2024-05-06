@@ -77,41 +77,15 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
             ```cmd
             winget install --id Microsoft.VisualStudio.2022.BuildTools --source winget --silent --override "--wait --quiet --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22000"
             ```
-    * Otherwise, assuming that you already have a Visual Studio 2022 instance previously installed, you can modify it to include native C/C++ x86/x64 development + Windows SDK with the following commands:
-        1. Set cmd variables depending on the kind of Visual Studio you have installed:
-            * Visual Studio 2022 Community:
-                ```cmd
-                set kind=community
-                set product_id=Community
-                ```
-            * Visual Studio 2022 Professional:
-                ```cmd
-                set kind=professional
-                set product_id=Professional
-                ```
-            * Visual Studio 2022 Enterprise:
-                ```cmd
-                set kind=enterprise
-                set product_id=Enterprise
-                ```
-            * Visual Studio 2022 Build Tools:
-                ```cmd
-                set kind=buildtools
-                set product_id=BuildTools
-                ```
-        2. Download the installer to modify Visual Studio:
+    * Otherwise, assuming that you already have a Visual Studio 2022 instance previously installed, you can modify it to include native C/C++ x86/x64 development + Windows SDK depending on the Windows version that you are targeting:
+        * Windows 10
             ```cmd
-            powershell -Command "Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_%kind%.exe -OutFile vs_%kind%.exe"
+            if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (for /f "usebackq tokens=*" %i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property properties.setupEngineFilePath`) do ( for /f "usebackq tokens=*" %j in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do ( "%i" modify --installPath "%j" --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.18362 ) ) ) else ( echo "Unable to find vswhere.exe" )
             ```
-        3. Modify it to include native C/C++ x86/x64 development + Windows SDK depending on the Windows version that you are targeting:
-            * Windows 10
-                ```cmd
-                vs_%kind%.exe modify --wait --quiet --productId Microsoft.VisualStudio.Product.%product_id% --channelId VisualStudio.17.Release --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.18362
-                ```
-            * Windows 11
-                ```cmd
-                vs_%kind%.exe modify --wait --quiet --productId Microsoft.VisualStudio.Product.%product_id% --channelId VisualStudio.17.Release --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22000
-                ```
+        * Windows 11
+            ```cmd
+            if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (for /f "usebackq tokens=*" %i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property properties.setupEngineFilePath`) do ( for /f "usebackq tokens=*" %j in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do ( "%i" modify --installPath "%j" --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22000 ) ) ) else ( echo "Unable to find vswhere.exe" )
+            ```
 5. (Optional if you have ifx) Install Intel Fortran Compiler (ifx)
     ```cmd
     winget install --id Intel.FortranCompiler --source winget --accept-package-agreements --accept-source-agreements --silent
