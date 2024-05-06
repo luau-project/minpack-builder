@@ -71,20 +71,20 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     * If you don't have Visual Studio 2022 installed and just want MSVC native C/C++ compilers for x86/x64, install them with the command below depending on the Windows version that you are targeting
         * Windows 10
             ```cmd
-            winget install --id Microsoft.VisualStudio.2022.BuildTools --source winget --silent --override "--wait --quiet --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.18362"
+            winget install --id Microsoft.VisualStudio.2022.BuildTools --source winget --silent --override "--quiet --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.18362"
             ```
         * Windows 11
             ```cmd
-            winget install --id Microsoft.VisualStudio.2022.BuildTools --source winget --silent --override "--wait --quiet --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22000"
+            winget install --id Microsoft.VisualStudio.2022.BuildTools --source winget --silent --override "--quiet --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22000"
             ```
     * Otherwise, assuming that you already have a Visual Studio 2022 instance previously installed, you can modify it to include native C/C++ x86/x64 development + Windows SDK depending on the Windows version that you are targeting:
         * Windows 10
             ```cmd
-            if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (for /f "usebackq tokens=*" %i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property properties.setupEngineFilePath`) do ( for /f "usebackq tokens=*" %j in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do ( "%i" modify --installPath "%j" --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.18362 ) ) ) else ( echo "Unable to find vswhere.exe" )
+            if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (for /f "usebackq tokens=*" %i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property properties.setupEngineFilePath`) do ( for /f "usebackq tokens=*" %j in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do ( "%comspec%" /C ""%i" modify --quiet --installPath "%j" --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.18362" ) ) ) else ( echo "Unable to find vswhere.exe" )
             ```
         * Windows 11
             ```cmd
-            if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (for /f "usebackq tokens=*" %i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property properties.setupEngineFilePath`) do ( for /f "usebackq tokens=*" %j in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do ( "%i" modify --installPath "%j" --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22000 ) ) ) else ( echo "Unable to find vswhere.exe" )
+            if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (for /f "usebackq tokens=*" %i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property properties.setupEngineFilePath`) do ( for /f "usebackq tokens=*" %j in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do ( "%comspec%" /C ""%i" modify --quiet --installPath "%j" --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22000" ) ) ) else ( echo "Unable to find vswhere.exe" )
             ```
 5. (Optional if you have ifx) Install Intel Fortran Compiler (ifx)
     ```cmd
