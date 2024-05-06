@@ -97,7 +97,7 @@ find_path(
 set(minpack_LIBRARIES ${minpack_LIBRARY})
 set(minpack_INCLUDE_DIRS ${minpack_INCLUDE_DIR})
 
-get_filename_component(__Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
+get_filename_component(__Fortran_COMPILER_NAME "${CMAKE_Fortran_COMPILER}" NAME)
 
 if ("${__Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
     if (WIN32)
