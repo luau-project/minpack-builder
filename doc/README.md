@@ -6,11 +6,12 @@ Welcome to the minpack-builder documentation! Here, you can find all the possibl
 
 > [!IMPORTANT]
 > 
-> At the moment, the documentation for usage is progressing, but there is a considerable work to do.
+> At the moment, we have guides to build and install minpack on Windows and Linux, using either GFortran or Intel Fortran Compiler (ifx).
 
 The build-and-install usage is split by platform and Fortran compiler. For now, we have the following guides:
 
 * Windows
+    * [Build and install minpack on Windows with GFortran](Build-and-Install-on-Windows-GFortran.md)
     * [Build and install minpack on Windows with Intel Fortran Compiler (ifx)](Build-and-Install-on-Windows-Intel-Fortran-Compiler-ifx.md)
 * Linux
     * [Build and install minpack on Linux with GFortran](Build-and-Install-on-Linux-GFortran.md)

@@ -79,7 +79,7 @@ For this tutorial, we are going to use Debian 12 stable in a terminal-only fashi
 
 > [!IMPORTANT]
 > 
-> After the installation has finished, you have to source intel shell variables in order to have access to ```ifx```, otherwise the ```ifx``` will not be found.
+> After the installation has finished, you have to source intel shell variables in order to have access to ```ifx```, otherwise the system will not be able to find ```ifx```.
 > 
 > ```bash
 > source /opt/intel/oneapi/setvars.sh
