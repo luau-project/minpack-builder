@@ -43,7 +43,7 @@ You can check that ```winget``` got properly installed if the search command wor
 > 
 > Although you can opt to install all the tools directly from MSYS2 (*they have packages for each tool on their repositories*), we are going to build minpack in a standard command prompt, i.e., out of MSYS2 shell.
 
-1. (Optional if you have git) Install MSYS2 and update MSYS2 core packages and tools
+1. (Optional if you have MSYS2) Install MSYS2, update core packages and tools
     1. The first step is the installation on MSYS2 on your computer, in case you don't have it yet
         ```cmd
         winget install --id MSYS2.MSYS2 --source winget --accept-package-agreements --accept-source-agreements --silent
