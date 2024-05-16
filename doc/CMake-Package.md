@@ -26,6 +26,7 @@ Below, you can find a list of all exported CMake variables in the configuration 
 | minpack_INSTALL_PREFIX | PATH | Root directory of minpack. |
 | minpack_LIBRARY | PATH | Path to minpack library. |
 | minpack_LIBRARIES | LIST | minpack libraries to link against. |
+| minpack_LIBRARY_DIR | PATH | Directory where library files are stored. |
 | minpack_INCLUDE_DIR | PATH | Directory where header files are stored. |
 | minpack_INCLUDE_DIRS | LIST | List of include dirs needed to use minpack. |
 | minpack_FORTRAN_FLAGS | LIST | List of Fortran flags to compile. |
