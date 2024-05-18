@@ -1,9 +1,7 @@
 name: Intel Fortran Compiler (ifx) on Windows
 run-name: minpack compiled with Intel Fortran Compiler (ifx) on Windows
-on:
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
+
 jobs:
   shared-build:
     runs-on: windows-latest

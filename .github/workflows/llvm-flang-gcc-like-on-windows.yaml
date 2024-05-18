@@ -1,9 +1,7 @@
 name: LLVM Flang (GCC-like) on Windows
 run-name: minpack compiled with LLVM Flang (GCC-like) from MSYS2 on Windows
-on:
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
+
 jobs:
   shared-build:
     runs-on: windows-latest
