@@ -50,7 +50,7 @@
 #     minpack_VERSION_MINOR ...... Minor version of minpack, if present       #
 #     minpack_VERSION_PATCH ...... Patch version of minpack, if present       #
 #     minpack_VERSION ............ Full version of minpack                    #
-#     minpack_RUNTIME ............ Directory holding .dll files on Windows    #
+#     minpack_RUNTIME_DIR ........ Directory holding .dll files on Windows    #
 #     minpack_PKGCONFIG_DIR ...... Directory holding minpack.pc, if present   #
 #                                                                             #
 ###############################################################################
@@ -112,7 +112,7 @@ mark_as_advanced(minpack_LIBRARY)
 
 if (DEFINED minpack_LIBRARY AND DEFINED minpack_INCLUDE_DIR)
     set(minpack_FOUND TRUE)
-    set(minpack_LIBRARY_DIR "${_prefix}/@MINPACK_INSTALL_LIBDIR@")
+    get_filename_component(minpack_LIBRARY_DIR "${minpack_LIBRARY}" PATH)
     set(minpack_INSTALL_PREFIX ${_prefix})
     set(minpack_ROOT_DIR ${_prefix})
 endif()
@@ -128,7 +128,7 @@ endif()
 
 if (WIN32)
     find_path(
-        minpack_RUNTIME
+        minpack_RUNTIME_DIR
         NAMES "@minpack_library_name@.dll" "lib@minpack_library_name@.dll"
         HINTS "${_prefix}/@MINPACK_INSTALL_BINDIR@"
         NO_DEFAULT_PATH
