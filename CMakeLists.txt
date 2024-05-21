@@ -302,23 +302,20 @@ set(targets_to_install "")
 if (BUILD_SHARED_LIBS)
     add_library(minpack_SHARED SHARED "")
     target_sources(minpack_SHARED PRIVATE ${minpack_source_files})
+
+    if (WIN32)
+        target_sources(minpack_SHARED PRIVATE ${minpack_def_file})
+    endif()
     
     get_filename_component(Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
     
     if ("${Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
         if (WIN32)
-            target_sources(minpack_SHARED PRIVATE ${minpack_def_file})
             list(APPEND minpack_Fflags ${minpack_intel_specific_Fflags_for_Win})
         else()
             list(APPEND minpack_Fflags ${minpack_intel_specific_Fflags_for_Unix})
         endif()
         target_compile_options(minpack_SHARED PRIVATE ${minpack_Fflags})
-    elseif("${Fortran_COMPILER_NAME}" MATCHES "flang(\\-new)?")
-        if (WIN32)
-            target_sources(minpack_SHARED PRIVATE ${minpack_def_file})
-        else()
-            # TODO
-        endif()
     else()
         # TODO: implement other compilers
     endif()
