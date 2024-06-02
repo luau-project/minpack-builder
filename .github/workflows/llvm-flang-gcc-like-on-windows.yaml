@@ -33,7 +33,7 @@ jobs:
       # This workaround takes place to avoid a kind of "flooding" on the main MSYS2
       # servers, due the amount of content we have to download in parallel builds.
       - name: Install Fortran compiler + GNU Make
-        shell: powershell
+        shell: pwsh
         run: |
           C:\msys64\usr\bin\bash.exe -lc "pacman -S ${{ env.MSYS2_PACKAGES_TO_INSTALL }} --print > /tmp/url.list"
           C:\msys64\usr\bin\bash.exe -lc "for e in `$(cat /tmp/url.list); do echo `$(basename `$e); done" > $env:RUNNER_TEMP\packages.list
@@ -92,7 +92,7 @@ jobs:
           C:\msys64\usr\bin\bash.exe -lc "pacman -U /tmp/*.pkg.tar.zst --noconfirm"
 
       - name: Add MSYS2 tools to system environment PATH, and set FC environment variables
-        shell: powershell
+        shell: pwsh
         run: |
           Add-Content $env:GITHUB_PATH "C:\msys64\${{ matrix.MSYS2_CONFIG.sys }}\bin"
           Add-Content $env:GITHUB_ENV "FC=${{ matrix.MSYS2_CONFIG.fc }}"
@@ -154,7 +154,7 @@ jobs:
       # This workaround takes place to avoid a kind of "flooding" on the main MSYS2
       # servers, due the amount of content we have to download in parallel builds.
       - name: Install Fortran compiler + GNU Make
-        shell: powershell
+        shell: pwsh
         run: |
           C:\msys64\usr\bin\bash.exe -lc "pacman -S ${{ env.MSYS2_PACKAGES_TO_INSTALL }} --print > /tmp/url.list"
           C:\msys64\usr\bin\bash.exe -lc "for e in `$(cat /tmp/url.list); do echo `$(basename `$e); done" > $env:RUNNER_TEMP\packages.list
@@ -213,7 +213,7 @@ jobs:
           C:\msys64\usr\bin\bash.exe -lc "pacman -U /tmp/*.pkg.tar.zst --noconfirm"
 
       - name: Add MSYS2 tools to system environment PATH, and set FC environment variables
-        shell: powershell
+        shell: pwsh
         run: |
           Add-Content $env:GITHUB_PATH "C:\msys64\${{ matrix.MSYS2_CONFIG.sys }}\bin"
           Add-Content $env:GITHUB_ENV "FC=${{ matrix.MSYS2_CONFIG.fc }}"
