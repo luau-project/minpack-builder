@@ -53,7 +53,7 @@ Browse the [documentation](doc/README.md).
 
 > [!TIP]
 > 
-> The heavy testing of the capabilities of ```minpack-builder``` to build minpack happens on our project [https://github.com/luau-project/minpackex](https://github.com/luau-project/minpackex), which extends minpack API to allow an easier usage from C/C++. You definitely should check it out!
+> The heavy testing of the capabilities of ```minpack-builder``` to build minpack happens on our project [https://github.com/luau-project/minpackex](https://github.com/luau-project/minpackex), which extends minpack API to allow an easier usage from C/C++. Check it out!
 
 At the moment, the continuous integration on ```minpack-builder``` github is able to build and install minpack in the following combination of platform / compiler toolchain.
 
@@ -77,6 +77,14 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 | Intel LLVM ifx (*GCC-like*) | 2024.1.0 | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
 | LLVM Flang-new (*GCC-like*) | 18.1.3 |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
 
+> [!IMPORTANT]
+> 
+> At the moment (June 2, 2024), we are aware that the current version of this project is not able to build minpack with LFortran compiler [[16]](https://lfortran.org/) paired with MSVC Build Tools on Windows (latest version present on Miniforge [[17]](https://github.com/conda-forge/miniforge), which is 0.36.0) by running
+> 
+> ```conda install -c conda-forge -n base -y lfortran```
+> 
+> However, this seems to be a limitation of LFortran.
+
 ## References
 
 1. minpack. Accessed May 2, 2024. [https://www.netlib.org/minpack](https://www.netlib.org/minpack);
@@ -93,4 +101,6 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 12. LLVM Flang. Accessed May 2, 2024. [https://flang.llvm.org/docs/](https://flang.llvm.org/docs/);
 13. Microsoft Visual C/C++ (MSVC) build tools. Accessed May 2, 2024. [https://visualstudio.microsoft.com/visual-cpp-build-tools](https://visualstudio.microsoft.com/visual-cpp-build-tools);
 14. Intel® Fortran Compiler. Accessed May 2, 2024. [https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html);
-15. pkg-config. Accessed May 2, 2024. [https://gitlab.freedesktop.org/pkg-config/pkg-config](https://gitlab.freedesktop.org/pkg-config/pkg-config).
+15. pkg-config. Accessed May 2, 2024. [https://gitlab.freedesktop.org/pkg-config/pkg-config](https://gitlab.freedesktop.org/pkg-config/pkg-config);
+16. LFortran. Accessed June 2, 2024. [https://lfortran.org/](https://lfortran.org/);
+17. Miniforge. Accessed June 2, 2024. [https://github.com/conda-forge/miniforge](https://github.com/conda-forge/miniforge).

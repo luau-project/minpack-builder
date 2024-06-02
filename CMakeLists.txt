@@ -110,7 +110,6 @@
 #     RELOCATABLE_PKGCONFIG (type: BOOL, default value: ON)                   #
 #         Description: Enable the generated pkg-config file (minpack.pc)      #
 #             to be relocatable.                                              #
-#         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
 #                                                                             #
 ###############################################################################
 # End(Description of parameters)                                              #
