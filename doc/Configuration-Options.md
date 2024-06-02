@@ -18,6 +18,7 @@
 * [MINPACK_INSTALL_INCLUDEDIR](#MINPACK_INSTALL_INCLUDEDIR)
 * [MINPACK_INSTALL_DOCDIR](#MINPACK_INSTALL_DOCDIR)
 * [MINPACK_INSTALL_PKGCONFIGDIR](#MINPACK_INSTALL_PKGCONFIGDIR)
+* [RELOCATABLE_PKGCONFIG](#RELOCATABLE_PKGCONFIG)
 
 ## CMAKE_BUILD_TYPE
 
@@ -106,6 +107,13 @@
 * Type: PATH
 * Default value: ${MINPACK_INSTALL_LIBDIR}/pkgconfig
 * Note: This value must be a relative path to ${CMAKE_INSTALL_PREFIX}.
+
+## RELOCATABLE_PKGCONFIG
+
+* Parameter: RELOCATABLE_PKGCONFIG
+* Description: Enable the generated pkg-config file (minpack.pc) to be relocatable.
+* Type: BOOL
+* Default value: ON.
 
 ---
 [Documentation](README.md)

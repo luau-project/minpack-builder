@@ -107,6 +107,11 @@
 #         Description: Installation directory for pkg-config (.pc) files.     #
 #         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
 #                                                                             #
+#     RELOCATABLE_PKGCONFIG (type: BOOL, default value: ON)                   #
+#         Description: Enable the generated pkg-config file (minpack.pc)      #
+#             to be relocatable.                                              #
+#         Note: Must be a relative path to ${CMAKE_INSTALL_PREFIX}.           #
+#                                                                             #
 ###############################################################################
 # End(Description of parameters)                                              #
 ###############################################################################
@@ -127,6 +132,7 @@ option(BUILD_SHARED_LIBS "Build the shared library." ON)
 option(BUILD_STATIC_LIBS "Build the static library." OFF)
 option(USE_DOWNLOAD "Download source code." ON)
 set(DOWNLOAD_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Destination directory to store downloaded files.")
+option(RELOCATABLE_PKGCONFIG "Enable the generated pkg-config file (minpack.pc) to be relocatable." ON)
 
 # official minpack url
 set(minpack_url "https://www.netlib.org/minpack")
@@ -298,6 +304,24 @@ set(minpack_intel_specific_Fflags_for_Unix "-assume" "underscore" "-names" "lowe
 # hold targets to install
 set(targets_to_install "")
 
+if (RELOCATABLE_PKGCONFIG)
+
+    # eval number of parents directories
+    # between CMAKE_INSTALL_PREFIX and MINPACK_INSTALL_PKGCONFIGDIR
+    # to enable a relocatable pkg-config (.pc) file
+    set(__pcfiledir_suffix "")
+    set(__current_parent_dir "${CMAKE_INSTALL_PREFIX}/${MINPACK_INSTALL_PKGCONFIGDIR}")
+    while (NOT "${__current_parent_dir}" STREQUAL "${CMAKE_INSTALL_PREFIX}")
+        get_filename_component(__current_parent_dir ${__current_parent_dir} PATH)
+        list(APPEND __pcfiledir_suffix "..")
+    endwhile()
+    list(JOIN __pcfiledir_suffix "/" __pcfiledir_joint_suffix)
+    set(MINPACK_PKGCONFIG_PREFIX "\${pcfiledir}/${__pcfiledir_joint_suffix}")
+
+else()
+    set(MINPACK_PKGCONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}")
+endif()
+
 # Build the shared library
 if (BUILD_SHARED_LIBS)
     add_library(minpack_SHARED SHARED "")
@@ -322,6 +346,7 @@ if (BUILD_SHARED_LIBS)
 
     set_target_properties(minpack_SHARED
         PROPERTIES
+        Fortran_FORMAT FIXED
         POSITION_INDEPENDENT_CODE ON
         OUTPUT_NAME ${minpack_library_name}
     )
@@ -354,6 +379,7 @@ if (BUILD_STATIC_LIBS)
 
     set_target_properties(minpack_STATIC
         PROPERTIES
+        Fortran_FORMAT FIXED
         OUTPUT_NAME ${minpack_library_name}
     )
 
@@ -410,6 +436,7 @@ message(STATUS "")
 message(STATUS "     Build type ...................... : ${CMAKE_BUILD_TYPE}")
 message(STATUS "     Build shared libs ............... : ${BUILD_SHARED_LIBS}")
 message(STATUS "     Build static libs ............... : ${BUILD_STATIC_LIBS}")
+message(STATUS "     Relocatable pkg-config files .... : ${RELOCATABLE_PKGCONFIG}")
 message(STATUS " ")
 message(STATUS "   Install directories:")
 message(STATUS " ")

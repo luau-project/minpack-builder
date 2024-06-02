@@ -9,10 +9,10 @@ Build scripts for minpack.
     * [What is minpack?](#what-is-minpack)
     * [Why minpack-builder is needed?](#why-minpack-builder-is-needed)
     * [How to solve the problem?](#how-to-solve-the-problem)
+* [Documentation](#documentation)
 * [Continuous Integration](#continuous-integration)
     * [Windows 11](#windows-11)
     * [Ubuntu 22.04](#ubuntu-2204)
-* [Documentation](#documentation)
 * [References](#references)
 
 ## Introduction
@@ -27,7 +27,7 @@ The primary goal of **minpack-builder** is to provide an unified C API and a sta
 
 ### What is minpack?
 
-The original minpack [[1]](https://www.netlib.org/minpack) is a battle-tested **min**imization **pack**age written in Fortran 77 for solving a system of nonlinear equations and nonlinear least squares problems, discussed in details at [[3]](https://doi.org/10.2172/6997568). Throughout the years, popular scientific libraries like SciPy [[4]](https://github.com/scipy/scipy/tree/main/scipy/optimize/minpack) and Eigen [[5]](https://eigen.tuxfamily.org/dox/unsupported/index.html) have been using minpack to perform nonlinear optimization, either in unmodified form or rewritten to programming languages other than Fortran.
+The original minpack [[1]](https://www.netlib.org/minpack) is a battle-tested **min**imization **pack**age written in Fortran 77 for solving a system of nonlinear equations and nonlinear least squares problems, discussed in details at [[3]](https://doi.org/10.2172/6997568). Throughout the years, popular scientific libraries like SciPy [[4]](https://github.com/scipy/scipy/tree/main/scipy/optimize/minpack) and Eigen [[5]](https://eigen.tuxfamily.org/dox/unsupported/index.html) have been using minpack to perform nonlinear optimization.
 
 > [!IMPORTANT]
 > 
@@ -45,9 +45,17 @@ While MSYS2 is an excellent choice for people working with GCC-like toolchains, 
 
 In order to provide an unified C API for minpack, we use CMake [[2]](https://cmake.org/) as a build system to download the source code directly from the official minpack website [[1]](https://www.netlib.org/minpack). Then, we handle vendor-specific parameters of the Fortran compiler to build the library conforming to the API seen on Linux operating systems. Finally, we install it on a suitable location defined by the developer, making the minpack binaries easily discoverable as a CMake [[2]](https://cmake.org/) module or pkg-config [[15]](https://gitlab.freedesktop.org/pkg-config/pkg-config) module.
 
+## Documentation
+
+Browse the [documentation](doc/README.md).
+
 ## Continuous Integration
 
-At the moment, the continuous integration on github is able to build and install minpack in the following combination of platform / compiler toolchain.
+> [!TIP]
+> 
+> The heavy testing of the capabilities of ```minpack-builder``` to build minpack happens on our project [https://github.com/luau-project/minpackex](https://github.com/luau-project/minpackex), which extends minpack API to allow an easier usage from C/C++. You definitely should check it out!
+
+At the moment, the continuous integration on ```minpack-builder``` github is able to build and install minpack in the following combination of platform / compiler toolchain.
 
 > [!NOTE]
 > 
@@ -57,7 +65,7 @@ At the moment, the continuous integration on github is able to build and install
 
 | Fortran Compiler | Compiler Version | Build Status |
 |------------------|------------------|--------------|
-| GFortran | 13.2.0 | ![gfortran-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-windows.yaml/badge.svg?branch=main) |
+| GFortran | 14.1.0 | ![gfortran-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-windows.yaml/badge.svg?branch=main) |
 | Intel LLVM ifx (*MSVC-like*) | 2024.1.0 | ![ifx-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-windows.yaml/badge.svg?branch=main) |
 | LLVM Flang-new (*GCC-like*) | 18.1.4 | ![llvm-flang-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |
 
@@ -68,10 +76,6 @@ At the moment, the continuous integration on github is able to build and install
 | GFortran         | 11.4.0 |![gfortran-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-ubuntu.yaml/badge.svg?branch=main)|
 | Intel LLVM ifx (*GCC-like*) | 2024.1.0 | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
 | LLVM Flang-new (*GCC-like*) | 18.1.3 |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
-
-## Documentation
-
-Browse the [documentation](doc/README.md).
 
 ## References
 

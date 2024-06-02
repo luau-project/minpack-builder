@@ -1,5 +1,5 @@
-prefix=@CMAKE_INSTALL_PREFIX@
-exec_prefix=@CMAKE_INSTALL_PREFIX@
+prefix=@MINPACK_PKGCONFIG_PREFIX@
+exec_prefix=@MINPACK_PKGCONFIG_PREFIX@
 lib_name=@minpack_library_name@
 libdir=${exec_prefix}/@MINPACK_INSTALL_LIBDIR@
 includedir=${prefix}/@MINPACK_INSTALL_INCLUDEDIR@
