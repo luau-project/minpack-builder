@@ -22,7 +22,6 @@ For this tutorial, we are going to use Windows 11 mostly in a command prompt-onl
     * Microsoft Visual C/C++ (MSVC) build tools for native C/C++ x86/x64 development (latest) + Windows SDK (suitable for your target platform);
     * ifx (latest version available on winget repositories);
     * git;
-    * Ninja (>= 1.10);
     * cmake (>= 3.17).
 
 ### Pre-installation steps
@@ -94,11 +93,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     ```cmd
     winget install --id Git.Git --source winget --accept-package-agreements --accept-source-agreements --silent
     ```
-7. (Optional if you have Ninja >= 1.10) Install Ninja
-    ```cmd
-    winget install --id Ninja-build.Ninja --source winget --accept-package-agreements --accept-source-agreements --silent
-    ```
-8. (Optional if you have CMake >= 3.17) Install CMake
+7. (Optional if you have CMake >= 3.17) Install CMake
     ```cmd
     winget install --id Kitware.CMake --source winget --accept-package-agreements --accept-source-agreements --silent
     ```
@@ -147,8 +142,12 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 6. By default, minpack-builder downloads (optional param ```USE_DOWNLOAD``` is ```ON```) minpack source code to the same directory of minpack-builder (provided by optional param ```DOWNLOAD_DIR```).
 
     ```
-    cmake -G Ninja --install-prefix "%INSTALL_DIR%" -S minpack-builder -B "%BUILD_DIR%"
+    cmake -G "NMake Makefiles" --install-prefix "%INSTALL_DIR%" -S minpack-builder -B "%BUILD_DIR%"
     ```
+
+> [!IMPORTANT]
+> 
+> In my personal tests, building with Visual Studio generator does not work nicely in most scenarios. So, prefer to build with ```-G "NMake Makefiles"```, because it already comes bundled with Visual Studio or MSVC Build Tools. You might also want to build with Ninja generator (```-G Ninja```) in case you have Ninja (version >= 1.10) installed.
 
 > [!NOTE]
 > 
@@ -156,7 +155,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
 7. Review the configuration summary and proceed to build
 
-    ![Screenshot from 2024-05-05 17-50-07](https://github.com/luau-project/minpack-builder/assets/18295115/9c5bdb1f-4a6f-4b04-a6d9-06930211342f)
+    ![Screenshot from 2024-06-02 10-25-42](https://github.com/luau-project/minpack-builder/assets/18295115/3b498b71-0cff-47dc-a08e-0c6415baa44a)
 
 8. Build the library. 
 
@@ -164,7 +163,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     cmake --build "%BUILD_DIR%"
     ```
 
-    ![Screenshot from 2024-05-05 17-51-29](https://github.com/luau-project/minpack-builder/assets/18295115/c296a828-137d-4443-8a6f-92894cee49c0)
+    ![Screenshot from 2024-06-02 10-26-30](https://github.com/luau-project/minpack-builder/assets/18295115/813ac470-66d1-4bee-bb0e-a2b7cf0a64ab)
 
 > [!NOTE]
 > 
@@ -181,7 +180,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     cmake --install "%BUILD_DIR%"
     ```
 
-    ![Screenshot from 2024-05-05 17-51-55](https://github.com/luau-project/minpack-builder/assets/18295115/6162aa03-3ec0-4690-be85-c7d7b9e0ee1e)
+    ![Screenshot from 2024-06-02 10-27-08](https://github.com/luau-project/minpack-builder/assets/18295115/dc7dfec4-ef56-4d98-9ea5-e7f963869185)
 
 ---
 [Documentation](README.md)

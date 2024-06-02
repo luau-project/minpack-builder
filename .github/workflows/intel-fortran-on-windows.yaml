@@ -1,6 +1,14 @@
 name: Intel Fortran Compiler (ifx) on Windows
 run-name: minpack compiled with Intel Fortran Compiler (ifx) on Windows
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - doc/**
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - doc/**
 
 jobs:
   shared-build:
@@ -11,40 +19,50 @@ jobs:
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         toolchain:
           - {compiler: intel, version: '2024.1'}
+    
     steps:
+      
       - name: Checkout assets
         uses: actions/checkout@v4
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         with:
           ref: assets-ci-v1
           path: assets
+      
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
+      
       - name: Set environment variables to build and install directories
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
           Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
         shell: powershell
+      
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
         shell: powershell
+      
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
           compiler: ${{ matrix.toolchain.compiler }}
           version: ${{ matrix.toolchain.version }}
+      
       - name: Configure the build of minpack (USE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }})
-        run: cmake -G Ninja -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
         shell: cmd
+      
       - name: Build minpack
         run: cmake --build %BUILDDIR% --config ${{ matrix.CMAKE_BUILD_TYPE }}
         shell: cmd
+      
       - name: Install minpack
         run: cmake --install %BUILDDIR% --config ${{ matrix.CMAKE_BUILD_TYPE }}
         shell: cmd
+  
   static-build:
     runs-on: windows-latest
     strategy:
@@ -53,37 +71,46 @@ jobs:
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         toolchain:
           - {compiler: intel, version: '2024.1'}
+    
     steps:
+      
       - name: Checkout assets
         uses: actions/checkout@v4
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         with:
           ref: assets-ci-v1
           path: assets
+      
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
+      
       - name: Set environment variables to build and install directories
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
           Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
         shell: powershell
+      
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
         shell: powershell
+      
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
           compiler: ${{ matrix.toolchain.compiler }}
           version: ${{ matrix.toolchain.version }}
+      
       - name: Configure the build of minpack (USE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }})
-        run: cmake -G Ninja -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
         shell: cmd
+      
       - name: Build minpack
         run: cmake --build %BUILDDIR% --config ${{ matrix.CMAKE_BUILD_TYPE }}
         shell: cmd
+      
       - name: Install minpack
         run: cmake --install %BUILDDIR% --config ${{ matrix.CMAKE_BUILD_TYPE }}
         shell: cmd

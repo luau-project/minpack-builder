@@ -1,91 +1,124 @@
 name: LLVM Flang on Ubuntu
 run-name: minpack compiled with LLVM Flang on Ubuntu
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - doc/**
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - doc/**
 
 jobs:
   shared-build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         USE_DOWNLOAD: ['OFF']
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         BUILD_STATIC_LIBS: ['ON', 'OFF']
+        TOOLCHAIN:
+          - {COMPILER_NAME: 'flang-new', VERSION: '18'}
+          - {COMPILER_NAME: 'flang-new', VERSION: '17'}
+    
     steps:
+
       - name: Checkout assets
         uses: actions/checkout@v4
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         with:
           ref: assets-ci-v1
           path: assets
+      
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
+      
       - name: Set shell variables to build and install directories
         run: |
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-flang" >> $GITHUB_ENV
+      
       - name: Install LLVM Flang
         run: |
-          echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" > $RUNNER_TEMP/llvm-flang.list
-          echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> $RUNNER_TEMP/llvm-flang.list
-          echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-17 main" >> $RUNNER_TEMP/llvm-flang.list
-          echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-17 main" >> $RUNNER_TEMP/llvm-flang.list
-          echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" >> $RUNNER_TEMP/llvm-flang.list
-          echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" >> $RUNNER_TEMP/llvm-flang.list
-          sudo mv $RUNNER_TEMP/llvm-flang.list /etc/apt/sources.list.d/
-          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          codename=$(lsb_release -c -s)
+          echo "deb http://apt.llvm.org/$codename/ llvm-toolchain-$codename main" > $RUNNER_TEMP/llvm-flang-new.list
+          echo "deb-src http://apt.llvm.org/$codename/ llvm-toolchain-$codename main" >> $RUNNER_TEMP/llvm-flang-new.list
+          echo "deb http://apt.llvm.org/$codename/ llvm-toolchain-$codename-${{ matrix.TOOLCHAIN.VERSION }} main" >> $RUNNER_TEMP/llvm-flang-new.list
+          echo "deb-src http://apt.llvm.org/$codename/ llvm-toolchain-$codename-${{ matrix.TOOLCHAIN.VERSION }} main" >> $RUNNER_TEMP/llvm-flang-new.list
+          sudo mv $RUNNER_TEMP/llvm-flang-new.list /etc/apt/sources.list.d/
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc  
           sudo apt update
-          sudo apt install -f -y libllvm-18-ocaml-dev libllvm18 llvm-18 llvm-18-dev llvm-18-doc llvm-18-examples llvm-18-runtime clang-18 clang-tools-18 clang-18-doc libclang-common-18-dev libclang-18-dev libclang1-18 clang-format-18 python3-clang-18 clangd-18 clang-tidy-18 libclang-rt-18-dev libmlir-18-dev mlir-18-tools flang-18
+          sudo apt install -f -y libllvm-${{ matrix.TOOLCHAIN.VERSION }}-ocaml-dev libllvm${{ matrix.TOOLCHAIN.VERSION }} llvm-${{ matrix.TOOLCHAIN.VERSION }} llvm-${{ matrix.TOOLCHAIN.VERSION }}-dev llvm-${{ matrix.TOOLCHAIN.VERSION }}-doc llvm-${{ matrix.TOOLCHAIN.VERSION }}-examples llvm-${{ matrix.TOOLCHAIN.VERSION }}-runtime clang-${{ matrix.TOOLCHAIN.VERSION }} clang-tools-${{ matrix.TOOLCHAIN.VERSION }} clang-${{ matrix.TOOLCHAIN.VERSION }}-doc libclang-common-${{ matrix.TOOLCHAIN.VERSION }}-dev libclang-${{ matrix.TOOLCHAIN.VERSION }}-dev libclang1-${{ matrix.TOOLCHAIN.VERSION }} clang-format-${{ matrix.TOOLCHAIN.VERSION }} python3-clang-${{ matrix.TOOLCHAIN.VERSION }} clangd-${{ matrix.TOOLCHAIN.VERSION }} clang-tidy-${{ matrix.TOOLCHAIN.VERSION }} libclang-rt-${{ matrix.TOOLCHAIN.VERSION }}-dev libmlir-${{ matrix.TOOLCHAIN.VERSION }}-dev mlir-${{ matrix.TOOLCHAIN.VERSION }}-tools flang-${{ matrix.TOOLCHAIN.VERSION }}
+          echo "FC=${{ matrix.TOOLCHAIN.COMPILER_NAME }}-${{ matrix.TOOLCHAIN.VERSION }}" >> $GITHUB_ENV
+
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
+      
       - name: Configure the build of minpack (USE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }})
-        run: cmake -G "Unix Makefiles" -DCMAKE_Fortran_COMPILER=flang-new-18 -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+      
       - name: Build minpack
         run: cmake --build $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
+      
       - name: Install minpack
         run: cmake --install $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
+      
   static-build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         USE_DOWNLOAD: ['OFF']
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         BUILD_SHARED_LIBS: ['OFF']
+        TOOLCHAIN:
+          - {COMPILER_NAME: 'flang-new', VERSION: '18'}
+          - {COMPILER_NAME: 'flang-new', VERSION: '17'}
+    
     steps:
+
       - name: Checkout assets
         uses: actions/checkout@v4
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         with:
           ref: assets-ci-v1
           path: assets
+    
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
+      
       - name: Set shell variables to build and install directories
         run: |
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-flang" >> $GITHUB_ENV
+      
       - name: Install LLVM Flang
         run: |
-          echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" > $RUNNER_TEMP/llvm-flang.list
-          echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> $RUNNER_TEMP/llvm-flang.list
-          echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-17 main" >> $RUNNER_TEMP/llvm-flang.list
-          echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-17 main" >> $RUNNER_TEMP/llvm-flang.list
-          echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" >> $RUNNER_TEMP/llvm-flang.list
-          echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" >> $RUNNER_TEMP/llvm-flang.list
-          sudo mv $RUNNER_TEMP/llvm-flang.list /etc/apt/sources.list.d/
-          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          codename=$(lsb_release -c -s)
+          echo "deb http://apt.llvm.org/$codename/ llvm-toolchain-$codename main" > $RUNNER_TEMP/llvm-flang-new.list
+          echo "deb-src http://apt.llvm.org/$codename/ llvm-toolchain-$codename main" >> $RUNNER_TEMP/llvm-flang-new.list
+          echo "deb http://apt.llvm.org/$codename/ llvm-toolchain-$codename-${{ matrix.TOOLCHAIN.VERSION }} main" >> $RUNNER_TEMP/llvm-flang-new.list
+          echo "deb-src http://apt.llvm.org/$codename/ llvm-toolchain-$codename-${{ matrix.TOOLCHAIN.VERSION }} main" >> $RUNNER_TEMP/llvm-flang-new.list
+          sudo mv $RUNNER_TEMP/llvm-flang-new.list /etc/apt/sources.list.d/
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc  
           sudo apt update
-          sudo apt install -f -y libllvm-18-ocaml-dev libllvm18 llvm-18 llvm-18-dev llvm-18-doc llvm-18-examples llvm-18-runtime clang-18 clang-tools-18 clang-18-doc libclang-common-18-dev libclang-18-dev libclang1-18 clang-format-18 python3-clang-18 clangd-18 clang-tidy-18 libclang-rt-18-dev libmlir-18-dev mlir-18-tools flang-18
+          sudo apt install -f -y libllvm-${{ matrix.TOOLCHAIN.VERSION }}-ocaml-dev libllvm${{ matrix.TOOLCHAIN.VERSION }} llvm-${{ matrix.TOOLCHAIN.VERSION }} llvm-${{ matrix.TOOLCHAIN.VERSION }}-dev llvm-${{ matrix.TOOLCHAIN.VERSION }}-doc llvm-${{ matrix.TOOLCHAIN.VERSION }}-examples llvm-${{ matrix.TOOLCHAIN.VERSION }}-runtime clang-${{ matrix.TOOLCHAIN.VERSION }} clang-tools-${{ matrix.TOOLCHAIN.VERSION }} clang-${{ matrix.TOOLCHAIN.VERSION }}-doc libclang-common-${{ matrix.TOOLCHAIN.VERSION }}-dev libclang-${{ matrix.TOOLCHAIN.VERSION }}-dev libclang1-${{ matrix.TOOLCHAIN.VERSION }} clang-format-${{ matrix.TOOLCHAIN.VERSION }} python3-clang-${{ matrix.TOOLCHAIN.VERSION }} clangd-${{ matrix.TOOLCHAIN.VERSION }} clang-tidy-${{ matrix.TOOLCHAIN.VERSION }} libclang-rt-${{ matrix.TOOLCHAIN.VERSION }}-dev libmlir-${{ matrix.TOOLCHAIN.VERSION }}-dev mlir-${{ matrix.TOOLCHAIN.VERSION }}-tools flang-${{ matrix.TOOLCHAIN.VERSION }}
+          echo "FC=${{ matrix.TOOLCHAIN.COMPILER_NAME }}-${{ matrix.TOOLCHAIN.VERSION }}" >> $GITHUB_ENV
+
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
+      
       - name: Configure the build of minpack (USE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }})
-        run: cmake -G "Unix Makefiles" -DCMAKE_Fortran_COMPILER=flang-new-18 -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+      
       - name: Build minpack
         run: cmake --build $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
+      
       - name: Install minpack
         run: cmake --install $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
