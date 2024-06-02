@@ -50,7 +50,7 @@ jobs:
           compiler: ${{ matrix.toolchain.compiler }}
           version: ${{ matrix.toolchain.version }}
       
-      - name: Configure the build of minpack (USE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }})
+      - name: Configure the build of minpack 
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
       
       - name: Build minpack
@@ -98,7 +98,7 @@ jobs:
           compiler: ${{ matrix.toolchain.compiler }}
           version: ${{ matrix.toolchain.version }}
       
-      - name: Configure the build of minpack (USE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }})
+      - name: Configure the build of minpack 
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
       
       - name: Build minpack
