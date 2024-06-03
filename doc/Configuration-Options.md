@@ -19,6 +19,8 @@
 * [MINPACK_INSTALL_DOCDIR](#MINPACK_INSTALL_DOCDIR)
 * [MINPACK_INSTALL_PKGCONFIGDIR](#MINPACK_INSTALL_PKGCONFIGDIR)
 * [RELOCATABLE_PKGCONFIG](#RELOCATABLE_PKGCONFIG)
+* [SOURCE_ARCHIVE_SUFFIX](#SOURCE_ARCHIVE_SUFFIX)
+* [BINARY_ARCHIVE_SUFFIX](#BINARY_ARCHIVE_SUFFIX)
 
 ## CMAKE_BUILD_TYPE
 
@@ -114,6 +116,21 @@
 * Description: Enable the generated pkg-config file (minpack.pc) to be relocatable.
 * Type: BOOL
 * Default value: ON.
+
+## SOURCE_ARCHIVE_SUFFIX
+
+* Parameter: SOURCE_ARCHIVE_SUFFIX
+* Description: Suffix for the source archive packaging all the relevant source code in the source tree.
+* Type: STRING
+* Default value: ""
+* Note: DO NOT choose a build directory equal to the source tree, or inside the source tree. Also, DO NOT choose a install directory inside the source tree.
+
+## BINARY_ARCHIVE_SUFFIX
+
+* Parameter: BINARY_ARCHIVE_SUFFIX
+* Description: Suffix for the binary archive packaging the built binaries.
+* Type: STRING
+* Default value: "".
 
 ---
 [Documentation](README.md)

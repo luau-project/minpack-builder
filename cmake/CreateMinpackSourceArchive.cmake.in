@@ -1,0 +1,152 @@
+#                                                                                 #
+#                                                                                 #
+###################################################################################
+# License                                                                         #
+###################################################################################
+#                                                                                 #
+# Copyright (c) 2024 luau-project                                                 #
+#                    https://github.com/luau-project/minpack-builder              #
+#                                                                                 #
+# Redistribution and use in source and binary forms, with or without              #
+# modification, are permitted provided that the following conditions are met:     #
+#                                                                                 #
+# 1. Redistributions of source code must retain the above copyright notice,       #
+# this list of conditions and the following disclaimer.                           #
+#                                                                                 #
+# 2. Redistributions in binary form must reproduce the above copyright            #
+# notice, this list of conditions and the following disclaimer in the             #
+# documentation and/or other materials provided with the distribution.            #
+#                                                                                 #
+# 3. Neither the name of the copyright holder nor the names of its                #
+# contributors may be used to endorse or promote products derived from this       #
+# software without specific prior written permission.                             #
+#                                                                                 #
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS”     #
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,           #
+# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR          #
+# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR               #
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,           #
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,             #
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;     #
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,        #
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR         #
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF          #
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                                      #
+#                                                                                 #
+###################################################################################
+###################################################################################
+##                                 Body                                          ##
+###################################################################################
+###################################################################################
+#                                                                                 #
+#                                                                                 #
+
+if (NOT DEFINED MINPACK_ARCHIVE_FORMAT)
+    message(FATAL_ERROR "Archive format not set.")
+endif()
+
+set(supported_archive_formats "zip" "gzip" "bzip2" "xz")
+
+list(FIND supported_archive_formats "${MINPACK_ARCHIVE_FORMAT}" format_index)
+
+if (format_index LESS 0)
+    message(FATAL_ERROR "Unsupported archive format.")
+endif()
+
+set(toplevel_dirs_to_include
+    "@CMAKE_CURRENT_SOURCE_DIR@/cmake"
+    "@CMAKE_CURRENT_SOURCE_DIR@/doc")
+
+set(toplevel_files_to_include
+    "@CMAKE_CURRENT_SOURCE_DIR@/CMakeLists.txt"
+    "@CMAKE_CURRENT_SOURCE_DIR@/libminpack.def"
+    "@CMAKE_CURRENT_SOURCE_DIR@/LICENSE.md"
+    "@CMAKE_CURRENT_SOURCE_DIR@/minpack.def"
+    "@CMAKE_CURRENT_SOURCE_DIR@/minpack.h"
+    "@CMAKE_CURRENT_SOURCE_DIR@/README.md")
+
+set(destination_archiving_dir "@CMAKE_CURRENT_BINARY_DIR@/@MINPACK_LIBRARY_NAME@-@MINPACK_VERSION@-sources@SOURCE_ARCHIVE_SUFFIX@")
+
+if ("${MINPACK_ARCHIVE_FORMAT}" STREQUAL "zip")
+    set(destination_archive_file "${destination_archiving_dir}.zip")
+elseif ("${MINPACK_ARCHIVE_FORMAT}" STREQUAL "gzip")
+    set(destination_archive_file "${destination_archiving_dir}.tar.gz")
+elseif ("${MINPACK_ARCHIVE_FORMAT}" STREQUAL "bzip2")
+    set(destination_archive_file "${destination_archiving_dir}.tar.bz2")
+else() # "${MINPACK_ARCHIVE_FORMAT}" STREQUAL "xz"
+    set(destination_archive_file "${destination_archiving_dir}.tar.xz")
+endif()
+
+if (EXISTS ${destination_archiving_dir})
+    file(REMOVE_RECURSE ${destination_archiving_dir})
+endif()
+
+if (EXISTS ${destination_archive_file})
+    file(REMOVE ${destination_archive_file})
+endif()
+
+file(MAKE_DIRECTORY ${destination_archiving_dir})
+
+set(file_list "")
+
+foreach(toplevel_file ${toplevel_files_to_include})
+    if (EXISTS ${toplevel_file})
+        message(STATUS "Archiving: ${toplevel_file}")
+
+        string(REPLACE "@CMAKE_CURRENT_SOURCE_DIR@" "${destination_archiving_dir}" target_copied_file ${toplevel_file})
+
+        get_filename_component(target_copied_file_dir "${target_copied_file}" PATH)
+
+        file(COPY ${toplevel_file} DESTINATION "${target_copied_file_dir}")
+
+        list(APPEND file_list "${target_copied_file}")
+    else()
+        message(FATAL_ERROR "File not found for archiving: ${toplevel_file}")
+    endif()
+endforeach()
+
+foreach(toplevel_dir ${toplevel_dirs_to_include})
+    if (EXISTS ${toplevel_dir})
+        message(STATUS "Archiving: ${toplevel_dir}")
+
+        string(REPLACE "@CMAKE_CURRENT_SOURCE_DIR@" "${destination_archiving_dir}" target_copied_dir ${toplevel_dir})
+
+        get_filename_component(target_copied_parent_dir "${target_copied_dir}" PATH)
+
+        file(COPY ${toplevel_dir} DESTINATION "${target_copied_parent_dir}")
+
+        list(APPEND file_list "${target_copied_dir}")
+    else()
+        message(FATAL_ERROR "Directory not found for archiving: ${toplevel_dir}")
+    endif()
+endforeach()
+
+if ("${MINPACK_ARCHIVE_FORMAT}" STREQUAL "zip")
+    set(tar_format_flag "zip")
+    set(tar_flag "c")
+elseif ("${MINPACK_ARCHIVE_FORMAT}" STREQUAL "gzip")
+    set(tar_format_flag "gnutar")
+    set(tar_flag "cz")
+elseif ("${MINPACK_ARCHIVE_FORMAT}" STREQUAL "bzip2")
+    set(tar_format_flag "gnutar")
+    set(tar_flag "cj")
+else() # "${MINPACK_ARCHIVE_FORMAT}" STREQUAL "xz"
+    set(tar_format_flag "gnutar")
+    set(tar_flag "cJ")
+endif()
+
+execute_process(
+    COMMAND ${CMAKE_COMMAND} -E tar ${tar_flag} "${destination_archive_file}" --format=${tar_format_flag} -- ${file_list}
+    RESULT_VARIABLE MINPACK_SOURCE_ARCHIVE_RES
+    ERROR_VARIABLE MINPACK_SOURCE_ERR
+)
+
+if (MINPACK_SOURCE_ARCHIVE_RES EQUAL 0)
+    set(MINPACK_SOURCE_ARCHIVE_HASHES "SHA256" "MD5")
+    foreach (__hash ${MINPACK_SOURCE_ARCHIVE_HASHES})
+        file(${__hash} ${destination_archive_file} MINPACK_SOURCE_ARCHIVE_HASH)
+        file(WRITE "${destination_archive_file}-${__hash}.txt" "${MINPACK_SOURCE_ARCHIVE_HASH}")
+    endforeach()
+else()
+    message(FATAL_ERROR "${MINPACK_SOURCE_ERR}")
+endif()

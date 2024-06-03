@@ -111,6 +111,17 @@
 #         Description: Enable the generated pkg-config file (minpack.pc)      #
 #             to be relocatable.                                              #
 #                                                                             #
+#     SOURCE_ARCHIVE_SUFFIX (type: STRING, default value: "")                 #
+#         Description: Suffix for the source archive packaging all the        #
+#             relevant source code in the source tree.                        #
+#         Note: DO NOT choose a build directory equal to the source tree,     #
+#             or inside the source tree. Also, DO NOT choose a install        #
+#             directory inside the source tree.                               #
+#                                                                             #
+#     BINARY_ARCHIVE_SUFFIX (type: STRING, default value: "")                 #
+#         Description: Suffix for the binary archive packaging the built      #
+#             binaries.                                                       #
+#                                                                             #
 ###############################################################################
 # End(Description of parameters)                                              #
 ###############################################################################
@@ -124,6 +135,54 @@
 #         Description: Removes all the installed files.                       #
 #         Note: Only works if the user has installed with minpack-builder,    #
 #             and didn't delete the build directory or related files.         #
+#                                                                             #
+#     binary-zip                                                              #
+#         Description: Packages the built artifacts as a zip (.zip) file.     #
+#         Note: Must be run after a cmake --install <build-dir> command.      #
+#                                                                             #
+#     binary-tar-gz                                                           #
+#         Description: Packages the built artifacts as a .tar.gz file.        #
+#         Note: Must be run after a cmake --install <build-dir> command.      #
+#                                                                             #
+#     binary-tar-bz2                                                          #
+#         Description: Packages the built artifacts as a .tar.bz2 file.       #
+#         Note: Must be run after a cmake --install <build-dir> command.      #
+#                                                                             #
+#     binary-tar-xz                                                           #
+#         Description: Packages the built artifacts as a .tar.xz file.        #
+#         Note: Must be run after a cmake --install <build-dir> command.      #
+#                                                                             #
+#     source-zip                                                              #
+#         Description: Packages the relevant source code in the source tree   #
+#             as a zip (.zip) file.                                           #
+#         Note: Must be run after a cmake configure command.                  #
+#             DO NOT choose a build directory equal to the source tree,       #
+#             or inside the source tree. Also, DO NOT choose a install        #
+#             directory inside the source tree.                               #
+#                                                                             #
+#     source-tar-gz                                                           #
+#         Description: Packages the relevant source code in the source tree   #
+#             as a .tar.gz file.                                              #
+#         Note: Must be run after a cmake configure command.                  #
+#             DO NOT choose a build directory equal to the source tree,       #
+#             or inside the source tree. Also, DO NOT choose a install        #
+#             directory inside the source tree.                               #
+#                                                                             #
+#     source-tar-bz2                                                          #
+#         Description: Packages the relevant source code in the source tree   #
+#             as a .tar.bz2 file.                                             #
+#         Note: Must be run after a cmake configure command.                  #
+#             DO NOT choose a build directory equal to the source tree,       #
+#             or inside the source tree. Also, DO NOT choose a install        #
+#             directory inside the source tree.                               #
+#                                                                             #
+#     source-tar-xz                                                           #
+#         Description: Packages the relevant source code in the source tree   #
+#             as a .tar.xz file.                                              #
+#         Note: Must be run after a cmake configure command.                  #
+#             DO NOT choose a build directory equal to the source tree,       #
+#             or inside the source tree. Also, DO NOT choose a install        #
+#             directory inside the source tree.                               #
 #                                                                             #
 ###############################################################################
 # End(Project-specific targets)                                               #
@@ -146,6 +205,8 @@ option(BUILD_STATIC_LIBS "Build the static library." OFF)
 option(USE_DOWNLOAD "Download source code." ON)
 set(DOWNLOAD_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Destination directory to store downloaded files.")
 option(RELOCATABLE_PKGCONFIG "Enable the generated pkg-config file (minpack.pc) to be relocatable." ON)
+set(SOURCE_ARCHIVE_SUFFIX "" CACHE STRING "Suffix for the source archive.")
+set(BINARY_ARCHIVE_SUFFIX "" CACHE STRING "Suffix for the binary archive.")
 
 # official minpack url
 set(minpack_url "https://www.netlib.org/minpack")
@@ -293,6 +354,18 @@ set(minpack_uninstall_target_input "cmake/UninstallMinpack.cmake.in")
 # uninstall target transformed file
 set(minpack_uninstall_target "${CMAKE_CURRENT_BINARY_DIR}/UninstallMinpack.cmake")
 
+# binary-* target input file
+set(minpack_binary_archive_target_input "cmake/CreateMinpackBinaryArchive.cmake.in")
+
+# binary-* target transformed file
+set(minpack_binary_archive_target "${CMAKE_CURRENT_BINARY_DIR}/CreateMinpackBinaryArchive.cmake")
+
+# source-* target input file
+set(minpack_source_archive_target_input "cmake/CreateMinpackSourceArchive.cmake.in")
+
+# source-* target transformed file
+set(minpack_source_archive_target "${CMAKE_CURRENT_BINARY_DIR}/CreateMinpackSourceArchive.cmake")
+
 # minpack config cmake file to be transformed
 set(minpack_config_cmake_in "cmake/${minpack_library_name}-config.cmake.in")
 
@@ -317,6 +390,46 @@ set(minpack_targets_export "${minpack_library_name}-targets")
 # providing uninstall target
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${minpack_uninstall_target}
+)
+
+# generate binary-zip target
+add_custom_target("binary-zip"
+    COMMAND ${CMAKE_COMMAND} -DMINPACK_ARCHIVE_FORMAT=zip -P ${minpack_binary_archive_target}
+)
+
+# generate binary-tar-gz target
+add_custom_target("binary-tar-gz"
+    COMMAND ${CMAKE_COMMAND} -DMINPACK_ARCHIVE_FORMAT=gzip -P ${minpack_binary_archive_target}
+)
+
+# generate binary-tar-bz2 target
+add_custom_target("binary-tar-bz2"
+    COMMAND ${CMAKE_COMMAND} -DMINPACK_ARCHIVE_FORMAT=bzip2 -P ${minpack_binary_archive_target}
+)
+
+# generate binary-tar-xz target
+add_custom_target("binary-tar-xz"
+    COMMAND ${CMAKE_COMMAND} -DMINPACK_ARCHIVE_FORMAT=xz -P ${minpack_binary_archive_target}
+)
+
+# generate source-zip target
+add_custom_target("source-zip"
+    COMMAND ${CMAKE_COMMAND} -DMINPACK_ARCHIVE_FORMAT=zip -P ${minpack_source_archive_target}
+)
+
+# generate source-tar-gz target
+add_custom_target("source-tar-gz"
+    COMMAND ${CMAKE_COMMAND} -DMINPACK_ARCHIVE_FORMAT=gzip -P ${minpack_source_archive_target}
+)
+
+# generate source-tar-bz2 target
+add_custom_target("source-tar-bz2"
+    COMMAND ${CMAKE_COMMAND} -DMINPACK_ARCHIVE_FORMAT=bzip2 -P ${minpack_source_archive_target}
+)
+
+# generate source-tar-xz target
+add_custom_target("source-tar-xz"
+    COMMAND ${CMAKE_COMMAND} -DMINPACK_ARCHIVE_FORMAT=xz -P ${minpack_source_archive_target}
 )
 
 # additional vendor-specific Fortran flags
@@ -434,6 +547,16 @@ configure_file(
 configure_file(
     ${minpack_uninstall_target_input}
     ${minpack_uninstall_target} @ONLY
+)
+
+configure_file(
+    ${minpack_binary_archive_target_input}
+    ${minpack_binary_archive_target} @ONLY
+)
+
+configure_file(
+    ${minpack_source_archive_target_input}
+    ${minpack_source_archive_target} @ONLY
 )
 
 install(
