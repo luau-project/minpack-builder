@@ -117,6 +117,20 @@
 #                                                                             #
 #                                                                             #
 ###############################################################################
+# Start(Project-specific targets)                                             #
+###############################################################################
+#                                                                             #
+#     uninstall                                                               #
+#         Description: Removes all the installed files.                       #
+#         Note: Only works if the user has installed with minpack-builder,    #
+#             and didn't delete the build directory or related files.         #
+#                                                                             #
+###############################################################################
+# End(Project-specific targets)                                               #
+###############################################################################
+#                                                                             #
+#                                                                             #
+###############################################################################
 ###############################################################################
 ##                                 Body                                      ##
 ###############################################################################
@@ -273,6 +287,12 @@ endif()
 # minpack header file
 set(minpack_header "${minpack_library_name}.h")
 
+# uninstall target input file
+set(minpack_uninstall_target_input "cmake/UninstallMinpack.cmake.in")
+
+# uninstall target transformed file
+set(minpack_uninstall_target "${CMAKE_CURRENT_BINARY_DIR}/UninstallMinpack.cmake")
+
 # minpack config cmake file to be transformed
 set(minpack_config_cmake_in "cmake/${minpack_library_name}-config.cmake.in")
 
@@ -293,6 +313,11 @@ set(minpack_pkg_config "${CMAKE_CURRENT_BINARY_DIR}/${minpack_library_name}.pc")
 
 # minpack targets destination file
 set(minpack_targets_export "${minpack_library_name}-targets")
+
+# providing uninstall target
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${minpack_uninstall_target}
+)
 
 # additional vendor-specific Fortran flags
 set(minpack_Fflags "")
@@ -404,6 +429,11 @@ configure_file(
 configure_file(
     ${minpack_config_version_cmake_in}
     ${minpack_config_version_cmake} @ONLY
+)
+
+configure_file(
+    ${minpack_uninstall_target_input}
+    ${minpack_uninstall_target} @ONLY
 )
 
 install(

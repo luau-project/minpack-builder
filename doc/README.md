@@ -28,3 +28,7 @@ Take a look at [Configuration Options](Configuration-Options.md).
 ## CMake Package
 
 After you have built and installed minpack through ```minpack-builder```, you can use minpack as a CMake Package. For detailed instructions, have a read at [CMake Package](CMake-Package.md).
+
+## Project-specific Targets
+
+We also have a few specific targets for some operations. For further information, take a look at [Project-specific Targets](Project-Targets.md).
