@@ -1,4 +1,4 @@
-# Project-specific Targets
+# Project-specific targets
 
 In this section, you find all the custom targets made available by ```minpackex```.
 
@@ -10,7 +10,7 @@ In this section, you find all the custom targets made available by ```minpackex`
 
 * Description: Removes all the installed files.
 * Note: Only works if the user has installed with minpack-builder, but didn't delete the build directory or related files.
-* Usage: Assume that user configured, built and installed minpack with the following commands (1, 2, 3). If the build directory was not deleted, reconfigured or cleaned, the user is able to uninstall at step (4):
+* Usage: Assume that user configured, built and installed minpack with the following commands (i, ii, iii). If the build directory was not deleted, reconfigured or cleaned, the user is able to uninstall at step (iv):
     1. Configure
         ```bash
         cmake -DCMAKE_BUILD_TYPE=Release --install-prefix <path-to-install> -S minpack-builder -B build-dir
@@ -27,3 +27,6 @@ In this section, you find all the custom targets made available by ```minpackex`
         ```bash
         cmake --build build-dir --config Release --target uninstall
         ```
+
+---
+[Documentation](README.md)
