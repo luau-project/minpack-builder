@@ -85,7 +85,7 @@ jobs:
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
           Copy-Item $env:BUILDDIR\${{ env.ARCHIVE }} C:\msys64\tmp;
-          C:\msys64\usr\bin\bash -lc "tar -xf ${{ env.ARCHIVE }}";
+          C:\msys64\usr\bin\bash -lc "tar -xf /tmp/${{ env.ARCHIVE }}";
           Move-Item C:\msys64\tmp\${{ env.ARCHIVE_DIR }} .;
       
       - name: Download minpack sources to extracted source archive
@@ -181,7 +181,7 @@ jobs:
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
           Copy-Item $env:BUILDDIR\${{ env.ARCHIVE }} C:\msys64\tmp;
-          C:\msys64\usr\bin\bash -lc "tar -xf ${{ env.ARCHIVE }}";
+          C:\msys64\usr\bin\bash -lc "tar -xf /tmp/${{ env.ARCHIVE }}";
           Move-Item C:\msys64\tmp\${{ env.ARCHIVE_DIR }} .;
       
       - name: Download minpack sources to extracted source archive
