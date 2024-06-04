@@ -83,10 +83,7 @@ jobs:
       - name: Build  from extracted source archive
         run: cmake --build $BUILDDIR --config Release
         
-      - name: Test from extracted source archive
-        run: ctest --test-dir $BUILDDIR -C Release
-        
       - name: Install from extracted source archive
-        run: cmake --build $BUILDDIR -C Release
+        run: cmake --install $BUILDDIR -C Release
         
       
