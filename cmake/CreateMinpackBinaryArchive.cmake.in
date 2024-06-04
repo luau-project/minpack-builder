@@ -56,7 +56,7 @@ endif()
 if (EXISTS "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt")
     file(STRINGS "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt" MANIFEST_CONTENT)
 
-    set(destination_archiving_dir "@CMAKE_CURRENT_BINARY_DIR@/@MINPACK_LIBRARY_NAME@-@MINPACK_VERSION@-binaries@BINARY_ARCHIVE_SUFFIX@")
+    set(destination_archiving_dir "@CMAKE_CURRENT_BINARY_DIR@/@minpack_library_name@-@MINPACK_VERSION@-binaries@BINARY_ARCHIVE_SUFFIX@")
 
     if ("${MINPACK_ARCHIVE_FORMAT}" STREQUAL "zip")
         set(destination_archive_file "${destination_archiving_dir}.zip")

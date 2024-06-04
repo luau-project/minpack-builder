@@ -65,7 +65,7 @@ set(toplevel_files_to_include
     "@CMAKE_CURRENT_SOURCE_DIR@/minpack.h"
     "@CMAKE_CURRENT_SOURCE_DIR@/README.md")
 
-set(destination_archiving_dir "@CMAKE_CURRENT_BINARY_DIR@/@MINPACK_LIBRARY_NAME@-@MINPACK_VERSION@-sources@SOURCE_ARCHIVE_SUFFIX@")
+set(destination_archiving_dir "@CMAKE_CURRENT_BINARY_DIR@/@minpack_library_name@-@MINPACK_VERSION@-sources@SOURCE_ARCHIVE_SUFFIX@")
 
 if ("${MINPACK_ARCHIVE_FORMAT}" STREQUAL "zip")
     set(destination_archive_file "${destination_archiving_dir}.zip")
