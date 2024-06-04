@@ -85,7 +85,7 @@ jobs:
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
           & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }};
-          & "C:\Program Files\7-Zip\7z.exe" x [System.IO.Path]::GetFileNameWithoutExtension((Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).FullName);
+          & "C:\Program Files\7-Zip\7z.exe" x [System.IO.Path]::GetFileNameWithoutExtension("$env:BUILDDIR\${{ env.ARCHIVE }}");
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
@@ -180,7 +180,7 @@ jobs:
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
           & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }};
-          & "C:\Program Files\7-Zip\7z.exe" x [System.IO.Path]::GetFileNameWithoutExtension((Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).FullName);
+          & "C:\Program Files\7-Zip\7z.exe" x [System.IO.Path]::GetFileNameWithoutExtension("$env:BUILDDIR\${{ env.ARCHIVE }}");
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
