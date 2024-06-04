@@ -81,7 +81,7 @@ jobs:
       - name: Extract the Source Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
-          "C:\Program Files\Git\usr\bin\tar.exe" -xf ("$env:BUILDDIR\${{ env.ARCHIVE }}".Replace("\", "/"))
+          & "C:\Program Files\Git\usr\bin\tar.exe" -xf ("$env:BUILDDIR\${{ env.ARCHIVE }}".Replace("\", "/"))
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
@@ -172,7 +172,7 @@ jobs:
       - name: Extract the Source Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
-          "C:\Program Files\Git\usr\bin\tar.exe" -xf ("$env:BUILDDIR\${{ env.ARCHIVE }}".Replace("\", "/"))
+          & "C:\Program Files\Git\usr\bin\tar.exe" -xf ("$env:BUILDDIR\${{ env.ARCHIVE }}".Replace("\", "/"))
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
