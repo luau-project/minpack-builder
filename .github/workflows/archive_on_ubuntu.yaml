@@ -12,6 +12,7 @@ on:
 
 jobs:
   source-archive:
+    name: Source Archive
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -84,6 +85,56 @@ jobs:
         run: cmake --build $BUILDDIR --config Release
         
       - name: Install from extracted source archive
-        run: cmake --install $BUILDDIR -C Release
-        
+        run: cmake --install $BUILDDIR --config Release
+
+  binary-archive:
+    name: Binary Archive
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        USE_DOWNLOAD: ['OFF']
+        SOURCE_ARCHIVE:
+          - { format: 'zip', ext: ".zip" }
+          - { format: 'tar-gz', ext: ".tar.gz" }
+          - { format: 'tar-bz2', ext: ".tar.bz2" }
+          - { format: 'tar-xz', ext: ".tar.xz" }
+    
+    steps:
+
+      - name: Install unzip
+        run: sudo apt install -y unzip
+
+      - name: Checkout assets
+        uses: actions/checkout@v4
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
       
+      - name: Checkout repository to minpack-builder directory
+        uses: actions/checkout@v4
+        with:
+          path: minpack-builder
+      
+      - name: Set shell variables to build and install directories
+        run: |
+          echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
+          echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
+      
+      - name: Download minpack sources
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
+      
+      - name: Configure the build of minpack 
+        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+      
+      - name: Build  from extracted source archive
+        run: cmake --build $BUILDDIR --config Release
+        
+      - name: Install from extracted source archive
+        run: cmake --install $BUILDDIR --config Release
+
+      - name: Create a Binary Archive
+        run: |
+          cmake --build $BUILDDIR --config Release --target binary-${{ matrix.SOURCE_ARCHIVE.format }};
+          ls $BUILDDIR;
