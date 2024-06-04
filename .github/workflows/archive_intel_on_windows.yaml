@@ -84,9 +84,8 @@ jobs:
       - name: Extract the Source Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
-          Copy-Item $env:BUILDDIR\${{ env.ARCHIVE }} C:\msys64\tmp;
-          C:\msys64\usr\bin\bash -lc "tar -xf /tmp/${{ env.ARCHIVE }}";
-          Move-Item C:\msys64\tmp\${{ env.ARCHIVE_DIR }} .;
+          & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }};
+          & "C:\Program Files\7-Zip\7z.exe" x [System.IO.Path]::GetFileNameWithoutExtension((Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).FullName);
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
@@ -180,9 +179,8 @@ jobs:
       - name: Extract the Source Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
-          Copy-Item $env:BUILDDIR\${{ env.ARCHIVE }} C:\msys64\tmp;
-          C:\msys64\usr\bin\bash -lc "tar -xf /tmp/${{ env.ARCHIVE }}";
-          Move-Item C:\msys64\tmp\${{ env.ARCHIVE_DIR }} .;
+          & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }};
+          & "C:\Program Files\7-Zip\7z.exe" x [System.IO.Path]::GetFileNameWithoutExtension((Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).FullName);
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
