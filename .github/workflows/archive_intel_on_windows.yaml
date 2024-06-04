@@ -76,12 +76,17 @@ jobs:
 
       - name: Extract the Source Zip Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
-        run: Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }}
+        run: |
+          Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }};
+          Move-Item ${{ env.ARCHIVE_DIR }} _tmp;
+          Move-Item _tmp\${{ env.ARCHIVE_DIR }} ${{ env.ARCHIVE_DIR }};
 
       - name: Extract the Source Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
-          & "C:\Program Files\Git\usr\bin\tar.exe" -xf ("$env:BUILDDIR\${{ env.ARCHIVE }}".Replace("\", "/"))
+          Copy-Item $env:BUILDDIR\${{ env.ARCHIVE }} C:\msys64\tmp;
+          C:\msys64\usr\bin\bash -lc "tar -xf ${{ env.ARCHIVE }}";
+          Move-Item C:\msys64\tmp\${{ env.ARCHIVE_DIR }} .;
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
@@ -167,12 +172,17 @@ jobs:
 
       - name: Extract the Source Zip Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
-        run: Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }}
+        run: |
+          Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }};
+          Move-Item ${{ env.ARCHIVE_DIR }} _tmp;
+          Move-Item _tmp\${{ env.ARCHIVE_DIR }} ${{ env.ARCHIVE_DIR }};
 
       - name: Extract the Source Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
-          & "C:\Program Files\Git\usr\bin\tar.exe" -xf ("$env:BUILDDIR\${{ env.ARCHIVE }}".Replace("\", "/"))
+          Copy-Item $env:BUILDDIR\${{ env.ARCHIVE }} C:\msys64\tmp;
+          C:\msys64\usr\bin\bash -lc "tar -xf ${{ env.ARCHIVE }}";
+          Move-Item C:\msys64\tmp\${{ env.ARCHIVE_DIR }} .;
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
