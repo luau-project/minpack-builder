@@ -1,0 +1,193 @@
+name: Archive on Windows
+run-name: minpack archive with ifx on Windows
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - doc/**
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - doc/**
+
+jobs:
+  shared-source-archive:
+    name: Source Archive of Shared Libraries
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        USE_DOWNLOAD: ['OFF']
+        toolchain:
+          - {compiler: intel, version: '2024.1'}
+        SOURCE_ARCHIVE:
+          - { format: 'zip', ext: ".zip" }
+          - { format: 'tar-gz', ext: ".tar.gz" }
+          - { format: 'tar-bz2', ext: ".tar.bz2" }
+          - { format: 'tar-xz', ext: ".tar.xz" }
+    
+    env:
+      ARCHIVE: minpack-1.1.0-sources${{ matrix.SOURCE_ARCHIVE.ext }}
+      ARCHIVE_DIR: minpack-1.1.0-sources
+    
+    steps:
+      
+      - name: Checkout assets
+        uses: actions/checkout@v4
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
+      
+      - name: Checkout repository to minpack-builder directory
+        uses: actions/checkout@v4
+        with:
+          path: minpack-builder
+      
+      - name: Set environment variables to build and install directories
+        run: |
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
+        shell: powershell
+      
+      - name: Download minpack sources
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
+        shell: powershell
+      
+      - uses: fortran-lang/setup-fortran@v1
+        id: setup-fortran
+        with:
+          compiler: ${{ matrix.toolchain.compiler }}
+          version: ${{ matrix.toolchain.version }}
+      
+      - name: Set MSVC cl as C, C++ compiler
+        run: |
+          Add-Content $env:GITHUB_ENV "CC=cl"
+          Add-Content $env:GITHUB_ENV "CXX=cl"
+      
+      - name: Configure the build of minpack 
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
+        shell: cmd
+      
+      - name: Create a Source Arhive
+        run: |
+          cmake --build $env:BUILDDIR --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
+          dir $env:BUILDDIR;
+
+      - name: Extract the Source Zip Archive
+        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
+        run: Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }}
+
+      - name: Extract the Source Archive
+        if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
+        run: C:\msys64\usr\bin\tar -xf $env:BUILDDIR\${{ env.ARCHIVE }}
+      
+      - name: Download minpack sources to extracted source archive
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" ${{ env.ARCHIVE_DIR }}; }
+              
+      - name: Set environment variables to build and install directories
+        run: |
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\source-archive-build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\source-archive-install-${{ matrix.toolchain.compiler }}"
+        
+      - name: Configure the build of minpack 
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S ${{ env.ARCHIVE_DIR }} -B %BUILDDIR%
+        shell: cmd
+      
+      - name: Build  from extracted source archive
+        run: cmake --build $env:BUILDDIR --config Release
+      
+      - name: Install from extracted source archive
+        run: cmake --install $env:BUILDDIR --config Release
+     
+  static-source-archive:
+    name: Source Archive of Static Libraries
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        USE_DOWNLOAD: ['OFF']
+        toolchain:
+          - {compiler: intel, version: '2024.1'}
+        SOURCE_ARCHIVE:
+          - { format: 'zip', ext: ".zip" }
+          - { format: 'tar-gz', ext: ".tar.gz" }
+          - { format: 'tar-bz2', ext: ".tar.bz2" }
+          - { format: 'tar-xz', ext: ".tar.xz" }
+    
+    env:
+      ARCHIVE: minpack-1.1.0-sources${{ matrix.SOURCE_ARCHIVE.ext }}
+      ARCHIVE_DIR: minpack-1.1.0-sources
+    
+    steps:
+      
+      - name: Checkout assets
+        uses: actions/checkout@v4
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
+      
+      - name: Checkout repository to minpack-builder directory
+        uses: actions/checkout@v4
+        with:
+          path: minpack-builder
+      
+      - name: Set environment variables to build and install directories
+        run: |
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
+        shell: powershell
+      
+      - name: Download minpack sources
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
+        shell: powershell
+      
+      - uses: fortran-lang/setup-fortran@v1
+        id: setup-fortran
+        with:
+          compiler: ${{ matrix.toolchain.compiler }}
+          version: ${{ matrix.toolchain.version }}
+      
+      - name: Set MSVC cl as C, C++ compiler
+        run: |
+          Add-Content $env:GITHUB_ENV "CC=cl"
+          Add-Content $env:GITHUB_ENV "CXX=cl"
+      
+      - name: Configure the build of minpack 
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
+        shell: cmd
+      
+      - name: Create a Source Arhive
+        run: |
+          cmake --build $env:BUILDDIR --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
+          dir $env:BUILDDIR;
+
+      - name: Extract the Source Zip Archive
+        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
+        run: Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }}
+
+      - name: Extract the Source Archive
+        if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
+        run: C:\msys64\usr\bin\tar -xf $env:BUILDDIR\${{ env.ARCHIVE }}
+      
+      - name: Download minpack sources to extracted source archive
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" ${{ env.ARCHIVE_DIR }}; }
+              
+      - name: Set environment variables to build and install directories
+        run: |
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\source-archive-build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\source-archive-install-${{ matrix.toolchain.compiler }}"
+        
+      - name: Configure the build of minpack 
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S ${{ env.ARCHIVE_DIR }} -B %BUILDDIR%
+        shell: cmd
+      
+      - name: Build  from extracted source archive
+        run: cmake --build $env:BUILDDIR --config Release
+      
+      - name: Install from extracted source archive
+        run: cmake --install $env:BUILDDIR --config Release
+     
