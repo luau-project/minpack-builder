@@ -87,11 +87,14 @@ endif()
 
 file(MAKE_DIRECTORY ${destination_archiving_dir})
 
+string(LENGTH "@CMAKE_CURRENT_SOURCE_DIR@" __source_dir_length)
+
 foreach(toplevel_file ${toplevel_files_to_include})
     if (EXISTS ${toplevel_file})
         message(STATUS "Archiving: ${toplevel_file}")
 
-        string(REPLACE "@CMAKE_CURRENT_SOURCE_DIR@" "${destination_archiving_dir}" target_copied_file ${toplevel_file})
+        string(SUBSTRING ${toplevel_file} ${__source_dir_length} "-1" __toplevel_file_suffix)
+        string(CONCAT target_copied_file "${destination_archiving_dir}" "${__toplevel_file_suffix}")
 
         get_filename_component(target_copied_file_dir "${target_copied_file}" PATH)
 
@@ -105,7 +108,8 @@ foreach(toplevel_dir ${toplevel_dirs_to_include})
     if (EXISTS ${toplevel_dir})
         message(STATUS "Archiving: ${toplevel_dir}")
 
-        string(REPLACE "@CMAKE_CURRENT_SOURCE_DIR@" "${destination_archiving_dir}" target_copied_dir ${toplevel_dir})
+        string(SUBSTRING ${toplevel_dir} ${__source_dir_length} "-1" __toplevel_dir_suffix)
+        string(CONCAT target_copied_dir "${destination_archiving_dir}" "${__toplevel_dir_suffix}")
 
         get_filename_component(target_copied_parent_dir "${target_copied_dir}" PATH)
 
