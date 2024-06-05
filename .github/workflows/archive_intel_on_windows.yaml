@@ -144,10 +144,15 @@ jobs:
           foreach ($file in $first_archive_file_suffixes)
           {
             $file_suffix = $file.Suffix.ToString();
-            $file_hash_SHA256 = (Get-FileHash -Path (Join-Path -Path $first_archive_fullname -ChildPath $file_suffix) -Algorithm SHA256).Hash;
-            $file_hash_MD5 = (Get-FileHash -Path (Join-Path -Path $first_archive_fullname -ChildPath $file_suffix) -Algorithm MD5).Hash;
+            $file_path = Join-Path -Path $first_archive_fullname -ChildPath $file_suffix;
 
-            $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+            if ((Get-Item $file_path).Attributes.ToString() -ne "Directory")
+            {
+              $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
+              $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
+
+              $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+            }
           }
 
           $second_archive_fullname = (Get-Item comparison-dir-source-archive\${{ env.ARCHIVE_DIR }}).FullName;
@@ -158,10 +163,15 @@ jobs:
           foreach ($file in $second_archive_file_suffixes)
           {
             $file_suffix = $file.Suffix.ToString();
-            $file_hash_SHA256 = (Get-FileHash -Path (Join-Path -Path $second_archive_fullname -ChildPath $file_suffix) -Algorithm SHA256).Hash;
-            $file_hash_MD5 = (Get-FileHash -Path (Join-Path -Path $second_archive_fullname -ChildPath $file_suffix) -Algorithm MD5).Hash;
+            $file_path = Join-Path -Path $second_archive_fullname -ChildPath $file_suffix;
 
-            $second_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+            if ((Get-Item $file_path).Attributes.ToString() -ne "Directory")
+            {
+              $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
+              $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
+
+              $second_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+            }
           }
 
           foreach ($hash in $first_archive_hashes)
@@ -315,10 +325,15 @@ jobs:
           foreach ($file in $first_archive_file_suffixes)
           {
             $file_suffix = $file.Suffix.ToString();
-            $file_hash_SHA256 = (Get-FileHash -Path (Join-Path -Path $first_archive_fullname -ChildPath $file_suffix) -Algorithm SHA256).Hash;
-            $file_hash_MD5 = (Get-FileHash -Path (Join-Path -Path $first_archive_fullname -ChildPath $file_suffix) -Algorithm MD5).Hash;
+            $file_path = Join-Path -Path $first_archive_fullname -ChildPath $file_suffix;
 
-            $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+            if ((Get-Item $file_path).Attributes.ToString() -ne "Directory")
+            {
+              $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
+              $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
+
+              $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+            }
           }
 
           $second_archive_fullname = (Get-Item comparison-dir-source-archive\${{ env.ARCHIVE_DIR }}).FullName;
@@ -329,12 +344,17 @@ jobs:
           foreach ($file in $second_archive_file_suffixes)
           {
             $file_suffix = $file.Suffix.ToString();
-            $file_hash_SHA256 = (Get-FileHash -Path (Join-Path -Path $second_archive_fullname -ChildPath $file_suffix) -Algorithm SHA256).Hash;
-            $file_hash_MD5 = (Get-FileHash -Path (Join-Path -Path $second_archive_fullname -ChildPath $file_suffix) -Algorithm MD5).Hash;
+            $file_path = Join-Path -Path $second_archive_fullname -ChildPath $file_suffix;
 
-            $second_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+            if ((Get-Item $file_path).Attributes.ToString() -ne "Directory")
+            {
+              $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
+              $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
+
+              $second_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+            }
           }
-
+          
           foreach ($hash in $first_archive_hashes)
           {
             if (-not $second_archive_hashes.Contains($hash))
