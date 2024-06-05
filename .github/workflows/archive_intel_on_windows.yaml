@@ -86,7 +86,6 @@ jobs:
         run: |
           & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }};
           $basename = (Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName;
-          Write-Host "Filename without extension: $basename";
           & "C:\Program Files\7-Zip\7z.exe" x $basename;
       
       - name: Download minpack sources to extracted source archive
@@ -183,7 +182,6 @@ jobs:
         run: |
           & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }};
           $basename = (Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName;
-          Write-Host "Filename without extension: $basename";
           & "C:\Program Files\7-Zip\7z.exe" x $basename;
       
       - name: Download minpack sources to extracted source archive
