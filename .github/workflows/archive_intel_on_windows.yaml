@@ -136,7 +136,7 @@ jobs:
       # and compare file-by-file
       - name: Compare the content of the compressed files for equality
         run: |
-          $first_archive_fullname = (Get-Item comparison-dir\${{ env.ARCHIVE }}).FullName;
+          $first_archive_fullname = (Get-Item comparison-dir\${{ env.ARCHIVE_DIR }}).FullName;
           $first_archive_fullname_length = $first_archive_fullname.Length;
           $first_archive_file_suffixes = Get-ChildItem $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
           $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
@@ -150,7 +150,7 @@ jobs:
             $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
           }
 
-          $second_archive_fullname = (Get-Item comparison-dir-source-archive\${{ env.ARCHIVE }}).FullName;
+          $second_archive_fullname = (Get-Item comparison-dir-source-archive\${{ env.ARCHIVE_DIR }}).FullName;
           $second_archive_fullname_length = $second_archive_fullname.Length;
           $second_archive_file_suffixes = Get-ChildItem $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
           $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
@@ -307,7 +307,7 @@ jobs:
       # and compare file-by-file
       - name: Compare the content of the compressed files for equality
         run: |
-          $first_archive_fullname = (Get-Item comparison-dir\${{ env.ARCHIVE }}).FullName;
+          $first_archive_fullname = (Get-Item comparison-dir\${{ env.ARCHIVE_DIR }}).FullName;
           $first_archive_fullname_length = $first_archive_fullname.Length;
           $first_archive_file_suffixes = Get-ChildItem $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
           $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
@@ -321,7 +321,7 @@ jobs:
             $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
           }
 
-          $second_archive_fullname = (Get-Item comparison-dir-source-archive\${{ env.ARCHIVE }}).FullName;
+          $second_archive_fullname = (Get-Item comparison-dir-source-archive\${{ env.ARCHIVE_DIR }}).FullName;
           $second_archive_fullname_length = $second_archive_fullname.Length;
           $second_archive_file_suffixes = Get-ChildItem $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
           $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
