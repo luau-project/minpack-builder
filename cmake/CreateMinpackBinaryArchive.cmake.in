@@ -78,7 +78,7 @@ if (EXISTS "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt")
 
     file(MAKE_DIRECTORY ${destination_archiving_dir})
 
-    set(file_list "")
+    string(LENGTH "@CMAKE_INSTALL_PREFIX@" __prefix_dir_length)
 
     foreach(line ${MANIFEST_CONTENT})
         if (DEFINED ENV{DESTDIR})
@@ -90,13 +90,12 @@ if (EXISTS "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt")
         if (EXISTS ${__installed_file})
             message(STATUS "Archiving: ${__installed_file}")
 
-            string(REPLACE "@CMAKE_INSTALL_PREFIX@" "${destination_archiving_dir}" target_copied_file ${line})
-
+            string(SUBSTRING ${line} ${__prefix_dir_length} "-1" __file_suffix)
+            string(CONCAT target_copied_file "${destination_archiving_dir}" "${__file_suffix}")
+    
             get_filename_component(target_copied_file_dir "${target_copied_file}" PATH)
 
             file(COPY ${__installed_file} DESTINATION "${target_copied_file_dir}")
-
-            list(APPEND file_list "${target_copied_file}")
         else()
             message(FATAL_ERROR "File not found for archiving: ${__installed_file}")
         endif()
@@ -117,7 +116,7 @@ if (EXISTS "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt")
     endif()
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar ${tar_flag} "${destination_archive_file}" --format=${tar_format_flag} -- ${file_list}
+        COMMAND ${CMAKE_COMMAND} -E tar ${tar_flag} "${destination_archive_file}" --format=${tar_format_flag} -- ${destination_archiving_dir}
         RESULT_VARIABLE MINPACK_BINARY_ARCHIVE_RES
         ERROR_VARIABLE MINPACK_BINARY_ERR
     )

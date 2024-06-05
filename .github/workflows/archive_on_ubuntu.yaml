@@ -99,6 +99,10 @@ jobs:
           - { format: 'tar-bz2', ext: ".tar.bz2" }
           - { format: 'tar-xz', ext: ".tar.xz" }
     
+    env:
+      ARCHIVE: minpack-1.1.0-binaries${{ matrix.SOURCE_ARCHIVE.ext }}
+      ARCHIVE_DIR: minpack-1.1.0-binaries
+    
     steps:
 
       - name: Install unzip
@@ -135,6 +139,16 @@ jobs:
         run: cmake --install $BUILDDIR --config Release
 
       - name: Create a Binary Archive
+        run: cmake --build $BUILDDIR --config Release --target binary-${{ matrix.SOURCE_ARCHIVE.format }};
+      
+      - name: Extract the generated zip Binary Archive
+        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
         run: |
-          cmake --build $BUILDDIR --config Release --target binary-${{ matrix.SOURCE_ARCHIVE.format }};
-          ls $BUILDDIR;
+          mkdir archive-list
+          cd archive-list && unzip $BUILDDIR/${{ env.ARCHIVE }}
+
+      - name: Extract the generated Binary Archive
+        if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
+        run: |
+          mkdir archive-list
+          cd archive-list && tar -xf $BUILDDIR/${{ env.ARCHIVE }}
