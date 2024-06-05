@@ -77,16 +77,13 @@ jobs:
       - name: Extract the Source Zip Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
         run: |
-          Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }};
-          Move-Item ${{ env.ARCHIVE_DIR }} _tmp;
-          Move-Item _tmp\${{ env.ARCHIVE_DIR }} ${{ env.ARCHIVE_DIR }};
+          Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }} -DestinationPath (Get-Location);
 
       - name: Extract the Source Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
           & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }};
-          $basename = (Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName;
-          & "C:\Program Files\7-Zip\7z.exe" x $basename;
+          & "C:\Program Files\7-Zip\7z.exe" x ((Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName);
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
@@ -94,18 +91,42 @@ jobs:
               
       - name: Set environment variables to build and install directories
         run: |
-          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\source-archive-build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\source-archive-install-${{ matrix.toolchain.compiler }}"
+          Add-Content $env:GITHUB_ENV "BUILDDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-install-${{ matrix.toolchain.compiler }}"
         
       - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S ${{ env.ARCHIVE_DIR }} -B %BUILDDIR%
-        shell: cmd
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $env:BUILDDIR_SOURCE_ARCHIVE
       
       - name: Build  from extracted source archive
-        run: cmake --build $env:BUILDDIR --config Release
+        run: cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release
       
       - name: Install from extracted source archive
-        run: cmake --install $env:BUILDDIR --config Release
+        run: cmake --install $env:BUILDDIR_SOURCE_ARCHIVE --config Release
+
+      - name: Create Source Archive again
+        run: |
+          cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
+          dir $env:BUILDDIR_SOURCE_ARCHIVE;
+      
+      - name: Compare the hashes of both source archives
+        run: |
+          $content_first_archive_md5 = Get-Content $env:BUILDDIR\${{ env.ARCHIVE }}-MD5.txt;
+          $content_second_archive_md5 = Get-Content $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }}-MD5.txt;
+
+          if ($content_first_archive_md5 -ne $content_second_archive_md5)
+          {
+            Write-Host "MD5 hashes of both source archives do NOT match";
+            exit 1;
+          }
+
+          $content_first_archive_sha256 = Get-Content $env:BUILDDIR\${{ env.ARCHIVE }}-SHA256.txt;
+          $content_second_archive_sha256 = Get-Content $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }}-SHA256.txt;
+
+          if ($content_first_archive_sha256 -ne $content_second_archive_sha256)
+          {
+            Write-Host "SHA256 hashes of both source archives do NOT match";
+            exit 1;
+          }
      
   static-source-archive:
     name: Source Archive of Static Libraries
@@ -173,16 +194,13 @@ jobs:
       - name: Extract the Source Zip Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
         run: |
-          Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }};
-          Move-Item ${{ env.ARCHIVE_DIR }} _tmp;
-          Move-Item _tmp\${{ env.ARCHIVE_DIR }} ${{ env.ARCHIVE_DIR }};
+          Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }} -DestinationPath (Get-Location);
 
       - name: Extract the Source Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
           & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }};
-          $basename = (Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName;
-          & "C:\Program Files\7-Zip\7z.exe" x $basename;
+          & "C:\Program Files\7-Zip\7z.exe" x ((Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName);
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
@@ -190,16 +208,40 @@ jobs:
               
       - name: Set environment variables to build and install directories
         run: |
-          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\source-archive-build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\source-archive-install-${{ matrix.toolchain.compiler }}"
+          Add-Content $env:GITHUB_ENV "BUILDDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-install-${{ matrix.toolchain.compiler }}"
         
       - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S ${{ env.ARCHIVE_DIR }} -B %BUILDDIR%
-        shell: cmd
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $env:BUILDDIR_SOURCE_ARCHIVE
       
       - name: Build  from extracted source archive
-        run: cmake --build $env:BUILDDIR --config Release
+        run: cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release
       
       - name: Install from extracted source archive
-        run: cmake --install $env:BUILDDIR --config Release
+        run: cmake --install $env:BUILDDIR_SOURCE_ARCHIVE --config Release
+     
+      - name: Create Source Archive again
+        run: |
+          cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
+          dir $env:BUILDDIR_SOURCE_ARCHIVE;
+      
+      - name: Compare the hashes of both source archives
+        run: |
+          $content_first_archive_md5 = Get-Content $env:BUILDDIR\${{ env.ARCHIVE }}-MD5.txt;
+          $content_second_archive_md5 = Get-Content $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }}-MD5.txt;
+
+          if ($content_first_archive_md5 -ne $content_second_archive_md5)
+          {
+            Write-Host "MD5 hashes of both source archives do NOT match";
+            exit 1;
+          }
+
+          $content_first_archive_sha256 = Get-Content $env:BUILDDIR\${{ env.ARCHIVE }}-SHA256.txt;
+          $content_second_archive_sha256 = Get-Content $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }}-SHA256.txt;
+
+          if ($content_first_archive_sha256 -ne $content_second_archive_sha256)
+          {
+            Write-Host "SHA256 hashes of both source archives do NOT match";
+            exit 1;
+          }
      
