@@ -87,8 +87,6 @@ endif()
 
 file(MAKE_DIRECTORY ${destination_archiving_dir})
 
-set(file_list "")
-
 foreach(toplevel_file ${toplevel_files_to_include})
     if (EXISTS ${toplevel_file})
         message(STATUS "Archiving: ${toplevel_file}")
@@ -98,8 +96,6 @@ foreach(toplevel_file ${toplevel_files_to_include})
         get_filename_component(target_copied_file_dir "${target_copied_file}" PATH)
 
         file(COPY ${toplevel_file} DESTINATION "${target_copied_file_dir}")
-
-        list(APPEND file_list "${target_copied_file}")
     else()
         message(FATAL_ERROR "File not found for archiving: ${toplevel_file}")
     endif()
@@ -114,8 +110,6 @@ foreach(toplevel_dir ${toplevel_dirs_to_include})
         get_filename_component(target_copied_parent_dir "${target_copied_dir}" PATH)
 
         file(COPY ${toplevel_dir} DESTINATION "${target_copied_parent_dir}")
-
-        list(APPEND file_list "${target_copied_dir}")
     else()
         message(FATAL_ERROR "Directory not found for archiving: ${toplevel_dir}")
     endif()
@@ -136,7 +130,7 @@ else() # "${MINPACK_ARCHIVE_FORMAT}" STREQUAL "xz"
 endif()
 
 execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar ${tar_flag} "${destination_archive_file}" --format=${tar_format_flag} -- ${file_list}
+    COMMAND ${CMAKE_COMMAND} -E tar ${tar_flag} "${destination_archive_file}" --format=${tar_format_flag} -- ${destination_archiving_dir}
     RESULT_VARIABLE MINPACK_SOURCE_ARCHIVE_RES
     ERROR_VARIABLE MINPACK_SOURCE_ERR
 )

@@ -220,28 +220,82 @@ jobs:
       - name: Install from extracted source archive
         run: cmake --install $env:BUILDDIR_SOURCE_ARCHIVE --config Release
      
-      - name: Create Source Archive again
+      - name: Create a Source Archive again
         run: |
           cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
           dir $env:BUILDDIR_SOURCE_ARCHIVE;
       
-      - name: Compare the hashes of both source archives
+      - name: Extract the Source Zip Archives again
+        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
         run: |
-          $content_first_archive_md5 = Get-Content $env:BUILDDIR\${{ env.ARCHIVE }}-MD5.txt;
-          $content_second_archive_md5 = Get-Content $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }}-MD5.txt;
+          mkdir comparison-dir;
+          Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }} -DestinationPath comparison-dir;
 
-          if ($content_first_archive_md5 -ne $content_second_archive_md5)
+          mkdir comparison-dir-source-archive;
+          Expand-Archive $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }} -DestinationPath comparison-dir-source-archive;
+
+      - name: Extract the Source Archives again
+        if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
+        run: |
+          mkdir comparison-dir;
+          & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }} -ocomparison-dir;
+          $basename_first = (Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName;
+          & "C:\Program Files\7-Zip\7z.exe" x (Join-Path -Path comparison-dir -ChildPath $basename_first) -ocomparison-dir;
+
+          mkdir comparison-dir-source-archive;
+          & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }} -ocomparison-dir-source-archive;
+          $basename_second = (Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName;
+          & "C:\Program Files\7-Zip\7z.exe" x (Join-Path -Path comparison-dir-source-archive -ChildPath $basename_second) -ocomparison-dir-source-archive;
+
+      # a reliable manner to compare
+      # compressed files
+      # is extracting them
+      # and compare file-by-file
+      - name: Compare the content of the compressed files for equality
+        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
+        run: |
+          $first_archive_fullname = (Get-Item comparison-dir\${{ env.ARCHIVE }}).FullName;
+          $first_archive_fullname_length = $first_archive_fullname.Length;
+          $first_archive_file_suffixes = Get-ChildItem $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
+          $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
+          
+          foreach ($file in $first_archive_file_suffixes)
           {
-            Write-Host "MD5 hashes of both source archives do NOT match";
-            exit 1;
+            $file_suffix = $file.Suffix.ToString();
+            $file_hash_SHA256 = (Get-FileHash -Path (Join-Path -Path $first_archive_fullname -ChildPath $file_suffix) -Algorithm SHA256).Hash;
+            $file_hash_MD5 = (Get-FileHash -Path (Join-Path -Path $first_archive_fullname -ChildPath $file_suffix) -Algorithm MD5).Hash;
+
+            $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
           }
 
-          $content_first_archive_sha256 = Get-Content $env:BUILDDIR\${{ env.ARCHIVE }}-SHA256.txt;
-          $content_second_archive_sha256 = Get-Content $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }}-SHA256.txt;
-
-          if ($content_first_archive_sha256 -ne $content_second_archive_sha256)
+          $second_archive_fullname = (Get-Item comparison-dir-source-archive\${{ env.ARCHIVE }}).FullName;
+          $second_archive_fullname_length = $second_archive_fullname.Length;
+          $second_archive_file_suffixes = Get-ChildItem $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
+          $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
+          
+          foreach ($file in $second_archive_file_suffixes)
           {
-            Write-Host "SHA256 hashes of both source archives do NOT match";
-            exit 1;
+            $file_suffix = $file.Suffix.ToString();
+            $file_hash_SHA256 = (Get-FileHash -Path (Join-Path -Path $second_archive_fullname -ChildPath $file_suffix) -Algorithm SHA256).Hash;
+            $file_hash_MD5 = (Get-FileHash -Path (Join-Path -Path $second_archive_fullname -ChildPath $file_suffix) -Algorithm MD5).Hash;
+
+            $second_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
           }
-     
+
+          foreach ($hash in $first_archive_hashes)
+          {
+            if (-not $second_archive_hashes.Contains($hash))
+            {
+              Write-Host "Entry not found in the second archive: ${hash}";
+              exit 1;
+            }
+          }
+
+          foreach ($hash in $second_archive_hashes)
+          {
+            if (-not $first_archive_hashes.Contains($hash))
+            {
+              Write-Host "Entry not found in the first archive: ${hash}";
+              exit 1;
+            }
+          }
