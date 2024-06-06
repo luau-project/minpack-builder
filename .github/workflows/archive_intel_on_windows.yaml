@@ -47,12 +47,10 @@ jobs:
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
           Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
-        shell: powershell
       
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
-        shell: powershell
       
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
@@ -66,8 +64,7 @@ jobs:
           Add-Content $env:GITHUB_ENV "CXX=cl"
       
       - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
-        shell: cmd
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
       
       - name: Create a Source Arhive
         run: |
@@ -136,7 +133,7 @@ jobs:
       # and compare file-by-file
       - name: Compare the content of the compressed files for equality
         run: |
-          $first_archive_fullname = (Get-Item comparison-dir\${{ env.ARCHIVE_DIR }}).FullName;
+          $first_archive_fullname = (Get-Item (Join-Path -Path comparison-dir -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
           $first_archive_fullname_length = $first_archive_fullname.Length;
           $first_archive_file_suffixes = Get-ChildItem -File $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
           $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
@@ -152,7 +149,7 @@ jobs:
             $added = $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
           }
 
-          $second_archive_fullname = (Get-Item comparison-dir-source-archive\${{ env.ARCHIVE_DIR }}).FullName;
+          $second_archive_fullname = (Get-Item (Join-Path -Path comparison-dir-source-archive -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
           $second_archive_fullname_length = $second_archive_fullname.Length;
           $second_archive_file_suffixes = Get-ChildItem -File $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
           $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
@@ -222,13 +219,11 @@ jobs:
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
           Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
-        shell: powershell
-      
+        
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
-        shell: powershell
-      
+        
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
@@ -241,8 +236,7 @@ jobs:
           Add-Content $env:GITHUB_ENV "CXX=cl"
       
       - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
-        shell: cmd
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
       
       - name: Create a Source Arhive
         run: |
@@ -311,7 +305,7 @@ jobs:
       # and compare file-by-file
       - name: Compare the content of the compressed files for equality
         run: |
-          $first_archive_fullname = (Get-Item comparison-dir\${{ env.ARCHIVE_DIR }}).FullName;
+          $first_archive_fullname = (Get-Item (Join-Path -Path comparison-dir -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
           $first_archive_fullname_length = $first_archive_fullname.Length;
           $first_archive_file_suffixes = Get-ChildItem -File $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
           $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
@@ -327,7 +321,7 @@ jobs:
             $added = $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
           }
 
-          $second_archive_fullname = (Get-Item comparison-dir-source-archive\${{ env.ARCHIVE_DIR }}).FullName;
+          $second_archive_fullname = (Get-Item (Join-Path -Path comparison-dir-source-archive -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
           $second_archive_fullname_length = $second_archive_fullname.Length;
           $second_archive_file_suffixes = Get-ChildItem -File $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
           $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
