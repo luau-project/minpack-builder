@@ -110,15 +110,6 @@ jobs:
           mkdir comparison-dir-source-archive;
           tar -xf $BUILDDIR_SOURCE_ARCHIVE/${{ env.ARCHIVE }} --directory=comparison-dir-source-archive;
         
-      # we are going to (install and) use powershell
-      # to compare the compressed files
-      - name: Install Powershell 7.4.2
-        run: |
-          wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.2/powershell_7.4.2-1.deb_amd64.deb
-          sudo dpkg -i powershell_7.4.2-1.deb_amd64.deb
-          sudo apt-get install -f
-          rm powershell_7.4.2-1.deb_amd64.deb
-      
       - name: Write powershell script to file
         run: |
           cat << 'PWSH_END' > compare-script.ps1
