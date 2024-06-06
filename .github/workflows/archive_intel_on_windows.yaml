@@ -102,7 +102,7 @@ jobs:
       - name: Configure the build of minpack 
         run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $env:BUILDDIR_SOURCE_ARCHIVE
       
-      - name: Build  from extracted source archive
+      - name: Build from extracted source archive
         run: cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release
       
       - name: Install from extracted source archive
@@ -190,3 +190,77 @@ jobs:
               exit 1;
             }
           }
+  
+  binary-archive:
+    name: Binary Archive
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        USE_DOWNLOAD: ['OFF']
+        BUILD_SHARED_LIBS: ['ON', 'OFF']
+        BUILD_STATIC_LIBS: ['ON', 'OFF']
+        toolchain:
+          - {compiler: intel, version: '2024.1'}
+        BINARY_ARCHIVE:
+          - { format: 'zip', ext: ".zip" }
+          - { format: 'tar-gz', ext: ".tar.gz" }
+          - { format: 'tar-bz2', ext: ".tar.bz2" }
+          - { format: 'tar-xz', ext: ".tar.xz" }
+
+        exclude:
+          - BUILD_SHARED_LIBS: 'ON'
+            BUILD_STATIC_LIBS: 'ON'
+            
+          - BUILD_SHARED_LIBS: 'OFF'
+            BUILD_STATIC_LIBS: 'OFF'
+    env:
+      ARCHIVE: minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}
+      ARCHIVE_DIR: minpack-1.1.0-binaries
+    
+    steps:
+      
+      - name: Checkout assets
+        uses: actions/checkout@v4
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
+      
+      - name: Checkout repository to minpack-builder directory
+        uses: actions/checkout@v4
+        with:
+          path: minpack-builder
+      
+      - name: Set environment variables to build and install directories
+        run: |
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
+      
+      - name: Download minpack sources
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
+      
+      - uses: fortran-lang/setup-fortran@v1
+        id: setup-fortran
+        with:
+          compiler: ${{ matrix.toolchain.compiler }}
+          version: ${{ matrix.toolchain.version }}
+      
+      - name: Set MSVC cl as C, C++ compiler
+        run: |
+          Add-Content $env:GITHUB_ENV "CC=cl"
+          Add-Content $env:GITHUB_ENV "CXX=cl"
+      
+      - name: Configure the build of minpack 
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
+      
+      - name: Build from extracted source archive
+        run: cmake --build $env:BUILDDIR --config Release
+      
+      - name: Install from extracted source archive
+        run: cmake --install $env:BUILDDIR --config Release
+
+      - name: Create a Binary Arhive
+        run: |
+          cmake --build $env:BUILDDIR --config Release --target binary-${{ matrix.BINARY_ARCHIVE.format }};
+          dir $env:BUILDDIR;
