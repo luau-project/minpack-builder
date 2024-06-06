@@ -121,7 +121,7 @@ jobs:
       
       - name: Write powershell script to file
         run: |
-          cat << PWSH_END > compare-script.ps1
+          cat << 'PWSH_END' > compare-script.ps1
           $first_archive_fullname = (Get-Item (Join-Path -Path comparison-dir -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
           $first_archive_fullname_length = $first_archive_fullname.Length;
           $first_archive_file_suffixes = Get-ChildItem -File $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
@@ -172,6 +172,7 @@ jobs:
             }
           }
           PWSH_END
+          
 
       # a reliable manner to compare
       # compressed files
