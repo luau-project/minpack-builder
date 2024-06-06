@@ -1,5 +1,5 @@
 name: Archive on Windows
-run-name: minpack archive with ifx on Windows
+run-name: minpack archive with Intel Fortran ifx on Windows
 on:
   push:
     paths-ignore:
@@ -11,12 +11,14 @@ on:
       - doc/**
 
 jobs:
-  shared-source-archive:
-    name: Source Archive of Shared Libraries
+  source-archive:
+    name: Source Archive
     runs-on: windows-latest
     strategy:
       matrix:
         USE_DOWNLOAD: ['OFF']
+        BUILD_SHARED_LIBS: ['ON', 'OFF']
+        BUILD_STATIC_LIBS: ['ON', 'OFF']
         toolchain:
           - {compiler: intel, version: '2024.1'}
         SOURCE_ARCHIVE:
@@ -24,7 +26,13 @@ jobs:
           - { format: 'tar-gz', ext: ".tar.gz" }
           - { format: 'tar-bz2', ext: ".tar.bz2" }
           - { format: 'tar-xz', ext: ".tar.xz" }
-    
+
+        exclude:
+          - BUILD_SHARED_LIBS: 'ON'
+            BUILD_STATIC_LIBS: 'ON'
+            
+          - BUILD_SHARED_LIBS: 'OFF'
+            BUILD_STATIC_LIBS: 'OFF'
     env:
       ARCHIVE: minpack-1.1.0-sources${{ matrix.SOURCE_ARCHIVE.ext }}
       ARCHIVE_DIR: minpack-1.1.0-sources
@@ -64,7 +72,7 @@ jobs:
           Add-Content $env:GITHUB_ENV "CXX=cl"
       
       - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
       
       - name: Create a Source Arhive
         run: |
@@ -92,7 +100,7 @@ jobs:
           Add-Content $env:GITHUB_ENV "INSTALLDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-install-${{ matrix.toolchain.compiler }}"
         
       - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $env:BUILDDIR_SOURCE_ARCHIVE
+        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $env:BUILDDIR_SOURCE_ARCHIVE
       
       - name: Build  from extracted source archive
         run: cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release
@@ -101,178 +109,6 @@ jobs:
         run: cmake --install $env:BUILDDIR_SOURCE_ARCHIVE --config Release
 
       - name: Create Source Archive again
-        run: |
-          cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
-          dir $env:BUILDDIR_SOURCE_ARCHIVE;
-      
-      - name: Extract the Source Zip Archives again
-        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
-        run: |
-          mkdir comparison-dir;
-          Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }} -DestinationPath comparison-dir;
-
-          mkdir comparison-dir-source-archive;
-          Expand-Archive $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }} -DestinationPath comparison-dir-source-archive;
-
-      - name: Extract the Source Archives again
-        if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
-        run: |
-          mkdir comparison-dir;
-          & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }} -ocomparison-dir;
-          $basename_first = (Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName;
-          & "C:\Program Files\7-Zip\7z.exe" x (Join-Path -Path comparison-dir -ChildPath $basename_first) -ocomparison-dir;
-
-          mkdir comparison-dir-source-archive;
-          & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }} -ocomparison-dir-source-archive;
-          $basename_second = (Get-Item $env:BUILDDIR_SOURCE_ARCHIVE\${{ env.ARCHIVE }}).BaseName;
-          & "C:\Program Files\7-Zip\7z.exe" x (Join-Path -Path comparison-dir-source-archive -ChildPath $basename_second) -ocomparison-dir-source-archive;
-
-      # a reliable manner to compare
-      # compressed files
-      # is extracting them
-      # and compare file-by-file
-      - name: Compare the content of the compressed files for equality
-        run: |
-          $first_archive_fullname = (Get-Item (Join-Path -Path comparison-dir -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
-          $first_archive_fullname_length = $first_archive_fullname.Length;
-          $first_archive_file_suffixes = Get-ChildItem -File $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
-          $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
-          
-          foreach ($file in $first_archive_file_suffixes)
-          {
-            $file_suffix = $file.Suffix.ToString();
-            $file_path = Join-Path -Path $first_archive_fullname -ChildPath $file_suffix;
-
-            $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
-            $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
-
-            $added = $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
-          }
-
-          $second_archive_fullname = (Get-Item (Join-Path -Path comparison-dir-source-archive -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
-          $second_archive_fullname_length = $second_archive_fullname.Length;
-          $second_archive_file_suffixes = Get-ChildItem -File $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
-          $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
-          
-          foreach ($file in $second_archive_file_suffixes)
-          {
-            $file_suffix = $file.Suffix.ToString();
-            $file_path = Join-Path -Path $second_archive_fullname -ChildPath $file_suffix;
-
-            $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
-            $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
-
-            $added = $second_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
-          }
-          
-          foreach ($hash in $first_archive_hashes)
-          {
-            if (-not $second_archive_hashes.Contains($hash))
-            {
-              Write-Host "Entry not found in the second archive: ${hash}";
-              exit 1;
-            }
-          }
-
-          foreach ($hash in $second_archive_hashes)
-          {
-            if (-not $first_archive_hashes.Contains($hash))
-            {
-              Write-Host "Entry not found in the first archive: ${hash}";
-              exit 1;
-            }
-          }
-  
-  static-source-archive:
-    name: Source Archive of Static Libraries
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        USE_DOWNLOAD: ['OFF']
-        toolchain:
-          - {compiler: intel, version: '2024.1'}
-        SOURCE_ARCHIVE:
-          - { format: 'zip', ext: ".zip" }
-          - { format: 'tar-gz', ext: ".tar.gz" }
-          - { format: 'tar-bz2', ext: ".tar.bz2" }
-          - { format: 'tar-xz', ext: ".tar.xz" }
-    
-    env:
-      ARCHIVE: minpack-1.1.0-sources${{ matrix.SOURCE_ARCHIVE.ext }}
-      ARCHIVE_DIR: minpack-1.1.0-sources
-    
-    steps:
-      
-      - name: Checkout assets
-        uses: actions/checkout@v4
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        with:
-          ref: assets-ci-v1
-          path: assets
-      
-      - name: Checkout repository to minpack-builder directory
-        uses: actions/checkout@v4
-        with:
-          path: minpack-builder
-      
-      - name: Set environment variables to build and install directories
-        run: |
-          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
-        
-      - name: Download minpack sources
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
-        
-      - uses: fortran-lang/setup-fortran@v1
-        id: setup-fortran
-        with:
-          compiler: ${{ matrix.toolchain.compiler }}
-          version: ${{ matrix.toolchain.version }}
-      
-      - name: Set MSVC cl as C, C++ compiler
-        run: |
-          Add-Content $env:GITHUB_ENV "CC=cl"
-          Add-Content $env:GITHUB_ENV "CXX=cl"
-      
-      - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
-      
-      - name: Create a Source Arhive
-        run: |
-          cmake --build $env:BUILDDIR --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
-          dir $env:BUILDDIR;
-
-      - name: Extract the Source Zip Archive
-        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
-        run: |
-          Expand-Archive $env:BUILDDIR\${{ env.ARCHIVE }} -DestinationPath (Get-Location);
-
-      - name: Extract the Source Archive
-        if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
-        run: |
-          & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\${{ env.ARCHIVE }};
-          & "C:\Program Files\7-Zip\7z.exe" x ((Get-Item $env:BUILDDIR\${{ env.ARCHIVE }}).BaseName);
-      
-      - name: Download minpack sources to extracted source archive
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" ${{ env.ARCHIVE_DIR }}; }
-              
-      - name: Set environment variables to build and install directories
-        run: |
-          Add-Content $env:GITHUB_ENV "BUILDDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-install-${{ matrix.toolchain.compiler }}"
-        
-      - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $env:BUILDDIR_SOURCE_ARCHIVE
-      
-      - name: Build  from extracted source archive
-        run: cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release
-      
-      - name: Install from extracted source archive
-        run: cmake --install $env:BUILDDIR_SOURCE_ARCHIVE --config Release
-     
-      - name: Create a Source Archive again
         run: |
           cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
           dir $env:BUILDDIR_SOURCE_ARCHIVE;
