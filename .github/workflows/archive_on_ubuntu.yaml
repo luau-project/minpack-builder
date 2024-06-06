@@ -110,9 +110,13 @@ jobs:
           mkdir comparison-dir-source-archive;
           tar -xf $BUILDDIR_SOURCE_ARCHIVE/${{ env.ARCHIVE }} --directory=comparison-dir-source-archive;
         
-      - name: Write powershell script to file
+      # a reliable manner to compare
+      # compressed files
+      # is extracting them
+      # and compare file-by-file
+      - name: Compare the content of the compressed files for equality
+        shell: pwsh
         run: |
-          cat << 'PWSH_END' > compare-script.ps1
           $first_archive_fullname = (Get-Item (Join-Path -Path comparison-dir -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
           $first_archive_fullname_length = $first_archive_fullname.Length;
           $first_archive_file_suffixes = Get-ChildItem -File $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
@@ -162,15 +166,6 @@ jobs:
               exit 1;
             }
           }
-          PWSH_END
-          
-
-      # a reliable manner to compare
-      # compressed files
-      # is extracting them
-      # and compare file-by-file
-      - name: Compare the content of the compressed files for equality
-        run: pwsh compare-script.ps1
       
   binary-archive:
     name: Binary Archive
