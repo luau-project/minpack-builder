@@ -75,18 +75,111 @@ jobs:
 
       - name: Set shell variables to build and install directories
         run: |
-          echo "BUILDDIR=$RUNNER_TEMP/source-archive-build" >> $GITHUB_ENV
-          echo "INSTALLDIR=$RUNNER_TEMP/source-archive-install-gfortran" >> $GITHUB_ENV
+          echo "BUILDDIR_SOURCE_ARCHIVE=$RUNNER_TEMP/source-archive-build" >> $GITHUB_ENV
+          echo "INSTALLDIR_SOURCE_ARCHIVE=$RUNNER_TEMP/source-archive-install-gfortran" >> $GITHUB_ENV
       
       - name: Configure the build of minpack from extracted source archive
-        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S ${{ env.ARCHIVE_DIR }} -B $BUILDDIR
+        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $BUILDDIR_SOURCE_ARCHIVE
       
       - name: Build  from extracted source archive
-        run: cmake --build $BUILDDIR --config Release
+        run: cmake --build $BUILDDIR_SOURCE_ARCHIVE --config Release
         
       - name: Install from extracted source archive
-        run: cmake --install $BUILDDIR --config Release
+        run: cmake --install $BUILDDIR_SOURCE_ARCHIVE --config Release
 
+      - name: Create Source Archive again
+        run: |
+          cmake --build $BUILDDIR_SOURCE_ARCHIVE --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
+          ls $BUILDDIR_SOURCE_ARCHIVE;
+      
+      - name: Extract the Source Zip Archives again
+        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
+        run: |
+          mkdir comparison-dir;
+          unzip $BUILDDIR/${{ env.ARCHIVE }} -d comparison-dir;
+
+          mkdir comparison-dir-source-archive;
+          unzip $BUILDDIR_SOURCE_ARCHIVE/${{ env.ARCHIVE }} -d comparison-dir-source-archive;
+      
+      - name: Extract the Source Archives again
+        if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
+        run: |
+          mkdir comparison-dir;
+          tar -xf $BUILDDIR/${{ env.ARCHIVE }} --directory=comparison-dir;
+          
+          mkdir comparison-dir-source-archive;
+          tar -xf $BUILDDIR_SOURCE_ARCHIVE/${{ env.ARCHIVE }} --directory=comparison-dir-source-archive;
+        
+      # we are going to (install and) use powershell
+      # to compare the compressed files
+      - name: Install Powershell 7.4.2
+        run: |
+          wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.2/powershell_7.4.2-1.deb_amd64.deb
+          sudo dpkg -i powershell_7.4.2-1.deb_amd64.deb
+          sudo apt-get install -f
+          rm powershell_7.4.2-1.deb_amd64.deb
+      
+      - name: Write powershell script to file
+        run: |
+          cat << PWSH_END > compare-script.ps1
+          $first_archive_fullname = (Get-Item (Join-Path -Path comparison-dir -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
+          $first_archive_fullname_length = $first_archive_fullname.Length;
+          $first_archive_file_suffixes = Get-ChildItem -File $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
+          $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
+          
+          foreach ($file in $first_archive_file_suffixes)
+          {
+            $file_suffix = $file.Suffix.ToString();
+            $file_path = Join-Path -Path $first_archive_fullname -ChildPath $file_suffix;
+
+            $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
+            $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
+
+            $added = $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+          }
+
+          $second_archive_fullname = (Get-Item (Join-Path -Path comparison-dir-source-archive -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
+          $second_archive_fullname_length = $second_archive_fullname.Length;
+          $second_archive_file_suffixes = Get-ChildItem -File $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
+          $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
+          
+          foreach ($file in $second_archive_file_suffixes)
+          {
+            $file_suffix = $file.Suffix.ToString();
+            $file_path = Join-Path -Path $second_archive_fullname -ChildPath $file_suffix;
+
+            $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
+            $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
+
+            $added = $second_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+          }
+          
+          foreach ($hash in $first_archive_hashes)
+          {
+            if (-not $second_archive_hashes.Contains($hash))
+            {
+              Write-Host "Entry not found in the second archive: ${hash}";
+              exit 1;
+            }
+          }
+
+          foreach ($hash in $second_archive_hashes)
+          {
+            if (-not $first_archive_hashes.Contains($hash))
+            {
+              Write-Host "Entry not found in the first archive: ${hash}";
+              exit 1;
+            }
+          }
+          PWSH_END
+
+      # a reliable manner to compare
+      # compressed files
+      # is extracting them
+      # and compare file-by-file
+      - name: Compare the content of the compressed files for equality
+        run: pwsh compare-script.ps1
+      
   binary-archive:
     name: Binary Archive
     runs-on: ubuntu-latest
