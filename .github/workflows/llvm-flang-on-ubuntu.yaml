@@ -1,5 +1,5 @@
-name: LLVM Flang on Ubuntu
-run-name: minpack compiled with LLVM Flang on Ubuntu
+name: LLVM flang-new on Ubuntu
+run-name: minpack compiled with LLVM flang-new on Ubuntu
 on:
   push:
     paths-ignore:
@@ -41,7 +41,7 @@ jobs:
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-flang" >> $GITHUB_ENV
       
-      - name: Install LLVM Flang
+      - name: Install LLVM flang-new 
         run: |
           codename=$(lsb_release -c -s)
           echo "deb http://apt.llvm.org/$codename/ llvm-toolchain-$codename main" > $RUNNER_TEMP/llvm-flang-new.list
@@ -97,7 +97,7 @@ jobs:
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-flang" >> $GITHUB_ENV
       
-      - name: Install LLVM Flang
+      - name: Install LLVM flang-new 
         run: |
           codename=$(lsb_release -c -s)
           echo "deb http://apt.llvm.org/$codename/ llvm-toolchain-$codename main" > $RUNNER_TEMP/llvm-flang-new.list
