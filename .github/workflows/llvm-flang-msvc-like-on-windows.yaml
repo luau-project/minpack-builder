@@ -64,7 +64,7 @@ jobs:
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
           conda activate "$env:CONDA";
           conda install --yes -c conda-forge -n base flang flang_win-64 libflang libfortran-main;
-          Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | Select-Object @{ Label = "Value"; Expression = { ($_.Name + "=" + $_.Value) } } | Select-Object -ExpandProperty Value >> $env:GITHUB_ENV;
+          Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
           Add-Content $env:GITHUB_ENV "FC=flang-new";
           Add-Content $env:GITHUB_ENV "CC=${{ matrix.C_COMPILER }}";
           Add-Content $env:GITHUB_ENV "CXX=${{ matrix.C_COMPILER }}";
