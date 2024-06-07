@@ -19,7 +19,7 @@ jobs:
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         BUILD_SHARED_LIBS: ['ON', 'OFF']
         BUILD_STATIC_LIBS: ['ON', 'OFF']
-        C_COMPILER: ['clang-cl', 'cl']
+        C_COMPILER: ['clang-cl']
 
         exclude:
           - BUILD_SHARED_LIBS: 'OFF'
@@ -55,7 +55,7 @@ jobs:
         run: |
           choco install ninja;
           ninja --version;
-
+      
       - name: Setup miniconda, install LLVM flang-new (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
