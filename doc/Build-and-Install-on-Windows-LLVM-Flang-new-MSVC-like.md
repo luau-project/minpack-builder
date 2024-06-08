@@ -107,8 +107,6 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     %userprofile%\miniforge3\Scripts\activate.bat %userprofile%\miniforge3
     ```
 
-<!-- image here -->
-
 > [!WARNING]
 > 
 > ```%userprofile%``` is a system environment variable on Windows that points to ```C:\Users\<you user name>```. If you performed a standard Miniforge install, it gets installed at ```%userprofile%\miniforge3```. However, in case you installed Miniforge elsewhere, adjust the path above replacing ```%userprofile%\miniforge3``` by the installation directory.
@@ -118,7 +116,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     conda --version
     ```
 
-<!-- image here -->
+![Screenshot from 2024-06-07 21-05-26](https://github.com/luau-project/minpack-builder/assets/18295115/ba296717-0f2a-4c62-89c6-4850d4934be9)
 
 4. Create an environment for minpack-builder installing LLVM flang-new (MSVC-like) from ```conda-forge```:
     ```cmd
@@ -135,7 +133,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     flang-new --version
     ```
 
-<!-- image here -->
+![Screenshot from 2024-06-07 21-21-01](https://github.com/luau-project/minpack-builder/assets/18295115/bab70581-2fb9-4079-b9dd-1a14ec00aca5)
 
 > [!IMPORTANT]
 > 
@@ -165,7 +163,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     ninja --version
     ```
 
-<!-- image here -->
+![Screenshot from 2024-06-07 21-31-26](https://github.com/luau-project/minpack-builder/assets/18295115/047f54b4-dd32-48e5-b929-23e83a5c934a)
 
 5. Set a variable to hold the path to a working directory, create that directory, and then change dir to this new directory
     ```cmd
@@ -191,7 +189,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
 8. Clone minpack-builder by running ```git clone https://github.com/luau-project/minpack-builder```
 
-<!-- image here -->
+![Screenshot from 2024-06-07 21-42-10](https://github.com/luau-project/minpack-builder/assets/18295115/5b914fa9-12a3-44df-91cb-631877146016)
 
 9. By default, minpack-builder downloads (optional param ```USE_DOWNLOAD``` is ```ON```) minpack source code to the same directory of minpack-builder (provided by optional param ```DOWNLOAD_DIR```).
 
@@ -209,7 +207,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
 10. Review the configuration summary and proceed to build
 
-<!-- image here -->
+![Screenshot from 2024-06-07 21-42-48](https://github.com/luau-project/minpack-builder/assets/18295115/da2d1bb5-7955-42b2-a3bd-ae6c9c656cfa)
 
 11. Build the library. 
 
@@ -217,7 +215,8 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     cmake --build "%BUILD_DIR%"
     ```
 
-<!-- image here -->
+![Screenshot from 2024-06-07 21-43-15](https://github.com/luau-project/minpack-builder/assets/18295115/9b2c574d-f31f-4cab-9899-624db0893b22)
+
 
 > [!NOTE]
 > 
@@ -234,7 +233,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     cmake --install "%BUILD_DIR%"
     ```
 
-<!-- image here -->
+![Screenshot from 2024-06-07 21-43-38](https://github.com/luau-project/minpack-builder/assets/18295115/84e9b3a6-ac33-48f9-a78f-773676fa41a1)
 
 ---
 [Documentation](README.md)
