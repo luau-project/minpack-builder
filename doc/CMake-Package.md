@@ -74,9 +74,9 @@ Assume you have installed minpack through minpack-builder at ```C:\minpack```.
     cmake "-DCMAKE_PREFIX_PATH=C:/minpack" <PARAMETER LIST>
     ```
 
-    > [!IMPORTANT]
-    > 
-    > If you chose the parameter-passing manner, you must be aware that CMake uses forward slash on prefix path, this is the reason ```C:/minpack``` is used above rather than ```C:\minpack```
+> [!IMPORTANT]
+> 
+> If you chose the parameter-passing manner, you must be aware that CMake uses forward slash on prefix path, this is the reason ```C:/minpack``` is used above rather than ```C:\minpack```
 
 On your ```CMakeLists.txt```, you can use ```minpack``` the following way
 
