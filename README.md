@@ -68,7 +68,7 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 | GFortran | 14.1.0 | ![gfortran-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-windows.yaml/badge.svg?branch=main) |
 | Intel LLVM ifx (*MSVC-like*) | 2024.1.0 | ![ifx-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-windows.yaml/badge.svg?branch=main) |
 | LLVM flang-new (*MSVC-like*) | 18.1.6 | ![llvm-flang-msvc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-msvc-like-on-windows.yaml/badge.svg?branch=main) |
-| LLVM flang-new (*GCC-like*) | 18.1.4 | ![llvm-flang-gcc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |
+| LLVM flang-new (*GCC-like*) | 18.1.6 | ![llvm-flang-gcc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |
 
 ### Ubuntu 22.04
 
@@ -76,7 +76,7 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 |------------------|------------|--------------|
 | GFortran         | 11.4.0 |![gfortran-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-ubuntu.yaml/badge.svg?branch=main)|
 | Intel LLVM ifx (*GCC-like*) | 2024.1.0 | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
-| LLVM flang-new (*GCC-like*) | 18.1.3 |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
+| LLVM flang-new (*GCC-like*) | 18.1.6 |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
 
 > [!IMPORTANT]
 > 

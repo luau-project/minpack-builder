@@ -1,5 +1,5 @@
 name: Archive on Windows
-run-name: minpack archive with Intel Fortran ifx on Windows
+run-name: minpack archive on Windows
 on:
   push:
     paths-ignore:
@@ -19,8 +19,9 @@ jobs:
         USE_DOWNLOAD: ['OFF']
         BUILD_SHARED_LIBS: ['ON', 'OFF']
         BUILD_STATIC_LIBS: ['ON', 'OFF']
-        toolchain:
-          - {compiler: intel, version: '2024.1'}
+        TOOLCHAIN:
+          - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
+          - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
         SOURCE_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
           - { format: 'tar-gz', ext: ".tar.gz" }
@@ -54,25 +55,49 @@ jobs:
       - name: Set environment variables to build and install directories
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.TOOLCHAIN.COMPILER }}"
       
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
       
+      - name: Setup Ninja build tool
+        if: ${{ matrix.TOOLCHAIN.CMAKE_GENERATOR=='Ninja' }}
+        run: |
+          choco install ninja;
+          ninja --version;
+      
+      - name: Setup MSVC
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Setup miniconda, install LLVM flang-new (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        run: |
+          & "$env:CONDA\shell\condabin\conda-hook.ps1";
+          conda activate "$env:CONDA";
+          conda install --yes -c conda-forge -n base flang libflang libfortran-main;
+          Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
+          Add-Content $env:GITHUB_ENV "FC=flang-new";
+          Add-Content $env:GITHUB_ENV "CC=cl";
+          Add-Content $env:GITHUB_ENV "CXX=cl";
+      
       - uses: fortran-lang/setup-fortran@v1
+        name: Setup Fortran and C compilers
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
         id: setup-fortran
         with:
-          compiler: ${{ matrix.toolchain.compiler }}
-          version: ${{ matrix.toolchain.version }}
+          compiler: ${{ matrix.TOOLCHAIN.COMPILER }}
+          version: ${{ matrix.TOOLCHAIN.VERSION }}
       
       - name: Set MSVC cl as C, C++ compiler
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
         run: |
           Add-Content $env:GITHUB_ENV "CC=cl"
           Add-Content $env:GITHUB_ENV "CXX=cl"
       
       - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
+        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
       
       - name: Create a Source Arhive
         run: |
@@ -97,10 +122,10 @@ jobs:
       - name: Set environment variables to build and install directories
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-install-${{ matrix.toolchain.compiler }}"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-install-${{ matrix.TOOLCHAIN.COMPILER }}"
         
       - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $env:BUILDDIR_SOURCE_ARCHIVE
+        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $env:BUILDDIR_SOURCE_ARCHIVE
       
       - name: Build from extracted source archive
         run: cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release
@@ -199,8 +224,9 @@ jobs:
         USE_DOWNLOAD: ['OFF']
         BUILD_SHARED_LIBS: ['ON', 'OFF']
         BUILD_STATIC_LIBS: ['ON', 'OFF']
-        toolchain:
-          - {compiler: intel, version: '2024.1'}
+        TOOLCHAIN:
+          - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
+          - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
         BINARY_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
           - { format: 'tar-gz', ext: ".tar.gz" }
@@ -234,25 +260,49 @@ jobs:
       - name: Set environment variables to build and install directories
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.toolchain.compiler }}"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.TOOLCHAIN.COMPILER }}"
       
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
       
+      - name: Setup Ninja build tool
+        if: ${{ matrix.TOOLCHAIN.CMAKE_GENERATOR=='Ninja' }}
+        run: |
+          choco install ninja;
+          ninja --version;
+      
+      - name: Setup MSVC
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Setup miniconda, install LLVM flang-new (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        run: |
+          & "$env:CONDA\shell\condabin\conda-hook.ps1";
+          conda activate "$env:CONDA";
+          conda install --yes -c conda-forge -n base flang libflang libfortran-main;
+          Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
+          Add-Content $env:GITHUB_ENV "FC=flang-new";
+          Add-Content $env:GITHUB_ENV "CC=cl";
+          Add-Content $env:GITHUB_ENV "CXX=cl";
+      
       - uses: fortran-lang/setup-fortran@v1
+        name: Setup Fortran and C compilers
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
         id: setup-fortran
         with:
-          compiler: ${{ matrix.toolchain.compiler }}
-          version: ${{ matrix.toolchain.version }}
+          compiler: ${{ matrix.TOOLCHAIN.COMPILER }}
+          version: ${{ matrix.TOOLCHAIN.VERSION }}
       
       - name: Set MSVC cl as C, C++ compiler
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
         run: |
           Add-Content $env:GITHUB_ENV "CC=cl"
           Add-Content $env:GITHUB_ENV "CXX=cl"
       
       - name: Configure the build of minpack 
-        run: cmake -G "NMake Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
+        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
       
       - name: Build from extracted source archive
         run: cmake --build $env:BUILDDIR --config Release
