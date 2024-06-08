@@ -43,17 +43,42 @@ Below, you can find a list of all exported CMake variables in the configuration 
 
 Assume you have installed minpack through minpack-builder at ```C:\minpack```.
 
-Then, in your other project which uses minpack, you configure it through
+* Environment variables (recommended)
 
-```
-cmake "-DCMAKE_PREFIX_PATH=C:/minpack" <PARAMETER LIST>
-```
+    1. Append the installation directory of minpack to ```CMAKE_PREFIX_PATH``` environment variable:
 
-> [!IMPORTANT]
-> 
-> CMake uses forward slash on prefix path, this is the reason ```C:/minpack``` is used above rather than ```C:\minpack```
+        * cmd:
+        ```cmd
+        set MINPACK_INSTALL_DIR=C:\minpack
 
-On your ```CMakeLists.txt```, you can use in the following way
+        if defined CMAKE_PREFIX_PATH (set CMAKE_PREFIX_PATH=%MINPACK_INSTALL_DIR%;%CMAKE_PREFIX_PATH%) else (set CMAKE_PREFIX_PATH=%MINPACK_INSTALL_DIR%)
+        ```
+
+        * powershell:
+        ```powershell
+        $env:MINPACK_INSTALL_DIR = "C:\minpack";
+
+        if ($env:CMAKE_PREFIX_PATH) { $env:CMAKE_PREFIX_PATH = @("$env:MINPACK_INSTALL_DIR", "$env:CMAKE_PREFIX_PATH") -join [System.IO.Path]::PathSeparator; } else { $env:CMAKE_PREFIX_PATH = "$env:MINPACK_INSTALL_DIR"; }
+        ```
+    2. Call cmake to configure normally
+
+        ```cmd
+        cmake <PARAMETER LIST>
+        ```
+
+* CMake parameter
+
+    You can configure it directly through
+
+    ```
+    cmake "-DCMAKE_PREFIX_PATH=C:/minpack" <PARAMETER LIST>
+    ```
+
+    > [!IMPORTANT]
+    > 
+    > If you chose the parameter-passing manner, you must be aware that CMake uses forward slash on prefix path, this is the reason ```C:/minpack``` is used above rather than ```C:\minpack```
+
+On your ```CMakeLists.txt```, you can use ```minpack``` the following way
 
 ```cmake
 cmake_minimum_required(VERSION 3.17)
@@ -74,13 +99,29 @@ endif()
 ### Unix
 Assume you have installed minpack through minpack-builder at ```/tmp/minpack```.
 
-Then, in your other project which uses minpack, you configure it through
+* Environment variables
 
-```
-cmake "-DCMAKE_PREFIX_PATH=/tmp/minpack" <PARAMETER LIST>
-```
+    1. Append the installation directory of minpack to ```CMAKE_PREFIX_PATH``` environment variable:
+        ```bash
+        MINPACK_INSTALL_DIR=/tmp/minpack
+        export CMAKE_PREFIX_PATH="$MINPACK_INSTALL_DIR:$CMAKE_PREFIX_PATH"
+        ```
+    2. Call cmake to configure normally
 
-On your ```CMakeLists.txt```, you can use in the following way
+        ```bash
+        cmake <PARAMETER LIST>
+        ```
+
+
+* CMake parameter
+
+    You can configure it directly through
+
+    ```
+    cmake "-DCMAKE_PREFIX_PATH=/tmp/minpack" <PARAMETER LIST>
+    ```
+
+On your ```CMakeLists.txt```, you can use ```minpack``` the following manner
 
 ```cmake
 cmake_minimum_required(VERSION 3.17)
