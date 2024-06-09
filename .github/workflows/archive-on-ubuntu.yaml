@@ -192,17 +192,17 @@ jobs:
       - name: Copy archives to a top level folder on workspace
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
-          mkdir -p minpack-builder-1.1.0-ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          cp $BUILDDIR/$ARCHIVE minpack-builder-1.1.0-ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          cp $BUILDDIR/$ARCHIVE_MD5 minpack-builder-1.1.0-ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          cp $BUILDDIR/$ARCHIVE_SHA256 minpack-builder-1.1.0-ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          mkdir -p minpack-builder-1.1.0-sources-ubuntu-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE minpack-builder-1.1.0-sources-ubuntu-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE_MD5 minpack-builder-1.1.0-sources-ubuntu-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE_SHA256 minpack-builder-1.1.0-sources-ubuntu-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
 
       - name: Upload archive containing sources
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.SOURCE_ARCHIVE.format!='zip' }}
         uses: actions/upload-artifact@v4
         with:
-          name: minpack-builder-1.1.0-ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          path: minpack-builder-1.1.0-ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          name: minpack-builder-1.1.0-sources-ubuntu-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          path: minpack-builder-1.1.0-sources-ubuntu-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
 
   binary-archive:
     name: Binary Archive
@@ -290,14 +290,14 @@ jobs:
       - name: Copy archives to a top level folder on workspace
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format!='zip' }}
         run: |
-          mkdir -p minpack-builder-1.1.0-ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          cp $BUILDDIR/$ARCHIVE minpack-builder-1.1.0-ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          cp $BUILDDIR/$ARCHIVE_MD5 minpack-builder-1.1.0-ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          cp $BUILDDIR/$ARCHIVE_SHA256 minpack-builder-1.1.0-ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          mkdir -p minpack-builder-1.1.0-binaries-ubuntu-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE minpack-builder-1.1.0-binaries-ubuntu-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE_MD5 minpack-builder-1.1.0-binaries-ubuntu-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE_SHA256 minpack-builder-1.1.0-binaries-ubuntu-artifact-${{ matrix.BINARY_ARCHIVE.format }}
 
       - name: Upload archive containing binaries
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format!='zip' }}
         uses: actions/upload-artifact@v4
         with:
-          name: minpack-builder-1.1.0-ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          path: minpack-builder-1.1.0-ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          name: minpack-builder-1.1.0-binaries-ubuntu-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          path: minpack-builder-1.1.0-binaries-ubuntu-artifact-${{ matrix.BINARY_ARCHIVE.format }}
