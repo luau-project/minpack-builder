@@ -46,7 +46,7 @@ jobs:
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
 
       - name: Create a top level directory on workspace to hold source archives
-        run: mkdir -p minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources
+        run: mkdir -p minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources-artifact
       
       - name: Create Source Archives
         run: |
@@ -68,17 +68,17 @@ jobs:
 
             cmake --build $BUILDDIR --config Release --target "source-${SOURCE_ARCHIVE_FORMAT}";
 
-            cp $BUILDDIR/$ARCHIVE minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources;
-            cp $BUILDDIR/$ARCHIVE_MD5 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources;
-            cp $BUILDDIR/$ARCHIVE_SHA256 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources;
+            cp $BUILDDIR/$ARCHIVE minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources-artifact;
+            cp $BUILDDIR/$ARCHIVE_MD5 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources-artifact;
+            cp $BUILDDIR/$ARCHIVE_SHA256 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources-artifact;
             
           done
 
       - name: Upload archive containing sources
         uses: actions/upload-artifact@v4
         with:
-          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources
-          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources
+          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources-artifact
+          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources-artifact
   
   binary-archive-release-ubuntu:
     name: Binary Archive Release on Ubuntu
@@ -262,29 +262,29 @@ jobs:
       - name: Copy shared libraries archives to a top level folder on workspace
         if: ${{ matrix.BUILD_SHARED_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
         run: |
-          mkdir minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          mkdir minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact
 
       - name: Upload shared libraries archive containing binaries
         if: ${{ matrix.BUILD_SHARED_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
         uses: actions/upload-artifact@v4
         with:
-          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact
+          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact
           
       - name: Copy static libraries archives to a top level folder on workspace
         if: ${{ matrix.BUILD_STATIC_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
         run: |
-          mkdir minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          mkdir minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact
 
       - name: Upload static libraries archive containing binaries
         if: ${{ matrix.BUILD_STATIC_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
         uses: actions/upload-artifact@v4
         with:
-          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact
+          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact
