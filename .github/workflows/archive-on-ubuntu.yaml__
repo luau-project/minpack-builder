@@ -226,6 +226,7 @@ jobs:
           fi
 
       - name: Install unzip
+        if: ${{ matrix.BINARY_ARCHIVE.format=='zip' }}
         run: sudo apt install -y unzip
 
       - name: Checkout assets
