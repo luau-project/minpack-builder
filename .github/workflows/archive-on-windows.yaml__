@@ -38,6 +38,9 @@ jobs:
           - BUILD_SHARED_LIBS: 'OFF'
             BUILD_STATIC_LIBS: 'OFF'
             
+    env:
+      MINPACK_BUILDER_VERSION: 1.1.0
+    
     steps:
       
       - name: Set environment variables for archive and archive directory
@@ -45,15 +48,15 @@ jobs:
           if ("${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX }}" -eq "ON")
           {
             Add-Content $env:GITHUB_ENV "SOURCE_ARCHIVE_SUFFIX=-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
-            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.SOURCE_ARCHIVE.ext }}";
-            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
-            Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.SOURCE_ARCHIVE.ext }}-MD5.txt";
-            Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.SOURCE_ARCHIVE.ext }}-SHA256.txt";
+            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.SOURCE_ARCHIVE.ext }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.SOURCE_ARCHIVE.ext }}-MD5.txt";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.SOURCE_ARCHIVE.ext }}-SHA256.txt";
           }
           else
           {
-            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-sources${{ matrix.SOURCE_ARCHIVE.ext }}";
-            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-sources";
+            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources${{ matrix.SOURCE_ARCHIVE.ext }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources";
           }
 
       - name: Checkout assets
@@ -269,6 +272,9 @@ jobs:
           - BUILD_SHARED_LIBS: 'OFF'
             BUILD_STATIC_LIBS: 'OFF'
     
+    env:
+      MINPACK_BUILDER_VERSION: 1.1.0
+    
     steps:
       
       - name: Set environment variables for archive and archive directory
@@ -276,15 +282,15 @@ jobs:
           if ("${{ matrix.USE_BINARY_ARCHIVE_SUFFIX }}" -eq "ON")
           {
             Add-Content $env:GITHUB_ENV "BINARY_ARCHIVE_SUFFIX=-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
-            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}";
-            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
-            Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt";
-            Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt";
+            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt";
           }
           else
           {
-            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}";
-            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-binaries";
+            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries${{ matrix.BINARY_ARCHIVE.ext }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries";
           }
 
       - name: Checkout assets

@@ -24,6 +24,9 @@ jobs:
           - { format: 'tar-bz2', ext: ".tar.bz2" }
           - { format: 'tar-xz', ext: ".tar.xz" }
     
+    env:
+      MINPACK_BUILDER_VERSION: 1.1.0
+    
     steps:
 
       - name: Set environment variables for archive and archive directory
@@ -32,13 +35,13 @@ jobs:
           then
             codename=$(lsb_release -c -s);
             echo "SOURCE_ARCHIVE_SUFFIX=-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
-            echo "ARCHIVE=minpack-1.1.0-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
-            echo "ARCHIVE_DIR=minpack-1.1.0-sources-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
-            echo "ARCHIVE_MD5=minpack-1.1.0-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
-            echo "ARCHIVE_SHA256=minpack-1.1.0-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
+            echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
+            echo "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
+            echo "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
           else
-            echo "ARCHIVE=minpack-1.1.0-sources${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
-            echo "ARCHIVE_DIR=minpack-1.1.0-sources" >> $GITHUB_ENV;
+            echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources" >> $GITHUB_ENV;
           fi
 
       - name: Install unzip
@@ -202,6 +205,9 @@ jobs:
           - { format: 'tar-bz2', ext: ".tar.bz2" }
           - { format: 'tar-xz', ext: ".tar.xz" }
     
+    env:
+      MINPACK_BUILDER_VERSION: 1.1.0
+    
     steps:
 
       - name: Set environment variables for archive and archive directory
@@ -210,13 +216,13 @@ jobs:
           then
             codename=$(lsb_release -c -s);
             echo "BINARY_ARCHIVE_SUFFIX=-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
-            echo "ARCHIVE=minpack-1.1.0-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
-            echo "ARCHIVE_DIR=minpack-1.1.0-binaries-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
-            echo "ARCHIVE_MD5=minpack-1.1.0-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
-            echo "ARCHIVE_SHA256=minpack-1.1.0-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
+            echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
+            echo "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
+            echo "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
           else
-            echo "ARCHIVE=minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
-            echo "ARCHIVE_DIR=minpack-1.1.0-binaries" >> $GITHUB_ENV;
+            echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries" >> $GITHUB_ENV;
           fi
 
       - name: Install unzip

@@ -1,0 +1,87 @@
+name: Release
+run-name: minpack Release
+on:
+  push:
+    # branches:
+    #   - 'release'
+    paths-ignore:
+      - "**.md"
+      - doc/**
+
+jobs:
+  source-archive-release:
+    name: Source Archive Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        USE_DOWNLOAD: ['OFF']
+        USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
+        SOURCE_ARCHIVE:
+          - { format: 'zip', ext: ".zip" }
+          - { format: 'tar-gz', ext: ".tar.gz" }
+          - { format: 'tar-bz2', ext: ".tar.bz2" }
+          - { format: 'tar-xz', ext: ".tar.xz" }
+          
+    env:
+      MINPACK_BUILDER_VERSION: 1.1.0
+    
+    steps:
+
+      - name: Checkout assets
+        uses: actions/checkout@v4
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
+      
+      - name: Checkout repository to minpack-builder directory
+        uses: actions/checkout@v4
+        with:
+          path: minpack-builder
+      
+      - name: Set shell variables to build and install directories
+        run: |
+          echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
+          echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
+      
+      - name: Download minpack sources
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
+      
+      - name: Configure the build of minpack
+        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+
+      - name: Create a top level directory on workspace to hold source archives
+        run: mkdir -p minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources
+      
+      - name: Create Source Archives
+        run: |
+          declare -A arr;
+
+          arr["zip"]=".zip";
+          arr["tar-gz"]=".tar.gz";
+          arr["tar-bz2"]=".tar.bz2";
+          arr["tar-xz"]=".tar.xz";
+
+          for SOURCE_ARCHIVE_FORMAT in ${!arr[@]};
+          do
+            SOURCE_ARCHIVE_EXT="${arr[${SOURCE_ARCHIVE_FORMAT}]}";
+            ARCHIVE="minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources${SOURCE_ARCHIVE_EXT}";
+            ARCHIVE_MD5="minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources${SOURCE_ARCHIVE_EXT}-MD5.txt";
+            ARCHIVE_SHA256="minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources${SOURCE_ARCHIVE_EXT}-SHA256.txt";
+
+            echo -e "Creating archive for source code: \e[32m$ARCHIVE\e[37m";
+
+            cmake --build $BUILDDIR --config Release --target "source-${SOURCE_ARCHIVE_FORMAT}";
+
+            cp $BUILDDIR/$ARCHIVE minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources;
+            cp $BUILDDIR/$ARCHIVE_MD5 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources;
+            cp $BUILDDIR/$ARCHIVE_SHA256 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources;
+            
+          done
+
+      - name: Upload archive containing sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources
+          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources
