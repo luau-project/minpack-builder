@@ -189,34 +189,20 @@ jobs:
             }
           }
 
-      - name: Copy archives to workspace
+      - name: Copy archives to a top level folder on workspace
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
-          mkdir -p ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-md5
-          cp $BUILDDIR/$ARCHIVE ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-md5
-          cp $BUILDDIR/$ARCHIVE_MD5 ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-md5
-          cp $BUILDDIR/$ARCHIVE_SHA256 ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-md5
+          mkdir -p ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE_MD5 ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE_SHA256 ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
 
-      - name: Upload archive
+      - name: Upload archive containing sources
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.SOURCE_ARCHIVE.format!='zip' }}
         uses: actions/upload-artifact@v4
         with:
           name: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          path: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-md5/$ARCHIVE
-
-      - name: Upload archive MD5
-        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.SOURCE_ARCHIVE.format!='zip' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-md5
-          path: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-md5/$ARCHIVE_MD5
-
-      - name: Upload archive SHA256
-        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.SOURCE_ARCHIVE.format!='zip' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-sha256
-          path: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-md5/$ARCHIVE_SHA256
+          path: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
 
   binary-archive:
     name: Binary Archive
@@ -301,31 +287,17 @@ jobs:
           mkdir archive-list
           cd archive-list && tar -xf $BUILDDIR/$ARCHIVE
       
-      - name: Copy archives to workspace
+      - name: Copy archives to a top level folder on workspace
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format!='zip' }}
         run: |
-          mkdir -p ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-md5
-          cp $BUILDDIR/$ARCHIVE ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-md5
-          cp $BUILDDIR/$ARCHIVE_MD5 ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-md5
-          cp $BUILDDIR/$ARCHIVE_SHA256 ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-md5
+          mkdir -p ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE_MD5 ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          cp $BUILDDIR/$ARCHIVE_SHA256 ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
 
-      - name: Upload archive
+      - name: Upload archive containing binaries
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format!='zip' }}
         uses: actions/upload-artifact@v4
         with:
           name: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          path: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-md5/$ARCHIVE
-
-      - name: Upload archive MD5
-        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format!='zip' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-md5
-          path: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-md5/$ARCHIVE_MD5
-
-      - name: Upload archive SHA256
-        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format!='zip' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-sha256
-          path: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-md5/$ARCHIVE_SHA256
+          path: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
