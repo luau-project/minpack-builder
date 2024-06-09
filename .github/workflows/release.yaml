@@ -80,7 +80,7 @@ jobs:
           name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources
           path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-sources
   
-  binary-archive-ubuntu:
+  binary-archive-release-ubuntu:
     name: Binary Archive Release on Ubuntu
     runs-on: ${{ matrix.OS }}
     strategy:
@@ -94,6 +94,11 @@ jobs:
       MINPACK_BUILDER_VERSION: 1.1.0
     
     steps:
+
+      - name: Install GFortran and set it as default Fortran Compiler
+        run: |
+          sudo apt install -y gfortran
+          echo "FC=gfortran" >> $GITHUB_ENV;
 
       - name: Set environment variables for archive and archive directory
         run: |
@@ -167,7 +172,7 @@ jobs:
           name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-noble-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
           path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-noble-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
 
-  binary-archive-windows:
+  binary-archive-release-windows:
     name: Binary Archive Release on Windows
     runs-on: windows-latest
     strategy:
