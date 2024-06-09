@@ -266,10 +266,10 @@ jobs:
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='OFF' }}
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
       
-      - name: Build  from extracted source archive
+      - name: Build
         run: cmake --build $BUILDDIR --config Release
         
-      - name: Install from extracted source archive
+      - name: Install
         run: cmake --install $BUILDDIR --config Release
 
       - name: Create a Binary Archive

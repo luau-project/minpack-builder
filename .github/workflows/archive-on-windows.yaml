@@ -70,8 +70,8 @@ jobs:
       
       - name: Set environment variables to build and install directories
         run: |
-          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.TOOLCHAIN.COMPILER }}"
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
       
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
@@ -268,6 +268,9 @@ jobs:
         TOOLCHAIN:
           - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
           - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
+        
+        USE_BINARY_ARCHIVE_SUFFIX: ['ON', 'OFF']
+        
         BINARY_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
           - { format: 'tar-gz', ext: ".tar.gz" }
@@ -280,12 +283,25 @@ jobs:
             
           - BUILD_SHARED_LIBS: 'OFF'
             BUILD_STATIC_LIBS: 'OFF'
-    env:
-      ARCHIVE: minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}
-      ARCHIVE_DIR: minpack-1.1.0-binaries
     
     steps:
       
+      - name: Set environment variables for archive and archive directory
+        run: |
+          if ("${{ matrix.USE_BINARY_ARCHIVE_SUFFIX }}" -eq "ON")
+          {
+            Add-Content $env:GITHUB_ENV "BINARY_ARCHIVE_SUFFIX=-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt";
+          }
+          else
+          {
+            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-binaries";
+          }
+
       - name: Checkout assets
         uses: actions/checkout@v4
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
@@ -300,8 +316,8 @@ jobs:
       
       - name: Set environment variables to build and install directories
         run: |
-          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP/build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP/install-${{ matrix.TOOLCHAIN.COMPILER }}"
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
       
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
@@ -342,16 +358,36 @@ jobs:
           Add-Content $env:GITHUB_ENV "CC=cl"
           Add-Content $env:GITHUB_ENV "CXX=cl"
       
-      - name: Configure the build of minpack 
+      - name: Configure the build of minpack (with binary archive suffix)
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' }}
+        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBINARY_ARCHIVE_SUFFIX=$env:BINARY_ARCHIVE_SUFFIX -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
+      
+      - name: Configure the build of minpack (without binary archive suffix)
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='OFF' }}
         run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
       
-      - name: Build from extracted source archive
+      - name: Build
         run: cmake --build $env:BUILDDIR --config Release
       
-      - name: Install from extracted source archive
+      - name: Install
         run: cmake --install $env:BUILDDIR --config Release
 
       - name: Create a Binary Arhive
         run: |
           cmake --build $env:BUILDDIR --config Release --target binary-${{ matrix.BINARY_ARCHIVE.format }};
           dir $env:BUILDDIR;
+
+      - name: Copy archives to a top level folder on workspace
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
+        run: |
+          mkdir minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+
+      - name: Upload archive containing binaries
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          path: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-artifact-${{ matrix.BINARY_ARCHIVE.format }}
