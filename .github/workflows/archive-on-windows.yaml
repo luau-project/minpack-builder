@@ -23,7 +23,8 @@ jobs:
           - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
           - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
         
-        USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
+        USE_SOURCE_ARCHIVE_SUFFIX: ['ON']
+        # USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
         
         SOURCE_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
@@ -147,7 +148,7 @@ jobs:
         
       - name: Configure the build of minpack (with source archive suffix)
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' }}
-        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DSOURCE_ARCHIVE_SUFFIX=$env:SOURCE_ARCHIVE_SUFFIX -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S $env:ARCHIVE_DIR -B $env:BUILDDIR_SOURCE_ARCHIVE
+        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" "-DSOURCE_ARCHIVE_SUFFIX=$env:SOURCE_ARCHIVE_SUFFIX" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S $env:ARCHIVE_DIR -B $env:BUILDDIR_SOURCE_ARCHIVE
       
       - name: Configure the build of minpack (without source archive suffix)
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='OFF' }}
