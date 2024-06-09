@@ -15,12 +15,6 @@ jobs:
     strategy:
       matrix:
         USE_DOWNLOAD: ['OFF']
-        USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
-        SOURCE_ARCHIVE:
-          - { format: 'zip', ext: ".zip" }
-          - { format: 'tar-gz', ext: ".tar.gz" }
-          - { format: 'tar-bz2', ext: ".tar.bz2" }
-          - { format: 'tar-xz', ext: ".tar.xz" }
           
     env:
       MINPACK_BUILDER_VERSION: 1.1.0
