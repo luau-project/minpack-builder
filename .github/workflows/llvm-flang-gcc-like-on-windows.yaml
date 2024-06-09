@@ -2,13 +2,32 @@ name: LLVM flang-new (GCC-like) on Windows
 run-name: minpack compiled with LLVM flang-new (GCC-like) from MSYS2 on Windows
 on:
   push:
-    paths-ignore:
-      - "**.md"
-      - doc/**
+    paths:
+      - '**'
+      - '!**.md'
+      - '!doc/**'
+      - '!.github/workflows/archive-on-windows.yaml'
+      - '!.github/workflows/gfortran-on-ubuntu.yaml'
+      - '!.github/workflows/gfortran-on-windows.yaml'
+      - '!.github/workflows/intel-fortran-on-ubuntu.yaml'
+      - '!.github/workflows/intel-fortran-on-windows.yaml'
+      - '!.github/workflows/archive-on-ubuntu.yaml'
+      - '!.github/workflows/llvm-flang-msvc-like-on-windows.yaml'
+      - '!.github/workflows/llvm-flang-on-ubuntu.yaml'
+  
   pull_request:
-    paths-ignore:
-      - "**.md"
-      - doc/**
+    paths:
+      - '**'
+      - '!**.md'
+      - '!doc/**'
+      - '!.github/workflows/archive-on-windows.yaml'
+      - '!.github/workflows/gfortran-on-ubuntu.yaml'
+      - '!.github/workflows/gfortran-on-windows.yaml'
+      - '!.github/workflows/intel-fortran-on-ubuntu.yaml'
+      - '!.github/workflows/intel-fortran-on-windows.yaml'
+      - '!.github/workflows/archive-on-ubuntu.yaml'
+      - '!.github/workflows/llvm-flang-msvc-like-on-windows.yaml'
+      - '!.github/workflows/llvm-flang-on-ubuntu.yaml'
 
 jobs:
   shared-build:

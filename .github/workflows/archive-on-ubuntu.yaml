@@ -2,13 +2,32 @@ name: Archive on Ubuntu
 run-name: minpack archive on Ubuntu
 on:
   push:
-    paths-ignore:
-      - "**.md"
-      - doc/**
+    paths:
+      - '**'
+      - '!**.md'
+      - '!doc/**'
+      - '!.github/workflows/archive-on-windows.yaml'
+      - '!.github/workflows/gfortran-on-ubuntu.yaml'
+      - '!.github/workflows/gfortran-on-windows.yaml'
+      - '!.github/workflows/intel-fortran-on-ubuntu.yaml'
+      - '!.github/workflows/intel-fortran-on-windows.yaml'
+      - '!.github/workflows/llvm-flang-gcc-like-on-windows.yaml'
+      - '!.github/workflows/llvm-flang-msvc-like-on-windows.yaml'
+      - '!.github/workflows/llvm-flang-on-ubuntu.yaml'
+  
   pull_request:
-    paths-ignore:
-      - "**.md"
-      - doc/**
+    paths:
+      - '**'
+      - '!**.md'
+      - '!doc/**'
+      - '!.github/workflows/archive-on-windows.yaml'
+      - '!.github/workflows/gfortran-on-ubuntu.yaml'
+      - '!.github/workflows/gfortran-on-windows.yaml'
+      - '!.github/workflows/intel-fortran-on-ubuntu.yaml'
+      - '!.github/workflows/intel-fortran-on-windows.yaml'
+      - '!.github/workflows/llvm-flang-gcc-like-on-windows.yaml'
+      - '!.github/workflows/llvm-flang-msvc-like-on-windows.yaml'
+      - '!.github/workflows/llvm-flang-on-ubuntu.yaml'
 
 jobs:
   source-archive:
@@ -17,17 +36,27 @@ jobs:
     strategy:
       matrix:
         USE_DOWNLOAD: ['OFF']
+        USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
         SOURCE_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
           - { format: 'tar-gz', ext: ".tar.gz" }
           - { format: 'tar-bz2', ext: ".tar.bz2" }
           - { format: 'tar-xz', ext: ".tar.xz" }
     
-    env:
-      ARCHIVE: minpack-1.1.0-sources${{ matrix.SOURCE_ARCHIVE.ext }}
-      ARCHIVE_DIR: minpack-1.1.0-sources
-      
     steps:
+
+      - name: Set environment variables for archive and archive directory
+        run: |
+          if [ "${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX }}" = "ON" ];
+          then
+            codename=$(lsb_release -c -s);
+            echo "SOURCE_ARCHIVE_SUFFIX=-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
+            echo "ARCHIVE=minpack-1.1.0-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-1.1.0-sources-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
+          else
+            echo "ARCHIVE=minpack-1.1.0-sources${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-1.1.0-sources" >> $GITHUB_ENV;
+          fi
 
       - name: Install unzip
         run: sudo apt install -y unzip
@@ -53,7 +82,12 @@ jobs:
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
       
-      - name: Configure the build of minpack 
+      - name: Configure the build of minpack (with source archive suffix)
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' }}
+        run: cmake -G "Unix Makefiles" -DSOURCE_ARCHIVE_SUFFIX=$SOURCE_ARCHIVE_SUFFIX -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+      
+      - name: Configure the build of minpack (without source archive suffix)
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='OFF' }}
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
       
       - name: Create a Source Archive
@@ -63,23 +97,28 @@ jobs:
       
       - name: Extract the Source Zip Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
-        run: unzip $BUILDDIR/${{ env.ARCHIVE }}
+        run: unzip $BUILDDIR/$ARCHIVE
 
       - name: Extract the Source Archive
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
-        run: tar -xf $BUILDDIR/${{ env.ARCHIVE }}
+        run: tar -xf $BUILDDIR/$ARCHIVE
       
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} ${{ env.ARCHIVE_DIR }}; done
+        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} $ARCHIVE_DIR; done
 
       - name: Set shell variables to build and install directories
         run: |
           echo "BUILDDIR_SOURCE_ARCHIVE=$RUNNER_TEMP/source-archive-build" >> $GITHUB_ENV
           echo "INSTALLDIR_SOURCE_ARCHIVE=$RUNNER_TEMP/source-archive-install-gfortran" >> $GITHUB_ENV
       
-      - name: Configure the build of minpack from extracted source archive
-        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR_SOURCE_ARCHIVE -S ${{ env.ARCHIVE_DIR }} -B $BUILDDIR_SOURCE_ARCHIVE
+      - name: Configure the build of minpack from extracted source archive (with source archive suffix)
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' }}
+        run: cmake -G "Unix Makefiles" -DSOURCE_ARCHIVE_SUFFIX=$SOURCE_ARCHIVE_SUFFIX -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR_SOURCE_ARCHIVE -S $ARCHIVE_DIR -B $BUILDDIR_SOURCE_ARCHIVE
+      
+      - name: Configure the build of minpack from extracted source archive (without source archive suffix)
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='OFF' }}
+        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR_SOURCE_ARCHIVE -S $ARCHIVE_DIR -B $BUILDDIR_SOURCE_ARCHIVE
       
       - name: Build  from extracted source archive
         run: cmake --build $BUILDDIR_SOURCE_ARCHIVE --config Release
@@ -96,19 +135,19 @@ jobs:
         if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
         run: |
           mkdir comparison-dir;
-          unzip $BUILDDIR/${{ env.ARCHIVE }} -d comparison-dir;
+          unzip $BUILDDIR/$ARCHIVE -d comparison-dir;
 
           mkdir comparison-dir-source-archive;
-          unzip $BUILDDIR_SOURCE_ARCHIVE/${{ env.ARCHIVE }} -d comparison-dir-source-archive;
+          unzip $BUILDDIR_SOURCE_ARCHIVE/$ARCHIVE -d comparison-dir-source-archive;
       
       - name: Extract the Source Archives again
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: |
           mkdir comparison-dir;
-          tar -xf $BUILDDIR/${{ env.ARCHIVE }} --directory=comparison-dir;
+          tar -xf $BUILDDIR/$ARCHIVE --directory=comparison-dir;
           
           mkdir comparison-dir-source-archive;
-          tar -xf $BUILDDIR_SOURCE_ARCHIVE/${{ env.ARCHIVE }} --directory=comparison-dir-source-archive;
+          tar -xf $BUILDDIR_SOURCE_ARCHIVE/$ARCHIVE --directory=comparison-dir-source-archive;
         
       # a reliable manner to compare
       # compressed files
@@ -117,7 +156,7 @@ jobs:
       - name: Compare the content of the compressed files for equality
         shell: pwsh
         run: |
-          $first_archive_fullname = (Get-Item (Join-Path -Path comparison-dir -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
+          $first_archive_fullname = (Get-Item (Join-Path -Path comparison-dir -ChildPath $env:ARCHIVE_DIR)).FullName;
           $first_archive_fullname_length = $first_archive_fullname.Length;
           $first_archive_file_suffixes = Get-ChildItem -File $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
           $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
@@ -133,7 +172,7 @@ jobs:
             $added = $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
           }
 
-          $second_archive_fullname = (Get-Item (Join-Path -Path comparison-dir-source-archive -ChildPath ${{ env.ARCHIVE_DIR }})).FullName;
+          $second_archive_fullname = (Get-Item (Join-Path -Path comparison-dir-source-archive -ChildPath $env:ARCHIVE_DIR)).FullName;
           $second_archive_fullname_length = $second_archive_fullname.Length;
           $second_archive_file_suffixes = Get-ChildItem -File $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
           $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
@@ -173,17 +212,27 @@ jobs:
     strategy:
       matrix:
         USE_DOWNLOAD: ['OFF']
+        USE_BINARY_ARCHIVE_SUFFIX: ['ON', 'OFF']
         BINARY_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
           - { format: 'tar-gz', ext: ".tar.gz" }
           - { format: 'tar-bz2', ext: ".tar.bz2" }
           - { format: 'tar-xz', ext: ".tar.xz" }
     
-    env:
-      ARCHIVE: minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}
-      ARCHIVE_DIR: minpack-1.1.0-binaries
-    
     steps:
+
+      - name: Set environment variables for archive and archive directory
+        run: |
+          if [ "${{ matrix.USE_BINARY_ARCHIVE_SUFFIX }}" = "ON" ];
+          then
+            codename=$(lsb_release -c -s);
+            echo "BINARY_ARCHIVE_SUFFIX=-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
+            echo "ARCHIVE=minpack-1.1.0-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-1.1.0-binaries-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
+          else
+            echo "ARCHIVE=minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-1.1.0-binaries" >> $GITHUB_ENV;
+          fi
 
       - name: Install unzip
         run: sudo apt install -y unzip
@@ -209,7 +258,12 @@ jobs:
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
       
-      - name: Configure the build of minpack 
+      - name: Configure the build of minpack (with binary archive suffix)
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' }}
+        run: cmake -G "Unix Makefiles" -DBINARY_ARCHIVE_SUFFIX=$BINARY_ARCHIVE_SUFFIX -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+      
+      - name: Configure the build of minpack (without binary archive suffix)
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='OFF' }}
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
       
       - name: Build  from extracted source archive
@@ -225,10 +279,10 @@ jobs:
         if: ${{ matrix.BINARY_ARCHIVE.format=='zip' }}
         run: |
           mkdir archive-list
-          cd archive-list && unzip $BUILDDIR/${{ env.ARCHIVE }}
+          cd archive-list && unzip $BUILDDIR/$ARCHIVE
 
       - name: Extract the generated Binary Archive
         if: ${{ matrix.BINARY_ARCHIVE.format!='zip' }}
         run: |
           mkdir archive-list
-          cd archive-list && tar -xf $BUILDDIR/${{ env.ARCHIVE }}
+          cd archive-list && tar -xf $BUILDDIR/$ARCHIVE
