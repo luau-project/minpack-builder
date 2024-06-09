@@ -242,36 +242,6 @@ jobs:
             }
           }
   
-      - name: Copy shared libraries archives to a top level folder on workspace
-        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_SHARED_LIBS=='ON' && matrix.SOURCE_ARCHIVE.format=='zip' }}
-        run: |
-          mkdir minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-
-      - name: Upload shared libraries archive containing sources
-        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_SHARED_LIBS=='ON' && matrix.SOURCE_ARCHIVE.format=='zip' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          path: minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          
-      - name: Copy static libraries archives to a top level folder on workspace
-        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_STATIC_LIBS=='ON' && matrix.SOURCE_ARCHIVE.format=='zip' }}
-        run: |
-          mkdir minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-
-      - name: Upload static libraries archive containing sources
-        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_STATIC_LIBS=='ON' && matrix.SOURCE_ARCHIVE.format=='zip' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-          path: minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
-  
   binary-archive:
     name: Binary Archive
     runs-on: windows-latest
@@ -391,33 +361,3 @@ jobs:
         run: |
           cmake --build $env:BUILDDIR --config Release --target binary-${{ matrix.BINARY_ARCHIVE.format }};
           dir $env:BUILDDIR;
-
-      - name: Copy shared libraries archives to a top level folder on workspace
-        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_SHARED_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
-        run: |
-          mkdir minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-
-      - name: Upload shared libraries archive containing binaries
-        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_SHARED_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          path: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          
-      - name: Copy static libraries archives to a top level folder on workspace
-        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_STATIC_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
-        run: |
-          mkdir minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-
-      - name: Upload static libraries archive containing binaries
-        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_STATIC_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          path: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
