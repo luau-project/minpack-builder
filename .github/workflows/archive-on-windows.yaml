@@ -23,8 +23,7 @@ jobs:
           - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
           - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
         
-        USE_SOURCE_ARCHIVE_SUFFIX: ['ON']
-        # USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
+        USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
         
         SOURCE_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
@@ -273,152 +272,152 @@ jobs:
           name: minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
           path: minpack-builder-1.1.0-sources-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
   
-  # binary-archive:
-  #   name: Binary Archive
-  #   runs-on: windows-latest
-  #   strategy:
-  #     matrix:
-  #       USE_DOWNLOAD: ['OFF']
-  #       BUILD_SHARED_LIBS: ['ON', 'OFF']
-  #       BUILD_STATIC_LIBS: ['ON', 'OFF']
-  #       TOOLCHAIN:
-  #         - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
-  #         - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
+  binary-archive:
+    name: Binary Archive
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        USE_DOWNLOAD: ['OFF']
+        BUILD_SHARED_LIBS: ['ON', 'OFF']
+        BUILD_STATIC_LIBS: ['ON', 'OFF']
+        TOOLCHAIN:
+          - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
+          - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
         
-  #       USE_BINARY_ARCHIVE_SUFFIX: ['ON', 'OFF']
+        USE_BINARY_ARCHIVE_SUFFIX: ['ON', 'OFF']
         
-  #       BINARY_ARCHIVE:
-  #         - { format: 'zip', ext: ".zip" }
-  #         - { format: 'tar-gz', ext: ".tar.gz" }
-  #         - { format: 'tar-bz2', ext: ".tar.bz2" }
-  #         - { format: 'tar-xz', ext: ".tar.xz" }
+        BINARY_ARCHIVE:
+          - { format: 'zip', ext: ".zip" }
+          - { format: 'tar-gz', ext: ".tar.gz" }
+          - { format: 'tar-bz2', ext: ".tar.bz2" }
+          - { format: 'tar-xz', ext: ".tar.xz" }
 
-  #       exclude:
-  #         - BUILD_SHARED_LIBS: 'ON'
-  #           BUILD_STATIC_LIBS: 'ON'
+        exclude:
+          - BUILD_SHARED_LIBS: 'ON'
+            BUILD_STATIC_LIBS: 'ON'
             
-  #         - BUILD_SHARED_LIBS: 'OFF'
-  #           BUILD_STATIC_LIBS: 'OFF'
+          - BUILD_SHARED_LIBS: 'OFF'
+            BUILD_STATIC_LIBS: 'OFF'
     
-  #   steps:
+    steps:
       
-  #     - name: Set environment variables for archive and archive directory
-  #       run: |
-  #         if ("${{ matrix.USE_BINARY_ARCHIVE_SUFFIX }}" -eq "ON")
-  #         {
-  #           Add-Content $env:GITHUB_ENV "BINARY_ARCHIVE_SUFFIX=-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
-  #           Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}";
-  #           Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
-  #           Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt";
-  #           Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt";
-  #         }
-  #         else
-  #         {
-  #           Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}";
-  #           Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-binaries";
-  #         }
+      - name: Set environment variables for archive and archive directory
+        run: |
+          if ("${{ matrix.USE_BINARY_ARCHIVE_SUFFIX }}" -eq "ON")
+          {
+            Add-Content $env:GITHUB_ENV "BINARY_ARCHIVE_SUFFIX=-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt";
+          }
+          else
+          {
+            Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}";
+            Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-1.1.0-binaries";
+          }
 
-  #     - name: Checkout assets
-  #       uses: actions/checkout@v4
-  #       if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-  #       with:
-  #         ref: assets-ci-v1
-  #         path: assets
+      - name: Checkout assets
+        uses: actions/checkout@v4
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
       
-  #     - name: Checkout repository to minpack-builder directory
-  #       uses: actions/checkout@v4
-  #       with:
-  #         path: minpack-builder
+      - name: Checkout repository to minpack-builder directory
+        uses: actions/checkout@v4
+        with:
+          path: minpack-builder
       
-  #     - name: Set environment variables to build and install directories
-  #       run: |
-  #         Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
-  #         Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
+      - name: Set environment variables to build and install directories
+        run: |
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
       
-  #     - name: Download minpack sources
-  #       if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-  #       run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
+      - name: Download minpack sources
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
       
-  #     - name: Setup Ninja build tool
-  #       if: ${{ matrix.TOOLCHAIN.CMAKE_GENERATOR=='Ninja' }}
-  #       run: |
-  #         choco install ninja;
-  #         ninja --version;
+      - name: Setup Ninja build tool
+        if: ${{ matrix.TOOLCHAIN.CMAKE_GENERATOR=='Ninja' }}
+        run: |
+          choco install ninja;
+          ninja --version;
       
-  #     - name: Setup MSVC
-  #       if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
-  #       uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup MSVC
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        uses: ilammy/msvc-dev-cmd@v1
 
-  #     - name: Setup miniconda, install LLVM flang-new (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
-  #       if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
-  #       run: |
-  #         & "$env:CONDA\shell\condabin\conda-hook.ps1";
-  #         conda activate "$env:CONDA";
-  #         conda install --yes -c conda-forge -n base flang libflang libfortran-main;
-  #         Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
-  #         Add-Content $env:GITHUB_ENV "FC=flang-new";
-  #         Add-Content $env:GITHUB_ENV "CC=cl";
-  #         Add-Content $env:GITHUB_ENV "CXX=cl";
+      - name: Setup miniconda, install LLVM flang-new (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        run: |
+          & "$env:CONDA\shell\condabin\conda-hook.ps1";
+          conda activate "$env:CONDA";
+          conda install --yes -c conda-forge -n base flang libflang libfortran-main;
+          Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
+          Add-Content $env:GITHUB_ENV "FC=flang-new";
+          Add-Content $env:GITHUB_ENV "CC=cl";
+          Add-Content $env:GITHUB_ENV "CXX=cl";
       
-  #     - uses: fortran-lang/setup-fortran@v1
-  #       name: Setup Fortran and C compilers
-  #       if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
-  #       id: setup-fortran
-  #       with:
-  #         compiler: ${{ matrix.TOOLCHAIN.COMPILER }}
-  #         version: ${{ matrix.TOOLCHAIN.VERSION }}
+      - uses: fortran-lang/setup-fortran@v1
+        name: Setup Fortran and C compilers
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
+        id: setup-fortran
+        with:
+          compiler: ${{ matrix.TOOLCHAIN.COMPILER }}
+          version: ${{ matrix.TOOLCHAIN.VERSION }}
       
-  #     - name: Set MSVC cl as C, C++ compiler
-  #       if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
-  #       run: |
-  #         Add-Content $env:GITHUB_ENV "CC=cl"
-  #         Add-Content $env:GITHUB_ENV "CXX=cl"
+      - name: Set MSVC cl as C, C++ compiler
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
+        run: |
+          Add-Content $env:GITHUB_ENV "CC=cl"
+          Add-Content $env:GITHUB_ENV "CXX=cl"
       
-  #     - name: Configure the build of minpack (with binary archive suffix)
-  #       if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' }}
-  #       run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" "-DBINARY_ARCHIVE_SUFFIX=$env:BINARY_ARCHIVE_SUFFIX" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
+      - name: Configure the build of minpack (with binary archive suffix)
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' }}
+        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" "-DBINARY_ARCHIVE_SUFFIX=$env:BINARY_ARCHIVE_SUFFIX" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
       
-  #     - name: Configure the build of minpack (without binary archive suffix)
-  #       if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='OFF' }}
-  #       run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
+      - name: Configure the build of minpack (without binary archive suffix)
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='OFF' }}
+        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
       
-  #     - name: Build
-  #       run: cmake --build $env:BUILDDIR --config Release
+      - name: Build
+        run: cmake --build $env:BUILDDIR --config Release
       
-  #     - name: Install
-  #       run: cmake --install $env:BUILDDIR --config Release
+      - name: Install
+        run: cmake --install $env:BUILDDIR --config Release
 
-  #     - name: Create a Binary Arhive
-  #       run: |
-  #         cmake --build $env:BUILDDIR --config Release --target binary-${{ matrix.BINARY_ARCHIVE.format }};
-  #         dir $env:BUILDDIR;
+      - name: Create a Binary Arhive
+        run: |
+          cmake --build $env:BUILDDIR --config Release --target binary-${{ matrix.BINARY_ARCHIVE.format }};
+          dir $env:BUILDDIR;
 
-  #     - name: Copy shared libraries archives to a top level folder on workspace
-  #       if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_SHARED_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
-  #       run: |
-  #         mkdir minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-  #         Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-  #         Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-  #         Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+      - name: Copy shared libraries archives to a top level folder on workspace
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_SHARED_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
+        run: |
+          mkdir minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
 
-  #     - name: Upload shared libraries archive containing binaries
-  #       if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_SHARED_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-  #         path: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+      - name: Upload shared libraries archive containing binaries
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_SHARED_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          path: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-shared-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
           
-  #     - name: Copy static libraries archives to a top level folder on workspace
-  #       if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_STATIC_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
-  #       run: |
-  #         mkdir minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-  #         Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-  #         Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-  #         Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+      - name: Copy static libraries archives to a top level folder on workspace
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_STATIC_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
+        run: |
+          mkdir minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_MD5 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          Copy-Item $env:BUILDDIR\$env:ARCHIVE_SHA256 minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
 
-  #     - name: Upload static libraries archive containing binaries
-  #       if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_STATIC_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-  #         path: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+      - name: Upload static libraries archive containing binaries
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BUILD_STATIC_LIBS=='ON' && matrix.BINARY_ARCHIVE.format=='zip' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          path: minpack-builder-1.1.0-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-static-libs-artifact-${{ matrix.BINARY_ARCHIVE.format }}
