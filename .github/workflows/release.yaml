@@ -102,12 +102,11 @@ jobs:
 
       - name: Set environment variables for archive and archive directory
         run: |
-          codename=$(lsb_release -c -s);
-          echo "BINARY_ARCHIVE_SUFFIX=-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
-          echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
-          echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
-          echo "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
-          echo "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
+          echo "BINARY_ARCHIVE_SUFFIX=-${{ matrix.OS }}-amd64" >> $GITHUB_ENV;
+          echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
+          echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64" >> $GITHUB_ENV;
+          echo "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
+          echo "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
 
       - name: Checkout assets
         uses: actions/checkout@v4
@@ -145,32 +144,17 @@ jobs:
       - name: Copy archives to a top level folder on workspace
         if: ${{ matrix.BINARY_ARCHIVE.format!='zip' }}
         run: |
-          codename=$(lsb_release -c -s);
-          mkdir -p minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          cp $BUILDDIR/$ARCHIVE minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          cp $BUILDDIR/$ARCHIVE_MD5 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          cp $BUILDDIR/$ARCHIVE_SHA256 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-${codename}-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          mkdir -p minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64-artifact
+          cp $BUILDDIR/$ARCHIVE minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64-artifact
+          cp $BUILDDIR/$ARCHIVE_MD5 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64-artifact
+          cp $BUILDDIR/$ARCHIVE_SHA256 minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64-artifact
 
-      - name: Upload archive containing binaries (Ubuntu Focal Fossa)
-        if: ${{ matrix.BINARY_ARCHIVE.format!='zip' && matrix.OS=='ubuntu-20.04' }}
+      - name: Upload archive containing binaries
+        if: ${{ matrix.BINARY_ARCHIVE.format!='zip' }}
         uses: actions/upload-artifact@v4
         with:
-          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-focal-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-focal-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-
-      - name: Upload archive containing binaries (Ubuntu Jammy Jellyfish)
-        if: ${{ matrix.BINARY_ARCHIVE.format!='zip' && matrix.OS=='ubuntu-22.04' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-jammy-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-jammy-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-
-      - name: Upload archive containing binaries (Ubuntu Noble Numbat)
-        if: ${{ matrix.BINARY_ARCHIVE.format!='zip' && matrix.OS=='ubuntu-24.04' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-noble-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
-          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-ubuntu-noble-amd64-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          name: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64-artifact
+          path: minpack-builder-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${{ matrix.OS }}-amd64-artifact
 
   binary-archive-release-windows:
     name: Binary Archive Release on Windows
