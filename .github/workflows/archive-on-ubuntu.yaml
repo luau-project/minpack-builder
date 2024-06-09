@@ -2,32 +2,13 @@ name: Archive on Ubuntu
 run-name: minpack archive on Ubuntu
 on:
   push:
-    paths:
-      - '**'
-      - '!**.md'
-      - '!doc/**'
-      - '!.github/workflows/archive-on-windows.yaml'
-      - '!.github/workflows/gfortran-on-ubuntu.yaml'
-      - '!.github/workflows/gfortran-on-windows.yaml'
-      - '!.github/workflows/intel-fortran-on-ubuntu.yaml'
-      - '!.github/workflows/intel-fortran-on-windows.yaml'
-      - '!.github/workflows/llvm-flang-gcc-like-on-windows.yaml'
-      - '!.github/workflows/llvm-flang-msvc-like-on-windows.yaml'
-      - '!.github/workflows/llvm-flang-on-ubuntu.yaml'
-  
+    paths-ignore:
+      - "**.md"
+      - doc/**
   pull_request:
-    paths:
-      - '**'
-      - '!**.md'
-      - '!doc/**'
-      - '!.github/workflows/archive-on-windows.yaml'
-      - '!.github/workflows/gfortran-on-ubuntu.yaml'
-      - '!.github/workflows/gfortran-on-windows.yaml'
-      - '!.github/workflows/intel-fortran-on-ubuntu.yaml'
-      - '!.github/workflows/intel-fortran-on-windows.yaml'
-      - '!.github/workflows/llvm-flang-gcc-like-on-windows.yaml'
-      - '!.github/workflows/llvm-flang-msvc-like-on-windows.yaml'
-      - '!.github/workflows/llvm-flang-on-ubuntu.yaml'
+    paths-ignore:
+      - "**.md"
+      - doc/**
 
 jobs:
   source-archive:
@@ -53,6 +34,8 @@ jobs:
             echo "SOURCE_ARCHIVE_SUFFIX=-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
             echo "ARCHIVE=minpack-1.1.0-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
             echo "ARCHIVE_DIR=minpack-1.1.0-sources-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
+            echo "ARCHIVE_MD5=minpack-1.1.0-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
+            echo "ARCHIVE_SHA256=minpack-1.1.0-sources-ubuntu-${codename}-amd64${{ matrix.SOURCE_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
           else
             echo "ARCHIVE=minpack-1.1.0-sources${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
             echo "ARCHIVE_DIR=minpack-1.1.0-sources" >> $GITHUB_ENV;
@@ -206,6 +189,27 @@ jobs:
             }
           }
       
+      - name: Upload archive
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.SOURCE_ARCHIVE.format!='zip' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}
+          path: $BUILDDIR/$ARCHIVE
+
+      - name: Upload archive MD5
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.SOURCE_ARCHIVE.format!='zip' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-md5
+          path: $BUILDDIR/$ARCHIVE_MD5
+
+      - name: Upload archive SHA256
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' && matrix.SOURCE_ARCHIVE.format!='zip' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-sources-artifact-${{ matrix.SOURCE_ARCHIVE.format }}-sha256
+          path: $BUILDDIR/$ARCHIVE_SHA256
+
   binary-archive:
     name: Binary Archive
     runs-on: ubuntu-latest
@@ -229,6 +233,8 @@ jobs:
             echo "BINARY_ARCHIVE_SUFFIX=-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
             echo "ARCHIVE=minpack-1.1.0-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
             echo "ARCHIVE_DIR=minpack-1.1.0-binaries-ubuntu-${codename}-amd64" >> $GITHUB_ENV;
+            echo "ARCHIVE_MD5=minpack-1.1.0-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
+            echo "ARCHIVE_SHA256=minpack-1.1.0-binaries-ubuntu-${codename}-amd64${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
           else
             echo "ARCHIVE=minpack-1.1.0-binaries${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
             echo "ARCHIVE_DIR=minpack-1.1.0-binaries" >> $GITHUB_ENV;
@@ -286,3 +292,24 @@ jobs:
         run: |
           mkdir archive-list
           cd archive-list && tar -xf $BUILDDIR/$ARCHIVE
+      
+      - name: Upload archive
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format!='zip' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}
+          path: $BUILDDIR/$ARCHIVE
+
+      - name: Upload archive MD5
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format!='zip' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-md5
+          path: $BUILDDIR/$ARCHIVE_MD5
+
+      - name: Upload archive SHA256
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' && matrix.BINARY_ARCHIVE.format!='zip' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-binaries-artifact-${{ matrix.BINARY_ARCHIVE.format }}-sha256
+          path: $BUILDDIR/$ARCHIVE_SHA256
