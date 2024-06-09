@@ -270,7 +270,8 @@ jobs:
           - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
         
         # USE_BINARY_ARCHIVE_SUFFIX: ['ON', 'OFF']
-        USE_BINARY_ARCHIVE_SUFFIX: ['OFF']
+        USE_BINARY_ARCHIVE_SUFFIX: ['ON']
+        # USE_BINARY_ARCHIVE_SUFFIX: ['OFF']
         
         BINARY_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
@@ -361,7 +362,7 @@ jobs:
       
       - name: Configure the build of minpack (with binary archive suffix)
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' }}
-        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBINARY_ARCHIVE_SUFFIX=$env:BINARY_ARCHIVE_SUFFIX -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
+        run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" "-DBINARY_ARCHIVE_SUFFIX=$env:BINARY_ARCHIVE_SUFFIX" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
       
       - name: Configure the build of minpack (without binary archive suffix)
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='OFF' }}
