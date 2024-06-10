@@ -102,9 +102,9 @@ get_filename_component(__Fortran_COMPILER_NAME "${CMAKE_Fortran_COMPILER}" NAME)
 
 if ("${__Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
     if (WIN32)
-        set(minpack_FORTRAN_FLAGS @minpack_intel_specific_Fflags_for_Win@)
+        set(minpack_FORTRAN_FLAGS "@minpack_intel_specific_Fflags_for_Win@")
     else()
-        set(minpack_FORTRAN_FLAGS @minpack_intel_specific_Fflags_for_Unix@)
+        set(minpack_FORTRAN_FLAGS "@minpack_intel_specific_Fflags_for_Unix@")
     endif()
 endif()
 
@@ -139,4 +139,4 @@ if (EXISTS "${_prefix}/@MINPACK_INSTALL_PKGCONFIGDIR@/@minpack_library_name@.pc"
     set(minpack_PKGCONFIG_DIR "${_prefix}/@MINPACK_INSTALL_PKGCONFIGDIR@")
 endif()
 
-set(minpack_VERSION @MINPACK_VERSION@)
+set(minpack_VERSION "@MINPACK_VERSION@")

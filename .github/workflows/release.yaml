@@ -183,13 +183,23 @@ jobs:
     
     steps:
       
-      - name: Set environment variables for archive and archive directory
-        run: |       
-          Add-Content $env:GITHUB_ENV "BINARY_ARCHIVE_SUFFIX=-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like";
-          Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like${{ matrix.BINARY_ARCHIVE.ext }}";
-          Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like";
-          Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt";
-          Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt";
+      - name: Set environment variables for archive and archive directory (shared-libraries)
+        if: ${{ matrix.BUILD_SHARED_LIBS=='ON'}}
+        run: |
+          Add-Content $env:GITHUB_ENV "BINARY_ARCHIVE_SUFFIX=-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-shared-libs";
+          Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-shared-libs${{ matrix.BINARY_ARCHIVE.ext }}";
+          Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-shared-libs";
+          Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-shared-libs${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt";
+          Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-shared-libs${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt";
+      
+      - name: Set environment variables for archive and archive directory (static-libraries)
+        if: ${{ matrix.BUILD_STATIC_LIBS=='ON'}}
+        run: |
+          Add-Content $env:GITHUB_ENV "BINARY_ARCHIVE_SUFFIX=-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-static-libs";
+          Add-Content $env:GITHUB_ENV "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-static-libs${{ matrix.BINARY_ARCHIVE.ext }}";
+          Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-static-libs";
+          Add-Content $env:GITHUB_ENV "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-static-libs${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt";
+          Add-Content $env:GITHUB_ENV "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-win64-${{ matrix.TOOLCHAIN.COMPILER }}-msvc-like-static-libs${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt";
 
       - name: Checkout assets
         uses: actions/checkout@v4

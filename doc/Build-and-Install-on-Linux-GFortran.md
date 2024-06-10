@@ -25,7 +25,7 @@ For this tutorial, we are going to use Debian 12 stable in a terminal-only fashi
 > 
 > Install them all at once running the following command in the terminal:
 > ```bash
-> sudo apt install -f -y gfortran git make cmake
+> sudo apt install -y gfortran git make cmake
 > ```
 
 Check that everything went fine. You should have all these tools installed, and the following commands should suceed:
@@ -58,7 +58,11 @@ The result on terminal should be more or less like this:
 > 
 > We are going for a local installation at ```/tmp/working_dir/local-install```, building the package at ```/tmp/working_dir/build```.
 
-3. Clone minpack-builder by running ```git clone https://github.com/luau-project/minpack-builder```
+3. Clone minpack-builder by running
+    
+    ```bash
+    git clone https://github.com/luau-project/minpack-builder
+    ```
 
     ![Screenshot from 2024-05-03 15-34-52](https://github.com/luau-project/minpack-builder/assets/18295115/0a24bfac-b4df-48cb-932b-8ff1cfe01bfe)
 

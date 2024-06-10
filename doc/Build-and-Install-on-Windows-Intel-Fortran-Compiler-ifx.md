@@ -135,7 +135,11 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 > 
 > If your ```%homedrive%``` variable points to ```C:```, we are going for a local installation at ```C:\minpack-builder-guide\local-install-ifx```, building the package at ```C:\minpack-builder-guide\build-ifx```.
 
-5. Clone minpack-builder by running ```git clone https://github.com/luau-project/minpack-builder```
+5. Clone minpack-builder by running 
+
+    ```cmd
+    git clone https://github.com/luau-project/minpack-builder
+    ```
 
     ![Screenshot from 2024-05-05 17-48-51](https://github.com/luau-project/minpack-builder/assets/18295115/f77c04d4-1beb-47eb-b62b-0d5d9b142330)
 

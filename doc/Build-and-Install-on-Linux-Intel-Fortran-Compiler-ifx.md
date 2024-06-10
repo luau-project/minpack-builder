@@ -35,7 +35,7 @@ For this tutorial, we are going to use Debian 12 stable in a terminal-only fashi
 1. First, make sure to have gpg installed. So, install it:
 
     ```bash
-    sudo apt install -f -y gpg
+    sudo apt install -y gpg
     ```
 
 2. Confirm that gpg was installed properly:
@@ -74,7 +74,7 @@ For this tutorial, we are going to use Debian 12 stable in a terminal-only fashi
 > 
 > Install them all at once running the following command in the terminal:
 > ```bash
-> sudo apt install -f -y intel-basekit intel-hpckit git make cmake
+> sudo apt install -y intel-basekit intel-hpckit git make cmake
 > ```
 
 > [!IMPORTANT]
@@ -116,7 +116,11 @@ The result on terminal should be more or less like this:
 > 
 > We are going for a local installation at ```/tmp/ifx_working_dir/local-install-ifx```, building the package at ```/tmp/ifx_working_dir/build-ifx```.
 
-3. Clone minpack-builder by running ```git clone https://github.com/luau-project/minpack-builder```
+3. Clone minpack-builder by running
+
+    ```bash
+    git clone https://github.com/luau-project/minpack-builder
+    ```
 
     ![Screenshot from 2024-05-04 12-43-51](https://github.com/luau-project/minpack-builder/assets/18295115/c2bafde5-9fab-49e6-bb38-85996a91a3bf)
 

@@ -122,7 +122,11 @@ You can check that ```winget``` got properly installed if the search command wor
 > 
 > If your ```%homedrive%``` variable points to ```C:```, we are going for a local installation at ```C:\minpack-builder-gfortran-guide\local-install-gfortran```, building the package at ```C:\minpack-builder-gfortran-guide\build-gfortran```.
 
-6. Clone minpack-builder by running ```git clone https://github.com/luau-project/minpack-builder```
+6. Clone minpack-builder by running 
+    
+    ```cmd
+    git clone https://github.com/luau-project/minpack-builder
+    ```
 
     ![Screenshot from 2024-05-08 08-41-22](https://github.com/luau-project/minpack-builder/assets/18295115/0f3c0f5b-f9e1-4760-b440-9f234a445c2f)
 
