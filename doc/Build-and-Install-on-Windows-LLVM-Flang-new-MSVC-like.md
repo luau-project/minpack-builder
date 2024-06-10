@@ -224,8 +224,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
 > [!NOTE]
 > 
-> By default, only the shared library is built. You can build the static library by feeding ```-DBUILD_STATIC_LIBS=ON``` in the configuration step.
-
+> By default, only the shared library is built. In my personal tests, if you build the static library by feeding ```-DBUILD_STATIC_LIBS=ON``` in the configuration step, the generated static library ```minpack.lib``` will ask you where Clang and flang-new libraries are stored once you use it on other projects. Since this topic of locating Clang and flang-new libraries goes too far from the scope presented here, prefer to build the shared library.
 
 > [!IMPORTANT]
 > 

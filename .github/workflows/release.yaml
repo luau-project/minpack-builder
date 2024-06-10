@@ -5,7 +5,7 @@ on:
     branches:
       - 'release'
     tags:
-      - 'v1.1.0'
+      - '1.1.0'
     paths-ignore:
       - "**.md"
       - doc/**
@@ -179,6 +179,9 @@ jobs:
             
           - BUILD_SHARED_LIBS: 'OFF'
             BUILD_STATIC_LIBS: 'OFF'
+          
+          - BUILD_STATIC_LIBS: 'ON'
+            TOOLCHAIN: { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
     
     env:
       MINPACK_BUILDER_VERSION: 1.1.0

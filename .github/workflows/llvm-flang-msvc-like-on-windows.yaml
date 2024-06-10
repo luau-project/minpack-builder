@@ -17,17 +17,10 @@ jobs:
       matrix:
         USE_DOWNLOAD: ['OFF']
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
-        BUILD_SHARED_LIBS: ['ON', 'OFF']
-        BUILD_STATIC_LIBS: ['ON', 'OFF']
+        BUILD_SHARED_LIBS: ['ON']
+        BUILD_STATIC_LIBS: ['OFF']
         C_COMPILER: ['clang-cl', 'cl']
 
-        exclude:
-          - BUILD_SHARED_LIBS: 'OFF'
-            BUILD_STATIC_LIBS: 'OFF'
-
-          - BUILD_SHARED_LIBS: 'ON'
-            BUILD_STATIC_LIBS: 'ON'
-    
     steps:
       
       - name: Checkout assets
