@@ -2,8 +2,10 @@ name: Release
 run-name: minpack Release
 on:
   push:
-    # branches:
-    #   - 'release'
+    branches:
+      - 'release'
+    tags:
+      - 'v1.1.0'
     paths-ignore:
       - "**.md"
       - doc/**
