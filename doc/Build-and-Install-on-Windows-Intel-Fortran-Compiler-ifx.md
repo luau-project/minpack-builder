@@ -171,8 +171,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
 > [!NOTE]
 > 
-> By default, only the shared library is built. You can build the static library by feeding ```-DBUILD_STATIC_LIBS=ON``` in the configuration step.
-
+> By default, only the shared library is built. You can build the static library by feeding ```-DBUILD_STATIC_LIBS=ON``` in the configuration step. However, in my personal tests, the generated static library ```minpack.lib``` will ask you where Intel specific libraries are stored once you use it on other projects. Thus, in order to keep things simple here, prefer to build only the shared library.
 
 > [!IMPORTANT]
 > 
