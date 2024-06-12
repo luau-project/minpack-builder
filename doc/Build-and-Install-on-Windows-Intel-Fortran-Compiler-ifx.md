@@ -6,6 +6,10 @@ For this tutorial, we are going to use Windows 11 mostly in a command prompt-onl
 > 
 > At the time of writing this guide, the latest Intel Fortran Compiler (ifx), which is ifx 2024.1, requires Visual Studio 2022 or 2019 native build tools to work nicely.
 
+> [!IMPORTANT]
+> 
+> In the end of this guide, you will have a working ```minpack``` shared library (minpack.dll) installed on your computer. The final ```minpack.dll``` depends on Intel Fortran Compiler Runtime for Windows (a ~ 36 MB windows installer which expands to 144 MB once installed). In order to use ```minpack.dll``` built here in a standalone manner with Intel Fortran Compiler (ifx), or redistribute to end users, you have to install Intel Fortran Compiler Runtime for Windows [https://www.intel.com/content/www/us/en/developer/articles/tool/compilers-redistributable-libraries-by-version.html](https://www.intel.com/content/www/us/en/developer/articles/tool/compilers-redistributable-libraries-by-version.html) depending on the ifx version you have installed (2024.1 for this guide), or guide your end users to install it.
+
 ## Table of Contents
 
 * [Requirements](#requirements)
