@@ -1,4 +1,4 @@
-# Build and Install on Windows 11 (Intel ifx)
+# Build and Install on Windows 11 (Intel Fortran Compiler - ifx)
 
 For this tutorial, we are going to use Windows 11 mostly in a command prompt-only fashion, compiling the library with Intel Fortran Compiler (ifx) acquired through ```winget``` (Microsoft's package manager).
 
