@@ -47,7 +47,7 @@ In order to provide an unified C API for minpack, we use CMake [[2]](https://cma
 
 ## Documentation
 
-Browse the [documentation](doc/README.md).
+Browse the [documentation](doc/README.md) for build instructions, guides on various platforms with different compiler toolchains, and usage in general.
 
 ## Continuous Integration
 
