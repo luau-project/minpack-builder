@@ -75,7 +75,7 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 | Fortran Compiler | Compiler Version | Build Status |
 |------------------|------------|--------------|
 | GFortran         | 11.4.0 |![gfortran-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-ubuntu.yaml/badge.svg?branch=main)|
-| Intel LLVM ifx (*GCC-like*) | 2024.1.0 | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
+| Intel LLVM ifx (*GCC-like*) | 2024.1.2 | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
 | LLVM flang-new (*GCC-like*) | 18.1.6 |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
 
 > [!IMPORTANT]
