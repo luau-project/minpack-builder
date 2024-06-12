@@ -2,10 +2,6 @@
 
 For this tutorial, we are going to use Debian 12 stable in a terminal-only fashion, compiling the library with Intel Fortran Compiler (ifx) provided by Intel through the package manager.
 
-> [!IMPORTANT]
-> 
-> In the end of this guide, you will have a working ```minpack``` shared library (libminpack.so) installed on your computer, and this final ```libminpack.so``` depends on Intel Fortran Compiler Runtime for Linux. In order to use ```libminpack.so``` built here in a standalone manner with Intel Fortran Compiler (ifx), or redistribute to end users, you have to install Intel Fortran Compiler Runtime for Linux [https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2023-0/list-available-toolkits-components-and-runtime.html#LIST-RUNTIME](https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2023-0/list-available-toolkits-components-and-runtime.html#LIST-RUNTIME) depending on the ifx version you have installed (2024.1 for this guide), or guide your end users to install it. In the future, since most likely these links will change and become obsolete, look for Intel Fortran Compiler Runtime for Linux.
-
 ## Table of Contents
 
 * [Requirements](#requirements)
@@ -162,6 +158,10 @@ The result on terminal should be more or less like this:
     ```
 
     ![Screenshot from 2024-05-04 12-46-02](https://github.com/luau-project/minpack-builder/assets/18295115/e9591e67-ed59-4295-81b3-fceb50d46c04)
+
+> [!IMPORTANT]
+> 
+> By the end of this guide, you have got a working ```minpack``` shared library (libminpack.so) installed on your computer, and this final ```libminpack.so``` depends on Intel Fortran Compiler Runtime for Linux. In order to use ```libminpack.so``` built here in a standalone manner with Intel Fortran Compiler (ifx), or redistribute to end users, you have to install Intel Fortran Compiler Runtime for Linux [https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2023-0/list-available-toolkits-components-and-runtime.html#LIST-RUNTIME](https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2023-0/list-available-toolkits-components-and-runtime.html#LIST-RUNTIME) depending on the ifx version you have installed (2024.1 for this guide), or guide your end users to install it. In the future, since most likely these links will change and become obsolete, look for Intel Fortran Compiler Runtime for Linux.
 
 ---
 [Documentation](README.md)
