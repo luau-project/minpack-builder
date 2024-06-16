@@ -11,8 +11,8 @@ Build scripts for minpack.
     * [How to solve the problem?](#how-to-solve-the-problem)
 * [Documentation](#documentation)
 * [Continuous Integration](#continuous-integration)
-    * [Windows 11](#windows-11)
-    * [Ubuntu 22.04](#ubuntu-2204)
+    * [Windows](#windows)
+    * [Ubuntu](#ubuntu)
 * [References](#references)
 
 ## Introduction
@@ -61,7 +61,7 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 > 
 > In the tables below, *MSVC-like* means the underline linker is MSVC-compatible. Therefore, *GCC-like* means the underline linker is GCC-compatible.
 
-### Windows 11
+### Windows
 
 | Fortran Compiler | Compiler Version | Build Status |
 |------------------|------------------|--------------|
@@ -70,7 +70,7 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 | LLVM flang-new (*MSVC-like*) | 18.1.7 | ![llvm-flang-msvc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-msvc-like-on-windows.yaml/badge.svg?branch=main) |
 | LLVM flang-new (*GCC-like*) | 18.1.6 | ![llvm-flang-gcc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |
 
-### Ubuntu 22.04
+### Ubuntu
 
 | Fortran Compiler | Compiler Version | Build Status |
 |------------------|------------|--------------|
