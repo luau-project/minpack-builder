@@ -11,12 +11,13 @@ on:
       - doc/**
 
 jobs:
-  shared-build:
+  build:
     runs-on: windows-latest
     strategy:
       matrix:
         USE_DOWNLOAD: ['OFF']
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
+        LIBRARY_KIND: ['SHARED', 'STATIC']
         MSYS2_CONFIG: [{ sys: clang64, env: clang-x86_64, fc: flang.exe }]
 
     env:
@@ -121,128 +122,15 @@ jobs:
         shell: pwsh
 
       - name: Configure the build of minpack 
-        run: cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
-        shell: cmd
-
-      - name: Build minpack
-        run: cmake --build %BUILDDIR% --config ${{ matrix.CMAKE_BUILD_TYPE }}
-        shell: cmd
-
-      - name: Install minpack
-        run: cmake --install %BUILDDIR% --config ${{ matrix.CMAKE_BUILD_TYPE }}
-        shell: cmd
-
-  static-build:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        USE_DOWNLOAD: ['OFF']
-        CMAKE_BUILD_TYPE: ['Release', 'Debug']
-        MSYS2_CONFIG: [{ sys: clang64, env: clang-x86_64, fc: flang.exe }]
-
-    env:
-      # Fortran compiler + GNU Make
-      MSYS2_PACKAGES_TO_INSTALL: "mingw-w64-${{ matrix.MSYS2_CONFIG.env }}-fc mingw-w64-${{ matrix.MSYS2_CONFIG.env }}-make"
-
-    steps:
-
-      # Here, instead of installing packages in the conventional way,
-      # we grab a list of mirrors for the environment (${{ matrix.MSYS2_CONFIG.env }}),
-      # then each package content is downloaded separetely from a different mirror.
-      # After all packages have been downloaded to disk, we install them.
-      #
-      # This workaround takes place to avoid a kind of "flooding" on the main MSYS2
-      # servers, due the amount of content we have to download in parallel builds.
-      - name: Install Fortran compiler + GNU Make
-        shell: pwsh
         run: |
-          C:\msys64\usr\bin\bash.exe -lc "pacman -S ${{ env.MSYS2_PACKAGES_TO_INSTALL }} --print > /tmp/url.list"
-          C:\msys64\usr\bin\bash.exe -lc "for e in `$(cat /tmp/url.list); do echo `$(basename `$e); done" > $env:RUNNER_TEMP\packages.list
-          ((Get-Content C:\msys64\etc\pacman.d\mirrorlist.${{ matrix.MSYS2_CONFIG.sys }}).Replace("\r\n", "\n") -match "Server\s*=\s*([^\n]+)") -replace "Server\s*=\s*", "" > $env:RUNNER_TEMP\mirrors.list
-          $mirrors_content = Get-Content $env:RUNNER_TEMP\mirrors.list;
-          $number_of_mirrors = ($mirrors_content | Measure-Object -Line).Lines;
-          $max_mirror = [int]$number_of_mirrors;
-          $min_mirror = [int](3, $max_mirror, $number_of_mirrors | Measure-Object -Minimum).Minimum;
-          $failed_mirrors = New-Object System.Collections.Generic.HashSet[string];
-          $ProgressPreference = 'SilentlyContinue';
-          [System.IO.File]::ReadAllLines((Get-Item $env:RUNNER_TEMP\packages.list).FullName) | ForEach-Object {
-            $package = $_;
-            $retries = 0;
-            $success = $false;
-            $max_retries = 10;
-            $connection_timeout = 30;
-            $read_timeout = 1;
-
-            while ((-not $success) -and ($retries -lt $max_retries))
-            {
-              $mirror = [string]($mirrors_content)[(Get-Random -Minimum $min_mirror -Maximum $max_mirror)];
-
-              if (-not $failed_mirrors.Contains($mirror))
-              {
-                $uri = "$mirror$package";
-
-                if ($retries -gt 0)
-                {
-                  C:\msys64\usr\bin\bash.exe -lc "echo -e '\e[32mRetry[\e[33m$retries\e[37m / \e[31m$max_retries\e[32m] >> \e[37mDownloading \e[35m$package\e[37m from \e[36m$uri\e[37m'";
-                }
-                else
-                {
-                  Write-Host "Downloading $package from $uri";
-                }
-
-                try
-                {
-                  Invoke-WebRequest -Uri $uri -MaximumRetryCount 0 -ConnectionTimeoutSeconds $connection_timeout -OperationTimeoutSeconds $read_timeout -OutFile C:\msys64\tmp\$package;
-                  $success = $true;
-                }
-                catch
-                {
-                  C:\msys64\usr\bin\bash.exe -lc "echo -e '\e[33mFailed to download $package from $mirror\e[37m'";
-                  $added = $failed_mirrors.Add($mirror);
-                  $retries++;
-                }
-              }
-            }
-
-            if (-not $success)
-            {
-              Write-Host "Failed to download $package";
-              exit 1;
-            }
-          }
-          C:\msys64\usr\bin\bash.exe -lc "pacman -U /tmp/*.pkg.tar.zst --noconfirm"
-
-      - name: Add MSYS2 tools to system environment PATH, and set FC environment variables
-        shell: pwsh
-        run: |
-          Add-Content $env:GITHUB_PATH "C:\msys64\${{ matrix.MSYS2_CONFIG.sys }}\bin"
-          Add-Content $env:GITHUB_ENV "FC=${{ matrix.MSYS2_CONFIG.fc }}"
-
-      - name: Checkout assets
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        with:
-          ref: assets-ci-v1
-          path: assets
-
-      - name: Checkout repository to minpack-builder directory
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        with:
-          path: minpack-builder
-
-      - name: Set environment variables to build and install directories
-        run: |
-          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-flang"
-        shell: pwsh
-
-      - name: Download minpack sources
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
-        shell: pwsh
-
-      - name: Configure the build of minpack 
-        run: cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
+          IF "${{ matrix.LIBRARY_KIND }}"=="SHARED" (
+            cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
+          ) ELSE IF "${{ matrix.LIBRARY_KIND }}"=="STATIC" (
+            cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix %INSTALLDIR% -S minpack-builder -B %BUILDDIR%
+          ) ELSE (
+            ECHO Unknown LIBRARY_KIND in the build matrix
+            EXIT /B 1
+          )
         shell: cmd
 
       - name: Build minpack
