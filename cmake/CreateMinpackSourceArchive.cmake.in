@@ -59,7 +59,6 @@ set(toplevel_dirs_to_include
 
 set(toplevel_files_to_include
     "@CMAKE_CURRENT_SOURCE_DIR@/CMakeLists.txt"
-    "@CMAKE_CURRENT_SOURCE_DIR@/libminpack.def"
     "@CMAKE_CURRENT_SOURCE_DIR@/LICENSE.md"
     "@CMAKE_CURRENT_SOURCE_DIR@/minpack.def"
     "@CMAKE_CURRENT_SOURCE_DIR@/minpack.h"

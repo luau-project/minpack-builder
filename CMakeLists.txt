@@ -336,13 +336,8 @@ else()
 endif()
 
 if (WIN32)
-    if ("${CMAKE_Fortran_SIMULATE_ID}" MATCHES "MSVC")
-        # .def file for MSVC-like shared library
-        set(minpack_def_file "${minpack_library_name}.def")
-    else()
-        # .def file for GNU-like shared library
-        set(minpack_def_file "lib${minpack_library_name}.def")
-    endif()
+    # .def file to build a shared library
+    set(minpack_def_file "${minpack_library_name}.def")
 endif()
 
 # minpack header file

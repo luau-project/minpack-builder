@@ -1,4 +1,3 @@
-LIBRARY "minpack.dll"
 EXPORTS
 chkder_
 dpmpar_
