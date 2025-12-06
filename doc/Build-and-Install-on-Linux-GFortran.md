@@ -59,7 +59,7 @@ The result on terminal should be more or less like this:
 > We are going for a local installation at ```/tmp/working_dir/local-install```, building the package at ```/tmp/working_dir/build```.
 
 3. Clone minpack-builder by running
-    
+
     ```bash
     git clone https://github.com/luau-project/minpack-builder
     ```

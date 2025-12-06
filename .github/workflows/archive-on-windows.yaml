@@ -22,9 +22,9 @@ jobs:
         TOOLCHAIN:
           - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
           - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
-        
+
         USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
-        
+
         SOURCE_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
           - { format: 'tar-gz', ext: ".tar.gz" }
@@ -34,15 +34,15 @@ jobs:
         exclude:
           - BUILD_SHARED_LIBS: 'ON'
             BUILD_STATIC_LIBS: 'ON'
-            
+
           - BUILD_SHARED_LIBS: 'OFF'
             BUILD_STATIC_LIBS: 'OFF'
-            
+
     env:
       MINPACK_BUILDER_VERSION: 1.2.0
-    
+
     steps:
-      
+
       - name: Set environment variables for archive and archive directory
         run: |
           if ("${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX }}" -eq "ON")
@@ -65,27 +65,27 @@ jobs:
         with:
           ref: assets-ci-v1
           path: assets
-      
+
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
-      
+
       - name: Set environment variables to build and install directories
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
           Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
-      
+
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
-      
+
       - name: Setup Ninja build tool
         if: ${{ matrix.TOOLCHAIN.CMAKE_GENERATOR=='Ninja' }}
         run: |
           choco install ninja;
           ninja --version;
-      
+
       - name: Setup MSVC
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
         uses: ilammy/msvc-dev-cmd@v1
@@ -100,7 +100,7 @@ jobs:
           Add-Content $env:GITHUB_ENV "FC=flang-new";
           Add-Content $env:GITHUB_ENV "CC=cl";
           Add-Content $env:GITHUB_ENV "CXX=cl";
-      
+
       - uses: fortran-lang/setup-fortran@v1
         name: Setup Fortran and C compilers
         if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
@@ -108,21 +108,21 @@ jobs:
         with:
           compiler: ${{ matrix.TOOLCHAIN.COMPILER }}
           version: ${{ matrix.TOOLCHAIN.VERSION }}
-      
+
       - name: Set MSVC cl as C, C++ compiler
         if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
         run: |
           Add-Content $env:GITHUB_ENV "CC=cl"
           Add-Content $env:GITHUB_ENV "CXX=cl"
-      
+
       - name: Configure the build of minpack (with source archive suffix)
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' }}
         run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" "-DSOURCE_ARCHIVE_SUFFIX=$env:SOURCE_ARCHIVE_SUFFIX" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
-      
+
       - name: Configure the build of minpack (without source archive suffix)
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='OFF' }}
         run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
-      
+
       - name: Create a Source Arhive
         run: |
           cmake --build $env:BUILDDIR --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
@@ -138,27 +138,27 @@ jobs:
         run: |
           & "C:\Program Files\7-Zip\7z.exe" x $env:BUILDDIR\$env:ARCHIVE;
           & "C:\Program Files\7-Zip\7z.exe" x ((Get-Item $env:BUILDDIR\$env:ARCHIVE).BaseName);
-      
+
       - name: Download minpack sources to extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" $env:ARCHIVE_DIR; }
-              
+
       - name: Set environment variables to build and install directories
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-build"
           Add-Content $env:GITHUB_ENV "INSTALLDIR_SOURCE_ARCHIVE=$env:RUNNER_TEMP\source-archive-install-${{ matrix.TOOLCHAIN.COMPILER }}"
-        
+
       - name: Configure the build of minpack (with source archive suffix)
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' }}
         run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" "-DSOURCE_ARCHIVE_SUFFIX=$env:SOURCE_ARCHIVE_SUFFIX" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S $env:ARCHIVE_DIR -B $env:BUILDDIR_SOURCE_ARCHIVE
-      
+
       - name: Configure the build of minpack (without source archive suffix)
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='OFF' }}
         run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR_SOURCE_ARCHIVE -S $env:ARCHIVE_DIR -B $env:BUILDDIR_SOURCE_ARCHIVE
-      
+
       - name: Build from extracted source archive
         run: cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release
-      
+
       - name: Install from extracted source archive
         run: cmake --install $env:BUILDDIR_SOURCE_ARCHIVE --config Release
 
@@ -166,7 +166,7 @@ jobs:
         run: |
           cmake --build $env:BUILDDIR_SOURCE_ARCHIVE --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
           dir $env:BUILDDIR_SOURCE_ARCHIVE;
-      
+
       - name: Extract the Source Zip Archives again
         if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
         run: |
@@ -199,7 +199,7 @@ jobs:
           $first_archive_fullname_length = $first_archive_fullname.Length;
           $first_archive_file_suffixes = Get-ChildItem -File $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
           $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
-          
+
           foreach ($file in $first_archive_file_suffixes)
           {
             $file_suffix = $file.Suffix.ToString();
@@ -215,7 +215,7 @@ jobs:
           $second_archive_fullname_length = $second_archive_fullname.Length;
           $second_archive_file_suffixes = Get-ChildItem -File $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
           $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
-          
+
           foreach ($file in $second_archive_file_suffixes)
           {
             $file_suffix = $file.Suffix.ToString();
@@ -226,7 +226,7 @@ jobs:
 
             $added = $second_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
           }
-          
+
           foreach ($hash in $first_archive_hashes)
           {
             if (-not $second_archive_hashes.Contains($hash))
@@ -244,7 +244,7 @@ jobs:
               exit 1;
             }
           }
-  
+
   binary-archive:
     name: Binary Archive
     runs-on: windows-latest
@@ -256,9 +256,9 @@ jobs:
         TOOLCHAIN:
           - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
           - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
-        
+
         USE_BINARY_ARCHIVE_SUFFIX: ['ON', 'OFF']
-        
+
         BINARY_ARCHIVE:
           - { format: 'zip', ext: ".zip" }
           - { format: 'tar-gz', ext: ".tar.gz" }
@@ -268,15 +268,15 @@ jobs:
         exclude:
           - BUILD_SHARED_LIBS: 'ON'
             BUILD_STATIC_LIBS: 'ON'
-            
+
           - BUILD_SHARED_LIBS: 'OFF'
             BUILD_STATIC_LIBS: 'OFF'
-    
+
     env:
       MINPACK_BUILDER_VERSION: 1.2.0
-    
+
     steps:
-      
+
       - name: Set environment variables for archive and archive directory
         run: |
           if ("${{ matrix.USE_BINARY_ARCHIVE_SUFFIX }}" -eq "ON")
@@ -299,27 +299,27 @@ jobs:
         with:
           ref: assets-ci-v1
           path: assets
-      
+
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
-      
+
       - name: Set environment variables to build and install directories
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
           Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
-      
+
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
-      
+
       - name: Setup Ninja build tool
         if: ${{ matrix.TOOLCHAIN.CMAKE_GENERATOR=='Ninja' }}
         run: |
           choco install ninja;
           ninja --version;
-      
+
       - name: Setup MSVC
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
         uses: ilammy/msvc-dev-cmd@v1
@@ -334,7 +334,7 @@ jobs:
           Add-Content $env:GITHUB_ENV "FC=flang-new";
           Add-Content $env:GITHUB_ENV "CC=cl";
           Add-Content $env:GITHUB_ENV "CXX=cl";
-      
+
       - uses: fortran-lang/setup-fortran@v1
         name: Setup Fortran and C compilers
         if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
@@ -342,24 +342,24 @@ jobs:
         with:
           compiler: ${{ matrix.TOOLCHAIN.COMPILER }}
           version: ${{ matrix.TOOLCHAIN.VERSION }}
-      
+
       - name: Set MSVC cl as C, C++ compiler
         if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
         run: |
           Add-Content $env:GITHUB_ENV "CC=cl"
           Add-Content $env:GITHUB_ENV "CXX=cl"
-      
+
       - name: Configure the build of minpack (with binary archive suffix)
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' }}
         run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" "-DBINARY_ARCHIVE_SUFFIX=$env:BINARY_ARCHIVE_SUFFIX" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
-      
+
       - name: Configure the build of minpack (without binary archive suffix)
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='OFF' }}
         run: cmake -G "${{ matrix.TOOLCHAIN.CMAKE_GENERATOR }}" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
-      
+
       - name: Build
         run: cmake --build $env:BUILDDIR --config Release
-      
+
       - name: Install
         run: cmake --install $env:BUILDDIR --config Release
 

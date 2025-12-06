@@ -64,9 +64,9 @@ You can check that ```winget``` got properly installed if the search command wor
     ```cmd
     %homedrive%\msys64\usr\bin\bash.exe -lc "pacman -S mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-make --noconfirm --overwrite *"
     ```
-    
+
     It is a good idea to test the installation of ```gfortran``` and ```make``` by running the command
-    
+
     ```cmd
     %homedrive%\msys64\mingw64\bin\gfortran.exe --version
     %homedrive%\msys64\mingw64\bin\mingw32-make.exe --version
@@ -74,7 +74,7 @@ You can check that ```winget``` got properly installed if the search command wor
 
     ![Screenshot from 2024-05-08 09-14-13](https://github.com/luau-project/minpack-builder/assets/18295115/234dbc27-7557-4601-a916-56b9cbca6929)
 
-    
+
 4. (Optional if you have git) Install git
     ```cmd
     winget install --id Git.Git --source winget --accept-package-agreements --accept-source-agreements --silent
@@ -123,7 +123,7 @@ You can check that ```winget``` got properly installed if the search command wor
 > If your ```%homedrive%``` variable points to ```C:```, we are going for a local installation at ```C:\minpack-builder-gfortran-guide\local-install-gfortran```, building the package at ```C:\minpack-builder-gfortran-guide\build-gfortran```.
 
 6. Clone minpack-builder by running 
-    
+
     ```cmd
     git clone https://github.com/luau-project/minpack-builder
     ```

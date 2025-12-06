@@ -59,7 +59,7 @@ For this tutorial, we are going to use Debian 12 stable in a terminal-only fashi
     ```bash
     echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
     ```
-    
+
     ![Screenshot from 2024-05-04 11-47-36](https://github.com/luau-project/minpack-builder/assets/18295115/81634d13-7b78-4568-87a2-cce8e49399ae)
 
 6. Update packages list and repository index

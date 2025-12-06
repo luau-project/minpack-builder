@@ -296,14 +296,14 @@ include("cmake/MinpackSources.cmake")
 if (USE_DOWNLOAD)
 
     include("cmake/DownloadMinpackSources.cmake")
-    
+
     download_minpack_sources(
         # Destination directory
         "${DOWNLOAD_DIR}"
 
         # Fortran source files for minpack
         minpack_source_files
-        
+
         # Copyright for minpack
         minpack_copyright
     )
@@ -330,7 +330,7 @@ else()
     # Fortran source files (*.f),
     # in order to keep a stable API as is
     # defined in the header file minpack.h
-    
+
     set(minpack_source_files ${minpack_source_basenames})
     set(minpack_copyright ${minpack_copyright_basename})
 endif()
@@ -462,9 +462,9 @@ if (BUILD_SHARED_LIBS)
     if (WIN32)
         target_sources(minpack_SHARED PRIVATE ${minpack_def_file})
     endif()
-    
+
     get_filename_component(Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-    
+
     if ("${Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
         if (WIN32)
             list(APPEND minpack_Fflags ${minpack_intel_specific_Fflags_for_Win})
@@ -495,7 +495,7 @@ if (BUILD_STATIC_LIBS)
     target_sources(minpack_STATIC PRIVATE ${minpack_source_files})
 
     get_filename_component(Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-    
+
     if ("${Fortran_COMPILER_NAME}" MATCHES "ifx|ifort")
         if (WIN32)
             set(wanted_Fflags ${minpack_intel_specific_Fflags_for_Win})

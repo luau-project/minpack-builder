@@ -22,33 +22,33 @@ jobs:
         C_COMPILER: ['clang-cl', 'cl']
 
     steps:
-      
+
       - name: Checkout assets
         uses: actions/checkout@v4
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         with:
           ref: assets-ci-v1
           path: assets
-      
+
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
-      
+
       - name: Set environment variables to build and install directories
         run: |
           Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
           Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install"
-      
+
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
-      
+
       - name: Install Ninja and test it
         run: |
           choco install ninja;
           ninja --version;
-      
+
       - uses: ilammy/msvc-dev-cmd@v1
         name: Setup MSVC
 
@@ -61,12 +61,12 @@ jobs:
           Add-Content $env:GITHUB_ENV "FC=flang-new";
           Add-Content $env:GITHUB_ENV "CC=${{ matrix.C_COMPILER }}";
           Add-Content $env:GITHUB_ENV "CXX=${{ matrix.C_COMPILER }}";
-      
+
       - name: Configure the build of minpack 
         run: cmake -G Ninja -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $env:INSTALLDIR -S minpack-builder -B $env:BUILDDIR
-      
+
       - name: Build minpack
         run: cmake --build $env:BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
-      
+
       - name: Install minpack
         run: cmake --install $env:BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}

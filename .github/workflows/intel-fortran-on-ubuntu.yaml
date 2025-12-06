@@ -20,45 +20,45 @@ jobs:
         BUILD_STATIC_LIBS: ['ON', 'OFF']
         toolchain:
           - {compiler: intel, version: '2024.1'}
-    
+
     steps:
-      
+
       - name: Checkout assets
         uses: actions/checkout@v4
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         with:
           ref: assets-ci-v1
           path: assets
-      
+
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
-      
+
       - name: Set shell variables to build and install directories
         run: |
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
-      
+
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
-      
+
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
           compiler: ${{ matrix.toolchain.compiler }}
           version: ${{ matrix.toolchain.version }}
-      
+
       - name: Configure the build of minpack 
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
-      
+
       - name: Build minpack
         run: cmake --build $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
-      
+
       - name: Install minpack
         run: cmake --install $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
-  
+
   static-build:
     runs-on: ubuntu-latest
     strategy:
@@ -68,41 +68,41 @@ jobs:
         BUILD_SHARED_LIBS: ['OFF']
         toolchain:
           - {compiler: intel, version: '2024.1'}
-    
+
     steps:
-      
+
       - name: Checkout assets
         uses: actions/checkout@v4
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         with:
           ref: assets-ci-v1
           path: assets
-      
+
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
-      
+
       - name: Set shell variables to build and install directories
         run: |
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
-      
+
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
-      
+
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
           compiler: ${{ matrix.toolchain.compiler }}
           version: ${{ matrix.toolchain.version }}
-      
+
       - name: Configure the build of minpack 
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
-      
+
       - name: Build minpack
         run: cmake --build $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
-      
+
       - name: Install minpack
         run: cmake --install $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}

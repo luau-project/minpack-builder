@@ -92,7 +92,7 @@ if (EXISTS "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt")
 
             string(SUBSTRING ${line} ${__prefix_dir_length} "-1" __file_suffix)
             string(CONCAT target_copied_file "${destination_archiving_dir}" "${__file_suffix}")
-    
+
             get_filename_component(target_copied_file_dir "${target_copied_file}" PATH)
 
             file(COPY ${__installed_file} DESTINATION "${target_copied_file_dir}")

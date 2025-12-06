@@ -21,7 +21,7 @@ jobs:
         TOOLCHAIN:
           - {COMPILER_NAME: 'flang-new', VERSION: '18'}
           - {COMPILER_NAME: 'flang-new', VERSION: '17'}
-    
+
     steps:
 
       - name: Checkout assets
@@ -30,17 +30,17 @@ jobs:
         with:
           ref: assets-ci-v1
           path: assets
-      
+
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
-      
+
       - name: Set shell variables to build and install directories
         run: |
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-flang" >> $GITHUB_ENV
-      
+
       - name: Install LLVM flang 
         run: |
           codename=$(lsb_release -c -s)
@@ -57,16 +57,16 @@ jobs:
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
-      
+
       - name: Configure the build of minpack 
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=${{ matrix.BUILD_STATIC_LIBS }} -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
-      
+
       - name: Build minpack
         run: cmake --build $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
-      
+
       - name: Install minpack
         run: cmake --install $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
-      
+
   static-build:
     runs-on: ubuntu-latest
     strategy:
@@ -77,7 +77,7 @@ jobs:
         TOOLCHAIN:
           - {COMPILER_NAME: 'flang-new', VERSION: '18'}
           - {COMPILER_NAME: 'flang-new', VERSION: '17'}
-    
+
     steps:
 
       - name: Checkout assets
@@ -86,17 +86,17 @@ jobs:
         with:
           ref: assets-ci-v1
           path: assets
-    
+
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@v4
         with:
           path: minpack-builder
-      
+
       - name: Set shell variables to build and install directories
         run: |
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-flang" >> $GITHUB_ENV
-      
+
       - name: Install LLVM flang 
         run: |
           codename=$(lsb_release -c -s)
@@ -113,12 +113,12 @@ jobs:
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
-      
+
       - name: Configure the build of minpack 
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
-      
+
       - name: Build minpack
         run: cmake --build $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
-      
+
       - name: Install minpack
         run: cmake --install $BUILDDIR --config ${{ matrix.CMAKE_BUILD_TYPE }}
