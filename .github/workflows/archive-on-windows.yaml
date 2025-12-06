@@ -90,7 +90,7 @@ jobs:
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Setup miniconda, install LLVM flang-new (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
+      - name: Setup miniconda, install LLVM flang (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
@@ -324,7 +324,7 @@ jobs:
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Setup miniconda, install LLVM flang-new (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
+      - name: Setup miniconda, install LLVM flang (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";

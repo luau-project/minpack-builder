@@ -1,5 +1,5 @@
-name: LLVM flang-new (GCC-like) on Windows
-run-name: minpack compiled with LLVM flang-new (GCC-like) from MSYS2 on Windows
+name: LLVM flang (GCC-like) on Windows
+run-name: minpack compiled with LLVM flang (GCC-like) from MSYS2 on Windows
 on:
   push:
     paths-ignore:

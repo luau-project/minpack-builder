@@ -1,5 +1,5 @@
-name: LLVM flang-new (MSVC-like) on Windows
-run-name: minpack compiled with LLVM flang-new (MSVC-like) on Windows
+name: LLVM flang (MSVC-like) on Windows
+run-name: minpack compiled with LLVM flang (MSVC-like) on Windows
 on:
   push:
     paths-ignore:
@@ -52,7 +52,7 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         name: Setup MSVC
 
-      - name: Setup miniconda, install LLVM flang-new (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
+      - name: Setup miniconda, install LLVM flang (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
           conda activate "$env:CONDA";

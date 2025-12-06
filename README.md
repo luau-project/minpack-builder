@@ -37,9 +37,9 @@ The original minpack [[1]](https://www.netlib.org/minpack) is a battle-tested **
 
 On a wide range of Linux operating systems [[7]](https://repology.org/project/minpack), due the widespread adoption of gfortran [[8]](https://gcc.gnu.org/wiki/GFortran) as robust and free option for a Fortran compiler, most distributions package minpack and make it available for their users through the package manager.
 
-Recently, on Windows, through the great MSYS2 ecosystem [[9]](https://www.msys2.org/) which keeps that feeling of the Linux world, I authored with contributions [[10]](https://github.com/msys2/MINGW-packages/pull/20643) the initial integration of minpack as a package on MSYS2 [[11]](https://packages.msys2.org/base/mingw-w64-libminpack). The insertion of minpack into MSYS2 repositories allowed Windows developers to have access to native binaries, compiled either by gfortran [[8]](https://gcc.gnu.org/wiki/GFortran) or LLVM flang-new [[12]](https://flang.llvm.org/docs/), which is also a free Fortran compiler under the LLVM project umbrella.
+Recently, on Windows, through the great MSYS2 ecosystem [[9]](https://www.msys2.org/) which keeps that feeling of the Linux world, I authored with contributions [[10]](https://github.com/msys2/MINGW-packages/pull/20643) the initial integration of minpack as a package on MSYS2 [[11]](https://packages.msys2.org/base/mingw-w64-libminpack). The insertion of minpack into MSYS2 repositories allowed Windows developers to have access to native binaries, compiled either by gfortran [[8]](https://gcc.gnu.org/wiki/GFortran) or LLVM flang [[12]](https://flang.llvm.org/docs/), which is also a free Fortran compiler under the LLVM project umbrella.
 
-While MSYS2 is an excellent choice for people working with GCC-like toolchains, Microsoft Visual C/C++ (MSVC) build tools [[13]](https://visualstudio.microsoft.com/visual-cpp-build-tools) are extremely popular among Windows developers. Whenever someone is looking for a Fortran compiler that integrates nicely with MSVC build tools, namely Intel® Fortran Compiler [[14]](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html) and LLVM flang-new [[12]](https://flang.llvm.org/docs/), the developer will have to build minpack from the source code on its own. Moreover, Fortran compilers often export symbols with different naming conventions, leading to different C APIs if standard compiler options were applied.
+While MSYS2 is an excellent choice for people working with GCC-like toolchains, Microsoft Visual C/C++ (MSVC) build tools [[13]](https://visualstudio.microsoft.com/visual-cpp-build-tools) are extremely popular among Windows developers. Whenever someone is looking for a Fortran compiler that integrates nicely with MSVC build tools, namely Intel® Fortran Compiler [[14]](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html) and LLVM flang [[12]](https://flang.llvm.org/docs/), the developer will have to build minpack from the source code on its own. Moreover, Fortran compilers often export symbols with different naming conventions, leading to different C APIs if standard compiler options were applied.
 
 ### How to solve the problem?
 
@@ -67,8 +67,8 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 |------------------|------------------|--------------|
 | GFortran | 14.1.0 | ![gfortran-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-windows.yaml/badge.svg?branch=main) |
 | Intel LLVM ifx (*MSVC-like*) | 2024.1.0 | ![ifx-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-windows.yaml/badge.svg?branch=main) |
-| LLVM flang-new (*MSVC-like*) | 18.1.7 | ![llvm-flang-msvc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-msvc-like-on-windows.yaml/badge.svg?branch=main) |
-| LLVM flang-new (*GCC-like*) | 18.1.6 | ![llvm-flang-gcc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |
+| LLVM flang (*MSVC-like*) | 18.1.7 | ![llvm-flang-msvc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-msvc-like-on-windows.yaml/badge.svg?branch=main) |
+| LLVM flang (*GCC-like*) | 18.1.6 | ![llvm-flang-gcc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |
 
 ### Ubuntu
 
@@ -76,7 +76,7 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 |------------------|------------|--------------|
 | GFortran         | 11.4.0 |![gfortran-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-ubuntu.yaml/badge.svg?branch=main)|
 | Intel LLVM ifx (*GCC-like*) | 2024.1.2 | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
-| LLVM flang-new (*GCC-like*) | 18.1.6 |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
+| LLVM flang (*GCC-like*) | 18.1.6 |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
 
 > [!IMPORTANT]
 > 
@@ -99,7 +99,7 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 9. MSYS2 project. Accessed May 2, 2024. [https://www.msys2.org/](https://www.msys2.org/);
 10. minpack insertion on MSYS2. Accessed May 2, 2024. [https://github.com/msys2/MINGW-packages/pull/20643](https://github.com/msys2/MINGW-packages/pull/20643);
 11. MSYS2 package for minpack. Accessed May 2, 2024. [https://packages.msys2.org/base/mingw-w64-libminpack](https://packages.msys2.org/base/mingw-w64-libminpack);
-12. LLVM flang-new . Accessed May 2, 2024. [https://flang.llvm.org/docs/](https://flang.llvm.org/docs/);
+12. LLVM flang . Accessed May 2, 2024. [https://flang.llvm.org/docs/](https://flang.llvm.org/docs/);
 13. Microsoft Visual C/C++ (MSVC) build tools. Accessed May 2, 2024. [https://visualstudio.microsoft.com/visual-cpp-build-tools](https://visualstudio.microsoft.com/visual-cpp-build-tools);
 14. Intel® Fortran Compiler. Accessed May 2, 2024. [https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler.html);
 15. pkg-config. Accessed May 2, 2024. [https://gitlab.freedesktop.org/pkg-config/pkg-config](https://gitlab.freedesktop.org/pkg-config/pkg-config);

@@ -1,17 +1,17 @@
-# Build and Install on Windows 11 (LLVM flang-new MSVC-like)
+# Build and Install on Windows 11 (LLVM flang MSVC-like)
 
-For this tutorial, we are going to use Windows 11 mostly in a command prompt-only fashion, compiling the library with LLVM flang-new (MSVC-like). LLVM flang-new is obtained from ```conda-forge``` with Miniforge.
+For this tutorial, we are going to use Windows 11 mostly in a command prompt-only fashion, compiling the library with LLVM flang (MSVC-like). LLVM flang is obtained from ```conda-forge``` with Miniforge.
 
 > [!NOTE]
 > 
-> At the time of writing this guide, recent versions of LLVM flang-new (MSVC-like) requires Visual Studio 2022 or 2019 native build tools to work nicely.
+> At the time of writing this guide, recent versions of LLVM flang (MSVC-like) requires Visual Studio 2022 or 2019 native build tools to work nicely.
 
 ## Table of Contents
 
 * [Requirements](#requirements)
     * [Pre-installation steps](#pre-installation-steps)
-    * [Install the usual tools and prepare to install LLVM flang-new](#install-the-usual-tools-and-prepare-to-install-llvm-flang-new)
-    * [Install LLVM flang-new (MSVC-like) with Miniforge](#install-llvm-flang-new-msvc-like-with-miniforge)
+    * [Install the usual tools and prepare to install LLVM flang](#install-the-usual-tools-and-prepare-to-install-llvm-flang-new)
+    * [Install LLVM flang (MSVC-like) with Miniforge](#install-llvm-flang-new-msvc-like-with-miniforge)
 * [Build and install minpack](#build-and-install-minpack)
 
 ## Requirements
@@ -22,7 +22,7 @@ For this tutorial, we are going to use Windows 11 mostly in a command prompt-onl
 4. Tools:
     * Microsoft Visual C/C++ (MSVC) build tools for native C/C++ x86/x64 development (latest) + Windows SDK (suitable for your target platform);
     * Miniforge;
-    * LLVM flang-new (MSVC-like) from ```conda-forge```.
+    * LLVM flang (MSVC-like) from ```conda-forge```.
     * git;
     * Ninja (&ge; 1.10);
     * cmake.
@@ -45,7 +45,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
 ![Screenshot from 2024-05-05 10-54-50](https://github.com/luau-project/minpack-builder/assets/18295115/2eabeafc-a898-4a97-8fba-937ec5bec0a5)
 
-### Install the usual tools and prepare to install LLVM flang-new
+### Install the usual tools and prepare to install LLVM flang
 
 > [!TIP]
 >
@@ -96,7 +96,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 > 
 > You must close the command prompt, because the installed tools are not on your system environment PATH variable until you launch a new fresh command prompt.
 
-### Install LLVM flang-new (MSVC-like) with Miniforge
+### Install LLVM flang (MSVC-like) with Miniforge
 
 1. Launch a vanilla (admin rights not needed) new fresh ``x64 Native Tools Command Prompt for VS 2022`` to build 64-bit flang-new.
 
@@ -118,7 +118,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
     ![Screenshot from 2024-06-07 21-05-26](https://github.com/luau-project/minpack-builder/assets/18295115/ba296717-0f2a-4c62-89c6-4850d4934be9)
 
-4. Create an environment for minpack-builder installing LLVM flang-new (MSVC-like) from ```conda-forge```:
+4. Create an environment for minpack-builder installing LLVM flang (MSVC-like) from ```conda-forge```:
     ```cmd
     conda create --yes -c conda-forge -n minpack-builder flang libflang libfortran-main
     ```
@@ -128,7 +128,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     conda activate minpack-builder
     ```
 
-6. Check that LLVM flang-new (MSVC-like) is available and print its version
+6. Check that LLVM flang (MSVC-like) is available and print its version
     ```cmd
     flang-new --version
     ```
