@@ -98,14 +98,14 @@ jobs:
           Add-Content $env:GITHUB_ENV "FC=${{ matrix.MSYS2_CONFIG.fc }}"
 
       - name: Checkout assets
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         with:
           ref: assets-ci-v1
           path: assets
 
       - name: Checkout repository to minpack-builder directory
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           path: minpack-builder
 
@@ -219,14 +219,14 @@ jobs:
           Add-Content $env:GITHUB_ENV "FC=${{ matrix.MSYS2_CONFIG.fc }}"
 
       - name: Checkout assets
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
         with:
           ref: assets-ci-v1
           path: assets
 
       - name: Checkout repository to minpack-builder directory
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           path: minpack-builder
 
