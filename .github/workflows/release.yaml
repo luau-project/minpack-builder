@@ -7,8 +7,8 @@ on:
     tags:
       - '1.2.0'
     paths-ignore:
-      - "**.md"
-      - doc/**
+      - "**/*.md"
+      - "doc/**"
 
 jobs:
   source-archive-release:

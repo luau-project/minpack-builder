@@ -3,12 +3,12 @@ run-name: minpack compiled with LLVM flang (MSVC-like) on Windows
 on:
   push:
     paths-ignore:
-      - "**.md"
-      - doc/**
+      - "**/*.md"
+      - "doc/**"
   pull_request:
     paths-ignore:
-      - "**.md"
-      - doc/**
+      - "**/*.md"
+      - "doc/**"
 
 jobs:
   build:

@@ -3,12 +3,12 @@ run-name: minpack archive on Ubuntu
 on:
   push:
     paths-ignore:
-      - "**.md"
-      - doc/**
+      - "**/*.md"
+      - "doc/**"
   pull_request:
     paths-ignore:
-      - "**.md"
-      - doc/**
+      - "**/*.md"
+      - "doc/**"
 
 jobs:
   source-archive:
