@@ -5,7 +5,7 @@ on:
     branches:
       - 'release'
     tags:
-      - '1.1.0'
+      - '1.2.0'
     paths-ignore:
       - "**.md"
       - doc/**
@@ -19,7 +19,7 @@ jobs:
         USE_DOWNLOAD: ['OFF']
           
     env:
-      MINPACK_BUILDER_VERSION: 1.1.0
+      MINPACK_BUILDER_VERSION: 1.2.0
     
     steps:
 

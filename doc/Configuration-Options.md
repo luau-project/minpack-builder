@@ -51,7 +51,7 @@
 * Parameter: MINPACK_VERSION
 * Description: The version of this build script.
 * Type: STRING
-* Default value: 1.1.0
+* Default value: 1.2.0
 * Note: Since it is unlikely to face any change in the source code of minpack, this value makes sense to be interpreted as this build script's version.
 
 ## USE_DOWNLOAD

@@ -221,7 +221,7 @@ endif()
 
 # set the package version
 if (NOT DEFINED MINPACK_VERSION)
-    set(MINPACK_VERSION "1.1.0")
+    set(MINPACK_VERSION "1.2.0")
 endif()
 
 if (NOT ("${MINPACK_VERSION}" MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$"))

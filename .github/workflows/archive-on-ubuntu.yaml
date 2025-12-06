@@ -25,7 +25,7 @@ jobs:
           - { format: 'tar-xz', ext: ".tar.xz" }
     
     env:
-      MINPACK_BUILDER_VERSION: 1.1.0
+      MINPACK_BUILDER_VERSION: 1.2.0
     
     steps:
 
@@ -206,7 +206,7 @@ jobs:
           - { format: 'tar-xz', ext: ".tar.xz" }
     
     env:
-      MINPACK_BUILDER_VERSION: 1.1.0
+      MINPACK_BUILDER_VERSION: 1.2.0
     
     steps:
 

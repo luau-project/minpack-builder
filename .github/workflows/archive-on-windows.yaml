@@ -39,7 +39,7 @@ jobs:
             BUILD_STATIC_LIBS: 'OFF'
             
     env:
-      MINPACK_BUILDER_VERSION: 1.1.0
+      MINPACK_BUILDER_VERSION: 1.2.0
     
     steps:
       
@@ -273,7 +273,7 @@ jobs:
             BUILD_STATIC_LIBS: 'OFF'
     
     env:
-      MINPACK_BUILDER_VERSION: 1.1.0
+      MINPACK_BUILDER_VERSION: 1.2.0
     
     steps:
       
