@@ -101,7 +101,7 @@ jobs:
           Add-Content $env:GITHUB_ENV "CC=cl";
           Add-Content $env:GITHUB_ENV "CXX=cl";
 
-      - uses: fortran-lang/setup-fortran@v1
+      - uses: fortran-lang/setup-fortran@47809fdb6e637da656ce9ada436527b240c1287f # v1.8.1
         name: Setup Fortran and C compilers
         if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
         id: setup-fortran
@@ -335,7 +335,7 @@ jobs:
           Add-Content $env:GITHUB_ENV "CC=cl";
           Add-Content $env:GITHUB_ENV "CXX=cl";
 
-      - uses: fortran-lang/setup-fortran@v1
+      - uses: fortran-lang/setup-fortran@47809fdb6e637da656ce9ada436527b240c1287f # v1.8.1
         name: Setup Fortran and C compilers
         if: ${{ matrix.TOOLCHAIN.COMPILER=='intel' }}
         id: setup-fortran
