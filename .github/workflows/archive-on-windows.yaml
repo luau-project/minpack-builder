@@ -94,8 +94,8 @@ jobs:
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
-          conda activate "$env:CONDA";
-          conda install --yes -c conda-forge -n base flang libflang libfortran-main;
+          conda create --yes -c conda-forge -n minpack-builder flang_win-64 flang-rt_win-64;
+          conda activate minpack-builder;
           Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
           Add-Content $env:GITHUB_ENV "FC=flang";
           Add-Content $env:GITHUB_ENV "CC=cl";
@@ -328,8 +328,8 @@ jobs:
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
-          conda activate "$env:CONDA";
-          conda install --yes -c conda-forge -n base flang libflang libfortran-main;
+          conda create --yes -c conda-forge -n minpack-builder flang_win-64 flang-rt_win-64;
+          conda activate minpack-builder;
           Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
           Add-Content $env:GITHUB_ENV "FC=flang";
           Add-Content $env:GITHUB_ENV "CC=cl";
