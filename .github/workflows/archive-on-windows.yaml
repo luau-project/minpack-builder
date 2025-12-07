@@ -20,8 +20,8 @@ jobs:
         BUILD_SHARED_LIBS: ['ON', 'OFF']
         BUILD_STATIC_LIBS: ['ON', 'OFF']
         TOOLCHAIN:
-          - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
-          - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
+          - { COMPILER: 'intel', VERSION: '2025.0', CMAKE_GENERATOR: 'NMake Makefiles' }
+          - { COMPILER: 'flang', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
 
         USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
 
@@ -87,17 +87,17 @@ jobs:
           ninja --version;
 
       - name: Setup MSVC
-        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
       - name: Setup miniconda, install LLVM flang (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
-        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
           conda activate "$env:CONDA";
           conda install --yes -c conda-forge -n base flang libflang libfortran-main;
           Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
-          Add-Content $env:GITHUB_ENV "FC=flang-new";
+          Add-Content $env:GITHUB_ENV "FC=flang";
           Add-Content $env:GITHUB_ENV "CC=cl";
           Add-Content $env:GITHUB_ENV "CXX=cl";
 
@@ -254,8 +254,8 @@ jobs:
         BUILD_SHARED_LIBS: ['ON', 'OFF']
         BUILD_STATIC_LIBS: ['ON', 'OFF']
         TOOLCHAIN:
-          - { COMPILER: 'intel', VERSION: '2024.1', CMAKE_GENERATOR: 'NMake Makefiles' }
-          - { COMPILER: 'flang-new', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
+          - { COMPILER: 'intel', VERSION: '2025.0', CMAKE_GENERATOR: 'NMake Makefiles' }
+          - { COMPILER: 'flang', VERSION: '', CMAKE_GENERATOR: 'Ninja' }
 
         USE_BINARY_ARCHIVE_SUFFIX: ['ON', 'OFF']
 
@@ -321,17 +321,17 @@ jobs:
           ninja --version;
 
       - name: Setup MSVC
-        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
       - name: Setup miniconda, install LLVM flang (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
-        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang-new' }}
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
           conda activate "$env:CONDA";
           conda install --yes -c conda-forge -n base flang libflang libfortran-main;
           Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
-          Add-Content $env:GITHUB_ENV "FC=flang-new";
+          Add-Content $env:GITHUB_ENV "FC=flang";
           Add-Content $env:GITHUB_ENV "CC=cl";
           Add-Content $env:GITHUB_ENV "CXX=cl";
 
