@@ -39,11 +39,9 @@ jobs:
 
       - name: Set shell variables to build and install directories
         run: |
-          gcc_dir=$(brew --prefix gcc)/bin
-          gfortran_binary=$(ls "${gcc_dir}" | grep -oP "^gfortran\-[0-9]+\$" | sort --version-sort | tail -n1)
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
-          echo "INSTALLDIR=$RUNNER_TEMP/install-llvm-flang" >> $GITHUB_ENV
-          echo "FC=${gcc_dir}/${gfortran_binary}" >> $GITHUB_ENV
+          echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
+          echo "FC=$(brew --prefix gcc)/bin/gfortran" >> $GITHUB_ENV
 
       - name: Download minpack sources
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
