@@ -19,7 +19,7 @@ jobs:
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         BUILD_STATIC_LIBS: ['ON', 'OFF']
         toolchain:
-          - {compiler: intel, version: '2024.1'}
+          - {compiler: intel, version: '2025.0'}
 
     steps:
 
@@ -67,7 +67,7 @@ jobs:
         CMAKE_BUILD_TYPE: ['Release', 'Debug']
         BUILD_SHARED_LIBS: ['OFF']
         toolchain:
-          - {compiler: intel, version: '2024.1'}
+          - {compiler: intel, version: '2025.0'}
 
     steps:
 

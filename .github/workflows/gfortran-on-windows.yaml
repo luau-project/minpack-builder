@@ -11,7 +11,7 @@ on:
       - "doc/**"
 
 jobs:
-  shared-build:
+  build:
     runs-on: windows-latest
     strategy:
       matrix:
