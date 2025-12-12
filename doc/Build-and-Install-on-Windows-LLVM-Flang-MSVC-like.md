@@ -10,8 +10,8 @@ For this tutorial, we are going to use Windows 11 mostly in a command prompt-onl
 
 * [Requirements](#requirements)
     * [Pre-installation steps](#pre-installation-steps)
-    * [Install the usual tools and prepare to install LLVM flang](#install-the-usual-tools-and-prepare-to-install-llvm-flang-new)
-    * [Install LLVM flang (MSVC-like) with Miniforge](#install-llvm-flang-new-msvc-like-with-miniforge)
+    * [Install the usual tools and prepare to install LLVM flang](#install-the-usual-tools-and-prepare-to-install-llvm-flang)
+    * [Install LLVM flang (MSVC-like) with Miniforge](#install-llvm-flang-msvc-like-with-miniforge)
 * [Build and install minpack](#build-and-install-minpack)
 
 ## Requirements
@@ -98,7 +98,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
 ### Install LLVM flang (MSVC-like) with Miniforge
 
-1. Launch a vanilla (admin rights not needed) new fresh ``x64 Native Tools Command Prompt for VS 2022`` to build 64-bit flang-new.
+1. Launch a vanilla (admin rights not needed) new fresh ``x64 Native Tools Command Prompt for VS 2022`` to build 64-bit flang.
 
     ![Screenshot from 2024-05-05 17-31-44](https://github.com/luau-project/minpack-builder/assets/18295115/3cc4a4e0-5a36-4f3c-b087-9136e94e3148)
 
@@ -116,12 +116,12 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     conda --version
     ```
 
-    ![Screenshot from 2024-06-07 21-05-26](https://github.com/luau-project/minpack-builder/assets/18295115/ba296717-0f2a-4c62-89c6-4850d4934be9)
-
 4. Create an environment for minpack-builder installing LLVM flang (MSVC-like) from ```conda-forge```:
     ```cmd
-    conda create --yes -c conda-forge -n minpack-builder flang libflang libfortran-main
+    conda create --yes -c conda-forge -n minpack-builder flang_win-64 flang-rt_win-64
     ```
+
+    <img width="1920" height="1044" alt="01-install-flang-steps-1-to-4" src="https://github.com/user-attachments/assets/c08dc137-59a5-41ed-883d-2bfba1dac62d" />
 
 5. Activate the minpack-builder environment created in the latest step
     ```cmd
@@ -130,10 +130,10 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
 6. Check that LLVM flang (MSVC-like) is available and print its version
     ```cmd
-    flang-new --version
+    flang --version
     ```
 
-    ![Screenshot from 2024-06-07 21-21-01](https://github.com/luau-project/minpack-builder/assets/18295115/bab70581-2fb9-4079-b9dd-1a14ec00aca5)
+    <img width="1920" height="1044" alt="02-install-flang-steps-5-to-6" src="https://github.com/user-attachments/assets/5f570b99-86b9-4c1b-8567-e6b3d31a6ba3" />
 
 > [!IMPORTANT]
 > 
@@ -157,43 +157,43 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 4. Check that all the required tools are available:
     ```cmd
     cl
-    flang-new --version
+    flang --version
     git --version
     cmake --version
     ninja --version
     ```
 
-    ![Screenshot from 2024-06-07 21-31-26](https://github.com/luau-project/minpack-builder/assets/18295115/047f54b4-dd32-48e5-b929-23e83a5c934a)
+    <img width="1920" height="1044" alt="03-build-minpack-steps-1-to-4" src="https://github.com/user-attachments/assets/bd706214-3a95-4a00-83d1-6870a198be0d" />
 
 5. Set a variable to hold the path to a working directory, create that directory, and then change dir to this new directory
     ```cmd
-    set working_dir=%homedrive%\minpack-builder-flang-new-guide
+    set working_dir=%homedrive%\minpack-builder-flang-guide
     mkdir %working_dir%
     cd %working_dir%
     ```
 
 6. Set variables for the build and install directories
     ```cmd
-    set BUILD_DIR=%working_dir%\build-flang-new
-    set INSTALL_DIR=%working_dir%\local-install-flang-new
+    set BUILD_DIR=%working_dir%\build-flang
+    set INSTALL_DIR=%working_dir%\local-install-flang
     ```
 
 > [!NOTE]
 > 
-> If your ```%homedrive%``` variable points to ```C:```, we are going for a local installation at ```C:\minpack-builder-flang-new-guide\local-install-flang-new```, building the package at ```C:\minpack-builder-flang-new-guide\build-flang-new```.
+> If your ```%homedrive%``` variable points to ```C:```, we are going for a local installation at ```C:\minpack-builder-flang-guide\local-install-flang```, building the package at ```C:\minpack-builder-flang-guide\build-flang```.
 
-7. Set a variable for the build tools to treat ```flang-new``` as the **F**ortran **C**ompiler
+7. Set a variable for the build tools to treat ```flang``` as the **F**ortran **C**ompiler
     ```cmd
-    set FC=flang-new
+    set FC=flang
     ```
 
-8. Clone minpack-builder by running 
+8. Clone minpack-builder by running
 
     ```cmd
     git clone https://github.com/luau-project/minpack-builder
     ```
 
-    ![Screenshot from 2024-06-07 21-42-10](https://github.com/luau-project/minpack-builder/assets/18295115/5b914fa9-12a3-44df-91cb-631877146016)
+    <img width="1920" height="1044" alt="04-build-minpack-steps-5-to-8" src="https://github.com/user-attachments/assets/c6377266-6cc9-48ee-b539-cf0734e6eec0" />
 
 9. By default, minpack-builder downloads (optional param ```USE_DOWNLOAD``` is ```ON```) minpack source code to the same directory of minpack-builder (provided by optional param ```DOWNLOAD_DIR```).
 
@@ -211,20 +211,17 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
 
 10. Review the configuration summary and proceed to build
 
-    ![Screenshot from 2024-06-07 21-42-48](https://github.com/luau-project/minpack-builder/assets/18295115/da2d1bb5-7955-42b2-a3bd-ae6c9c656cfa)
+    <img width="1920" height="1044" alt="05-build-minpack-steps-9-to-10" src="https://github.com/user-attachments/assets/0c2dd123-a1a4-4fff-9775-b038e97b2aac" />
 
-11. Build the library. 
+11. Build the library.
 
     ```
     cmake --build "%BUILD_DIR%"
     ```
 
-    ![Screenshot from 2024-06-07 21-43-15](https://github.com/luau-project/minpack-builder/assets/18295115/9b2c574d-f31f-4cab-9899-624db0893b22)
-
-
 > [!NOTE]
 > 
-> By default, only the shared library is built. In my personal tests, if you build the static library by feeding ```-DBUILD_STATIC_LIBS=ON``` in the configuration step, the generated static library ```minpack.lib``` will ask you where Clang and flang-new libraries are stored once you use it on other projects. Since this topic of locating Clang and flang-new libraries goes too far from the scope presented here, prefer to build only the shared library.
+> By default, only the shared library is built. In my personal tests, if you build the static library by feeding ```-DBUILD_STATIC_LIBS=ON``` in the configuration step, the generated static library ```minpack.lib``` will ask you where Clang and flang libraries are stored once you use it on other projects. Since this topic of locating Clang and flang libraries goes too far from the scope presented here, prefer to build only the shared library.
 
 > [!IMPORTANT]
 > 
@@ -236,7 +233,7 @@ works well on ```cmd``` once you answer ```Y``` when asked. You would receive an
     cmake --install "%BUILD_DIR%"
     ```
 
-    ![Screenshot from 2024-06-07 21-43-38](https://github.com/luau-project/minpack-builder/assets/18295115/84e9b3a6-ac33-48f9-a78f-773676fa41a1)
+    <img width="1920" height="1044" alt="06-install-minpack-step-12" src="https://github.com/user-attachments/assets/c581fac5-42f3-49ea-ac83-06dbbabb683e" />
 
 ---
 [Documentation](README.md)

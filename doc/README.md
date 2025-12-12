@@ -15,7 +15,7 @@ The following build-and-install guides were split by platform and Fortran compil
 * Windows
     * [Build and install minpack on Windows with GFortran](Build-and-Install-on-Windows-GFortran.md)
     * [Build and install minpack on Windows with Intel Fortran Compiler (ifx)](Build-and-Install-on-Windows-Intel-Fortran-Compiler-ifx.md)
-    * [Build and install minpack on Windows with LLVM flang (MSVC-like)](Build-and-Install-on-Windows-LLVM-Flang-new-MSVC-like.md)
+    * [Build and install minpack on Windows with LLVM flang (MSVC-like)](Build-and-Install-on-Windows-LLVM-Flang-MSVC-like.md)
 * Linux
     * [Build and install minpack on Linux with GFortran](Build-and-Install-on-Linux-GFortran.md)
     * [Build and install minpack on Linux with Intel Fortran Compiler (ifx)](Build-and-Install-on-Linux-Intel-Fortran-Compiler-ifx.md)
