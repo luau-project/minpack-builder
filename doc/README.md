@@ -19,6 +19,9 @@ The following build-and-install guides were split by platform and Fortran compil
 * Linux
     * [Build and install minpack on Linux with GFortran](Build-and-Install-on-Linux-GFortran.md)
     * [Build and install minpack on Linux with Intel Fortran Compiler (ifx)](Build-and-Install-on-Linux-Intel-Fortran-Compiler-ifx.md)
+* macOS
+    * [Build and install minpack on macOS with GFortran](Build-and-Install-on-macOS-GFortran.md)
+    * [Build and install minpack on macOS with LLVM flang](Build-and-Install-on-macOS-LLVM-Flang.md)
 
 > [!TIP]
 > 

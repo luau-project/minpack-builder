@@ -1,6 +1,6 @@
-# Build and Install on macOS (LLVM flang)
+# Build and Install on macOS (GFortran)
 
-For this tutorial, we are going to use macOS in a terminal-only fashion, compiling the library with LLVM flang provided by `Homebrew`.
+For this tutorial, we are going to use macOS in a terminal-only fashion, compiling the library with GFortran provided by `Homebrew`.
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ For this tutorial, we are going to use macOS in a terminal-only fashion, compili
 2. Terminal opened;
 3. Internet connection;
 4. Tools:
-   * flang from `Homebrew`;
+   * gfortran from `Homebrew`;
    * git;
    * make;
    * cmake (>= 3.17).
@@ -26,15 +26,15 @@ For this tutorial, we are going to use macOS in a terminal-only fashion, compili
 > * `git` and `make` can be installed through Developer Command Line tools;
 > * `cmake` can be downloaded from [https://cmake.org/download/](https://cmake.org/download/);
 > * `Homebrew` can be installed following the instructions at [https://brew.sh/](https://brew.sh/)
-> * After `Homebrew` was installed and configured correctly, install LLVM flang through the `flang` package:
+> * After `Homebrew` was installed and configured correctly, install GFortran through the `gcc` package:
 >     ```bash
->     brew install flang
+>     brew install gcc
 >     ```
 
 Check that everything went fine. You should have all these tools installed, and the following commands should suceed:
 
 ```bash
-flang --version
+gfortran --version
 git --version
 make --version
 cmake --version
@@ -42,7 +42,7 @@ cmake --version
 
 The result on terminal should be more or less like this:
 
-<img width="1297" height="902" alt="01-install-tools" src="https://github.com/user-attachments/assets/55ef120b-1a64-4504-9293-d596b766df02" />
+<img width="937" height="650" alt="01-install-tools" src="https://github.com/user-attachments/assets/cef44b87-caa7-4189-ba29-7bc8e63e95a7" />
 
 ## Build and Install minpack
 
@@ -50,10 +50,10 @@ The result on terminal should be more or less like this:
     ```bash
     cd /tmp
     mkdir working_dir
-    cd working_dir
+    cd working_dir/
     ```
 
-    <img width="1297" height="902" alt="02-build-install-step-1" src="https://github.com/user-attachments/assets/70bd8ce6-c733-45df-9231-0c8815e0d386" />
+    <img width="937" height="650" alt="02-build-install-step-1" src="https://github.com/user-attachments/assets/c6253d80-dd4c-4f85-a6ef-971ce452a41d" />
 
 2. Clone minpack-builder by running
 
@@ -61,11 +61,11 @@ The result on terminal should be more or less like this:
     git clone https://github.com/luau-project/minpack-builder
     ```
 
-3. Set shell variables for the build and install directories, and another one (`FC`) to hold the path to LLVM flang
+3. Set shell variables for the build and install directories, and another one (`FC`) to hold the path to GFortran
     ```bash
     BUILD_DIR=$PWD/build
     INSTALL_DIR=$PWD/local-install
-    FC=$(brew --prefix flang)/bin/flang
+    FC=$(brew --prefix gcc)/bin/gfortran
     ```
 > [!NOTE]
 > 
@@ -77,7 +77,7 @@ The result on terminal should be more or less like this:
     cmake "-DCMAKE_Fortran_COMPILER=$FC" --install-prefix $INSTALL_DIR -S minpack-builder -B $BUILD_DIR
     ```
 
-    <img width="1297" height="902" alt="03-build-install-step-2-to-4" src="https://github.com/user-attachments/assets/c23475a9-55c4-4dad-909e-86905c0f6584" />
+    <img width="937" height="650" alt="03-build-install-step-2-to-4" src="https://github.com/user-attachments/assets/269ee4a4-7628-4d67-a591-3c0a67bb2099" />
 
 > [!NOTE]
 > 
@@ -85,7 +85,7 @@ The result on terminal should be more or less like this:
 
 5. Review the configuration summary and proceed to build
 
-    <img width="1297" height="902" alt="04-build-install-step-5" src="https://github.com/user-attachments/assets/966dd2e6-7aa2-417e-aede-85e94e379fb2" />
+    <img width="937" height="650" alt="04-build-install-step-5" src="https://github.com/user-attachments/assets/ba0238dc-5e07-4590-8d95-c926b1a533b1" />
 
 6. Build the library. 
 
@@ -93,7 +93,7 @@ The result on terminal should be more or less like this:
     cmake --build $BUILD_DIR
     ```
 
-    <img width="1297" height="902" alt="05-build-install-step-6" src="https://github.com/user-attachments/assets/3099e00d-0b8a-431a-a19d-e8e42f0a36b0" />
+    <img width="937" height="650" alt="05-build-install-step-6" src="https://github.com/user-attachments/assets/8130f2ef-324c-4cbd-a63f-cdfe88d180ce" />
 
 > [!NOTE]
 > 
@@ -105,7 +105,7 @@ The result on terminal should be more or less like this:
     cmake --install $BUILD_DIR
     ```
 
-    <img width="1297" height="902" alt="06-build-install-step-7" src="https://github.com/user-attachments/assets/02dc424d-5383-4b11-bb68-dd0613667801" />
+    <img width="937" height="650" alt="06-build-install-step-7" src="https://github.com/user-attachments/assets/01e0d4f3-3ad4-4d2f-8a02-d8f87f9be64c" />
 
 ---
 [Documentation](README.md)
