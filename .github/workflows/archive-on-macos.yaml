@@ -35,7 +35,7 @@ jobs:
           then
             gfortran_path=$(brew --prefix gcc)/bin/gfortran
             system_triplet=$("${gfortran_path}" -dumpmachine);
-            echo "SOURCE_ARCHIVE_SUFFIX=-system_triplet" >> $GITHUB_ENV;
+            echo "SOURCE_ARCHIVE_SUFFIX=-${system_triplet}" >> $GITHUB_ENV;
             echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-${system_triplet}${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
             echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-${system_triplet}" >> $GITHUB_ENV;
             echo "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-${system_triplet}${{ matrix.SOURCE_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
@@ -215,7 +215,7 @@ jobs:
           then
             gfortran_path=$(brew --prefix gcc)/bin/gfortran
             system_triplet=$("${gfortran_path}" -dumpmachine);
-            echo "BINARY_ARCHIVE_SUFFIX=-system_triplet" >> $GITHUB_ENV;
+            echo "BINARY_ARCHIVE_SUFFIX=-${system_triplet}" >> $GITHUB_ENV;
             echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${system_triplet}${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
             echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${system_triplet}" >> $GITHUB_ENV;
             echo "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${system_triplet}${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
