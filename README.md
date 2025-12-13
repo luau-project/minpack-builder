@@ -13,6 +13,7 @@ Build scripts for minpack.
 * [Continuous Integration](#continuous-integration)
     * [Windows](#windows)
     * [Ubuntu](#ubuntu)
+    * [macOS](#macos)
 * [References](#references)
 
 ## Introduction
@@ -27,7 +28,7 @@ The primary goal of **minpack-builder** is to provide an unified C API and a sta
 
 ### What is minpack?
 
-The original minpack [[1]](https://www.netlib.org/minpack) is a battle-tested **min**imization **pack**age written in Fortran 77 for solving a system of nonlinear equations and nonlinear least squares problems, discussed in details at [[3]](https://doi.org/10.2172/6997568). Throughout the years, popular scientific libraries like SciPy [[4]](https://github.com/scipy/scipy/blob/main/scipy/optimize/__minpack.c) and Eigen [[5]](https://eigen.tuxfamily.org/dox/unsupported/index.html) have been using minpack to perform nonlinear optimization.
+The original minpack [[1]](https://www.netlib.org/minpack) is a battle-tested **min**imization **pack**age written in Fortran 77 for solving a system of nonlinear equations and nonlinear least squares problems, discussed in details at [[3]](https://doi.org/10.2172/6997568). Throughout the years, popular scientific libraries like SciPy [[4]](https://github.com/scipy/scipy/blob/v1.16.3/scipy/optimize/__minpack.c) and Eigen [[5]](https://eigen.tuxfamily.org/dox/unsupported/index.html) have been using minpack to perform nonlinear optimization.
 
 > [!IMPORTANT]
 > 
@@ -63,20 +64,27 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 
 ### Windows
 
-| Fortran Compiler | Compiler Version | Build Status |
-|------------------|------------------|--------------|
-| GFortran | 14.1.0 | ![gfortran-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-windows.yaml/badge.svg?branch=main) |
-| Intel LLVM ifx (*MSVC-like*) | 2024.1.0 | ![ifx-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-windows.yaml/badge.svg?branch=main) |
-| LLVM flang (*MSVC-like*) | 18.1.7 | ![llvm-flang-msvc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-msvc-like-on-windows.yaml/badge.svg?branch=main) |
-| LLVM flang (*GCC-like*) | 18.1.6 | ![llvm-flang-gcc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |
+| Fortran Compiler | Build Status |
+|------------------|--------------|
+| GFortran | ![gfortran-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-windows.yaml/badge.svg?branch=main) |
+| Intel LLVM ifx (*MSVC-like*) | ![ifx-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-windows.yaml/badge.svg?branch=main) |
+| LLVM flang (*MSVC-like*) | ![llvm-flang-msvc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-msvc-like-on-windows.yaml/badge.svg?branch=main) |
+| LLVM flang (*GCC-like*) | ![llvm-flang-gcc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |
 
 ### Ubuntu
 
-| Fortran Compiler | Compiler Version | Build Status |
-|------------------|------------|--------------|
-| GFortran         | 11.4.0 |![gfortran-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-ubuntu.yaml/badge.svg?branch=main)|
-| Intel LLVM ifx (*GCC-like*) | 2024.1.2 | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
-| LLVM flang (*GCC-like*) | 18.1.6 |![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)|
+| Fortran Compiler | Build Status |
+|------------------|--------------|
+| GFortran         | ![gfortran-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-ubuntu.yaml/badge.svg?branch=main) |
+| Intel LLVM ifx (*GCC-like*) | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
+| LLVM flang (*GCC-like*) | ![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main) |
+
+### macOS
+
+| Fortran Compiler | Build Status |
+|------------------|--------------|
+| GFortran         | ![gfortran-macos workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-macos.yaml/badge.svg?branch=main) |
+| LLVM flang (*GCC-like*) | ![llvm-flang-macos workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-macos.yaml/badge.svg?branch=main) |
 
 > [!IMPORTANT]
 > 
@@ -91,7 +99,7 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 1. minpack. Accessed May 2, 2024. [https://www.netlib.org/minpack](https://www.netlib.org/minpack);
 2. CMake. Accessed May 2, 2024. [https://cmake.org/](https://cmake.org/);
 3. Moré, Jorge J., Burton S. Garbow, and Kenneth E. Hillstrom. *User guide for MINPACK-1.[In FORTRAN]*. No. ANL-80-74. Argonne National Lab.(ANL), Argonne, IL (United States), 1980. DOI: [10.2172/6997568](https://doi.org/10.2172/6997568);
-4. SciPy. Accessed Dec 12, 2025. [https://github.com/scipy/scipy/blob/main/scipy/optimize/__minpack.c](https://github.com/scipy/scipy/blob/main/scipy/optimize/__minpack.c);
+4. SciPy. Accessed Dec 13, 2025. [https://github.com/scipy/scipy/blob/v1.16.3/scipy/optimize/__minpack.c](https://github.com/scipy/scipy/blob/v1.16.3/scipy/optimize/__minpack.c);
 5. Eigen. Accessed May 2, 2024. [https://eigen.tuxfamily.org/dox/unsupported/index.html](https://eigen.tuxfamily.org/dox/unsupported/index.html);
 6. Modernized Minpack. Accessed May 3, 2024. [https://github.com/fortran-lang/minpack](https://github.com/fortran-lang/minpack);
 7. minpack on repology. Accessed May 2, 2024. [https://repology.org/project/minpack](https://repology.org/project/minpack);
