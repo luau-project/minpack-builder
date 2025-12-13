@@ -88,7 +88,7 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 
 > [!IMPORTANT]
 > 
-> At the moment (June 2, 2024), we are aware that the current version of this project is not able to build minpack with LFortran compiler [[16]](https://lfortran.org/) paired with MSVC Build Tools on Windows (latest version present on Miniforge [[17]](https://github.com/conda-forge/miniforge), which is 0.36.0) by running
+> At the moment (Dec 13, 2025), we are aware that the current version of this project is not able to build minpack with LFortran compiler [[16]](https://lfortran.org/) paired with MSVC Build Tools on Windows (latest version present on Miniforge [[17]](https://github.com/conda-forge/miniforge), which is 0.58.0) by running
 > 
 > ```conda install -c conda-forge -n base -y lfortran```
 > 
