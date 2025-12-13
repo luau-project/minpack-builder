@@ -127,6 +127,7 @@ function(download_minpack_sources destination_dir minpack_source_files minpack_c
                 ${minpack_fortran_file_url}
                 ${minpack_fortran_file_destination}
                 EXPECTED_HASH SHA256=${minpack_fortran_file_sha256}
+                STATUS DOWNLOAD_STATUS
             )
 
             list(GET DOWNLOAD_STATUS 0 STATUS_CODE)

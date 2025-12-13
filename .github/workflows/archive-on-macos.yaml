@@ -1,0 +1,277 @@
+name: Archive on macOS
+run-name: minpack archive on macOS
+on:
+  push:
+    paths-ignore:
+      - "**/*.md"
+      - "doc/**"
+  pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "doc/**"
+
+jobs:
+  source-archive:
+    name: Source Archive
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        USE_DOWNLOAD: ['OFF']
+        USE_SOURCE_ARCHIVE_SUFFIX: ['ON', 'OFF']
+        SOURCE_ARCHIVE:
+          - { format: 'zip', ext: ".zip" }
+          - { format: 'tar-gz', ext: ".tar.gz" }
+          - { format: 'tar-bz2', ext: ".tar.bz2" }
+          - { format: 'tar-xz', ext: ".tar.xz" }
+
+    env:
+      MINPACK_BUILDER_VERSION: 1.2.0
+
+    steps:
+
+      - name: Set environment variables for archive and archive directory
+        run: |
+          if [ "${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX }}" = "ON" ];
+          then
+            gfortran_path=$(brew --prefix gcc)/bin/gfortran
+            system_triplet=$("${gfortran_path}" -dumpmachine);
+            echo "SOURCE_ARCHIVE_SUFFIX=-${system_triplet}" >> $GITHUB_ENV;
+            echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-${system_triplet}${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-${system_triplet}" >> $GITHUB_ENV;
+            echo "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-${system_triplet}${{ matrix.SOURCE_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
+            echo "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources-${system_triplet}${{ matrix.SOURCE_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
+          else
+            echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources${{ matrix.SOURCE_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources" >> $GITHUB_ENV;
+          fi
+
+      - name: Checkout assets
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
+
+      - name: Checkout repository to minpack-builder directory
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          path: minpack-builder
+
+      - name: Set shell variables to build and install directories
+        run: |
+          echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
+          echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
+          echo "FC=$(brew --prefix gcc)/bin/gfortran" >> $GITHUB_ENV
+
+      - name: Download minpack sources
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
+
+      - name: Configure the build of minpack (with source archive suffix)
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' }}
+        run: cmake -G "Unix Makefiles" -DSOURCE_ARCHIVE_SUFFIX=$SOURCE_ARCHIVE_SUFFIX -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+
+      - name: Configure the build of minpack (without source archive suffix)
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='OFF' }}
+        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+
+      - name: Create a Source Archive
+        run: |
+          cmake --build $BUILDDIR --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
+          ls $BUILDDIR;
+
+      - name: Extract the Source Zip Archive
+        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
+        run: unzip $BUILDDIR/$ARCHIVE
+
+      - name: Extract the Source Archive
+        if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
+        run: tar -xf $BUILDDIR/$ARCHIVE
+
+      - name: Download minpack sources to extracted source archive
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} $ARCHIVE_DIR; done
+
+      - name: Set shell variables to build and install directories
+        run: |
+          echo "BUILDDIR_SOURCE_ARCHIVE=$RUNNER_TEMP/source-archive-build" >> $GITHUB_ENV
+          echo "INSTALLDIR_SOURCE_ARCHIVE=$RUNNER_TEMP/source-archive-install-gfortran" >> $GITHUB_ENV
+
+      - name: Configure the build of minpack from extracted source archive (with source archive suffix)
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' }}
+        run: cmake -G "Unix Makefiles" -DSOURCE_ARCHIVE_SUFFIX=$SOURCE_ARCHIVE_SUFFIX -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR_SOURCE_ARCHIVE -S $ARCHIVE_DIR -B $BUILDDIR_SOURCE_ARCHIVE
+
+      - name: Configure the build of minpack from extracted source archive (without source archive suffix)
+        if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='OFF' }}
+        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR_SOURCE_ARCHIVE -S $ARCHIVE_DIR -B $BUILDDIR_SOURCE_ARCHIVE
+
+      - name: Build  from extracted source archive
+        run: cmake --build $BUILDDIR_SOURCE_ARCHIVE --config Release
+
+      - name: Install from extracted source archive
+        run: cmake --install $BUILDDIR_SOURCE_ARCHIVE --config Release
+
+      - name: Create Source Archive again
+        run: |
+          cmake --build $BUILDDIR_SOURCE_ARCHIVE --config Release --target source-${{ matrix.SOURCE_ARCHIVE.format }};
+          ls $BUILDDIR_SOURCE_ARCHIVE;
+
+      - name: Extract the Source Zip Archives again
+        if: ${{ matrix.SOURCE_ARCHIVE.format=='zip' }}
+        run: |
+          mkdir comparison-dir;
+          unzip $BUILDDIR/$ARCHIVE -d comparison-dir;
+
+          mkdir comparison-dir-source-archive;
+          unzip $BUILDDIR_SOURCE_ARCHIVE/$ARCHIVE -d comparison-dir-source-archive;
+
+      - name: Extract the Source Archives again
+        if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
+        run: |
+          mkdir comparison-dir;
+          tar -xf $BUILDDIR/$ARCHIVE --directory=comparison-dir;
+
+          mkdir comparison-dir-source-archive;
+          tar -xf $BUILDDIR_SOURCE_ARCHIVE/$ARCHIVE --directory=comparison-dir-source-archive;
+
+      # a reliable manner to compare
+      # compressed files
+      # is extracting them
+      # and compare file-by-file
+      - name: Compare the content of the compressed files for equality
+        shell: pwsh
+        run: |
+          $first_archive_fullname = (Get-Item (Join-Path -Path comparison-dir -ChildPath $env:ARCHIVE_DIR)).FullName;
+          $first_archive_fullname_length = $first_archive_fullname.Length;
+          $first_archive_file_suffixes = Get-ChildItem -File $first_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($first_archive_fullname_length) } };
+          $first_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
+
+          foreach ($file in $first_archive_file_suffixes)
+          {
+            $file_suffix = $file.Suffix.ToString();
+            $file_path = Join-Path -Path $first_archive_fullname -ChildPath $file_suffix;
+
+            $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
+            $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
+
+            $added = $first_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+          }
+
+          $second_archive_fullname = (Get-Item (Join-Path -Path comparison-dir-source-archive -ChildPath $env:ARCHIVE_DIR)).FullName;
+          $second_archive_fullname_length = $second_archive_fullname.Length;
+          $second_archive_file_suffixes = Get-ChildItem -File $second_archive_fullname -Recurse | Select-Object @{ Label = "Suffix"; Expression = { $_.FullName.Substring($second_archive_fullname_length) } };
+          $second_archive_hashes = New-Object System.Collections.Generic.HashSet[string];
+
+          foreach ($file in $second_archive_file_suffixes)
+          {
+            $file_suffix = $file.Suffix.ToString();
+            $file_path = Join-Path -Path $second_archive_fullname -ChildPath $file_suffix;
+
+            $file_hash_SHA256 = (Get-FileHash $file_path -Algorithm SHA256).Hash;
+            $file_hash_MD5 = (Get-FileHash $file_path -Algorithm MD5).Hash;
+
+            $added = $second_archive_hashes.Add("suffix: ${file_suffix}; SHA256: ${file_hash_SHA256}; MD5: ${file_hash_MD5}");
+          }
+
+          foreach ($hash in $first_archive_hashes)
+          {
+            if (-not $second_archive_hashes.Contains($hash))
+            {
+              Write-Host "Entry not found in the second archive: ${hash}";
+              exit 1;
+            }
+          }
+
+          foreach ($hash in $second_archive_hashes)
+          {
+            if (-not $first_archive_hashes.Contains($hash))
+            {
+              Write-Host "Entry not found in the first archive: ${hash}";
+              exit 1;
+            }
+          }
+
+  binary-archive:
+    name: Binary Archive
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        USE_DOWNLOAD: ['OFF']
+        USE_BINARY_ARCHIVE_SUFFIX: ['ON', 'OFF']
+        BINARY_ARCHIVE:
+          - { format: 'zip', ext: ".zip" }
+          - { format: 'tar-gz', ext: ".tar.gz" }
+          - { format: 'tar-bz2', ext: ".tar.bz2" }
+          - { format: 'tar-xz', ext: ".tar.xz" }
+
+    env:
+      MINPACK_BUILDER_VERSION: 1.2.0
+
+    steps:
+
+      - name: Set environment variables for archive and archive directory
+        run: |
+          if [ "${{ matrix.USE_BINARY_ARCHIVE_SUFFIX }}" = "ON" ];
+          then
+            gfortran_path=$(brew --prefix gcc)/bin/gfortran
+            system_triplet=$("${gfortran_path}" -dumpmachine);
+            echo "BINARY_ARCHIVE_SUFFIX=-${system_triplet}" >> $GITHUB_ENV;
+            echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${system_triplet}${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${system_triplet}" >> $GITHUB_ENV;
+            echo "ARCHIVE_MD5=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${system_triplet}${{ matrix.BINARY_ARCHIVE.ext }}-MD5.txt" >> $GITHUB_ENV;
+            echo "ARCHIVE_SHA256=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries-${system_triplet}${{ matrix.BINARY_ARCHIVE.ext }}-SHA256.txt" >> $GITHUB_ENV;
+          else
+            echo "ARCHIVE=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries${{ matrix.BINARY_ARCHIVE.ext }}" >> $GITHUB_ENV;
+            echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries" >> $GITHUB_ENV;
+          fi
+
+      - name: Checkout assets
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        with:
+          ref: assets-ci-v1
+          path: assets
+
+      - name: Checkout repository to minpack-builder directory
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          path: minpack-builder
+
+      - name: Set shell variables to build and install directories
+        run: |
+          echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
+          echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
+          echo "FC=$(brew --prefix gcc)/bin/gfortran" >> $GITHUB_ENV
+
+      - name: Download minpack sources
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
+
+      - name: Configure the build of minpack (with binary archive suffix)
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' }}
+        run: cmake -G "Unix Makefiles" -DBINARY_ARCHIVE_SUFFIX=$BINARY_ARCHIVE_SUFFIX -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+
+      - name: Configure the build of minpack (without binary archive suffix)
+        if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='OFF' }}
+        run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DUSE_DOWNLOAD=${{ matrix.USE_DOWNLOAD }} --install-prefix $INSTALLDIR -S minpack-builder -B $BUILDDIR
+
+      - name: Build
+        run: cmake --build $BUILDDIR --config Release
+
+      - name: Install
+        run: cmake --install $BUILDDIR --config Release
+
+      - name: Create a Binary Archive
+        run: cmake --build $BUILDDIR --config Release --target binary-${{ matrix.BINARY_ARCHIVE.format }};
+
+      - name: Extract the generated zip Binary Archive
+        if: ${{ matrix.BINARY_ARCHIVE.format=='zip' }}
+        run: |
+          mkdir archive-list
+          cd archive-list && unzip $BUILDDIR/$ARCHIVE
+
+      - name: Extract the generated Binary Archive
+        if: ${{ matrix.BINARY_ARCHIVE.format!='zip' }}
+        run: |
+          mkdir archive-list
+          cd archive-list && tar -xf $BUILDDIR/$ARCHIVE

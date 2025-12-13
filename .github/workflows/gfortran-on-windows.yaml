@@ -26,6 +26,13 @@ jobs:
 
     steps:
 
+      - name: Restore MSYS2 (${{ matrix.MSYS2_CONFIG.env }}) packages
+        id: restore-msys2-packages
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: 'C:\msys64\tmp\*-${{ matrix.MSYS2_CONFIG.env }}-*'
+          key: minpack-builder-${{ matrix.MSYS2_CONFIG.env }}
+
       # Here, instead of installing packages in the conventional way,
       # we grab a list of mirrors for the environment (${{ matrix.MSYS2_CONFIG.env }}),
       # then each package content is downloaded separetely from a different mirror.
@@ -33,7 +40,8 @@ jobs:
       #
       # This workaround takes place to avoid a kind of "flooding" on the main MSYS2
       # servers, due the amount of content we have to download in parallel builds.
-      - name: Install Fortran compiler + GNU Make
+      - name: Download Fortran compiler + GNU Make
+        if: ${{ steps.restore-msys2-packages.outputs.cache-hit != 'true' }}
         shell: pwsh
         run: |
           C:\msys64\usr\bin\bash.exe -lc "pacman -S ${{ env.MSYS2_PACKAGES_TO_INSTALL }} --print > /tmp/url.list"
@@ -92,6 +100,16 @@ jobs:
               exit 1;
             }
           }
+
+      - name: Save MSYS2 packages on cache
+        if: ${{ steps.restore-msys2-packages.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: 'C:\msys64\tmp\*-${{ matrix.MSYS2_CONFIG.env }}-*'
+          key: minpack-builder-${{ matrix.MSYS2_CONFIG.env }}
+
+      - name: Install MSYS2 packages
+        run: |
           C:\msys64\usr\bin\bash.exe -lc "pacman -U /tmp/*.pkg.tar.zst --noconfirm"
 
       - name: Add MSYS2 tools to system environment PATH, and set FC environment variables
