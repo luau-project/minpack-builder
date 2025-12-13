@@ -66,25 +66,25 @@ At the moment, the continuous integration on ```minpack-builder``` github is abl
 
 | Fortran Compiler | Build Status |
 |------------------|--------------|
-| GFortran | ![gfortran-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-windows.yaml/badge.svg?branch=main) |
-| Intel LLVM ifx (*MSVC-like*) | ![ifx-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-windows.yaml/badge.svg?branch=main) |
-| LLVM flang (*MSVC-like*) | ![llvm-flang-msvc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-msvc-like-on-windows.yaml/badge.svg?branch=main) |
-| LLVM flang (*GCC-like*) | ![llvm-flang-gcc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main) |
+| GFortran | [![gfortran-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-windows.yaml/badge.svg?branch=main)](.github/workflows/gfortran-on-windows.yaml) |
+| Intel LLVM ifx (*MSVC-like*) | [![ifx-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-windows.yaml/badge.svg?branch=main)](.github/workflows/intel-fortran-on-windows.yaml) |
+| LLVM flang (*MSVC-like*) | [![llvm-flang-msvc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-msvc-like-on-windows.yaml/badge.svg?branch=main)](.github/workflows/llvm-flang-msvc-like-on-windows.yaml) |
+| LLVM flang (*GCC-like*) | [![llvm-flang-gcc-win workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-gcc-like-on-windows.yaml/badge.svg?branch=main)](.github/workflows/llvm-flang-gcc-like-on-windows.yaml) |
 
 ### Ubuntu
 
 | Fortran Compiler | Build Status |
 |------------------|--------------|
-| GFortran         | ![gfortran-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-ubuntu.yaml/badge.svg?branch=main) |
-| Intel LLVM ifx (*GCC-like*) | ![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main) |
-| LLVM flang (*GCC-like*) | ![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main) |
+| GFortran         | [![gfortran-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-ubuntu.yaml/badge.svg?branch=main)](.github/workflows/gfortran-on-ubuntu.yaml) |
+| Intel LLVM ifx (*GCC-like*) | [![ifx-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/intel-fortran-on-ubuntu.yaml/badge.svg?branch=main)](.github/workflows/intel-fortran-on-ubuntu.yaml) |
+| LLVM flang (*GCC-like*) | [![llvm-flang-ubuntu workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-ubuntu.yaml/badge.svg?branch=main)](.github/workflows/llvm-flang-on-ubuntu.yaml) |
 
 ### macOS
 
 | Fortran Compiler | Build Status |
 |------------------|--------------|
-| GFortran         | ![gfortran-macos workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-macos.yaml/badge.svg?branch=main) |
-| LLVM flang (*GCC-like*) | ![llvm-flang-macos workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-macos.yaml/badge.svg?branch=main) |
+| GFortran         | [![gfortran-macos workflow](https://github.com/luau-project/minpack-builder/actions/workflows/gfortran-on-macos.yaml/badge.svg?branch=main)](.github/workflows/gfortran-on-macos.yaml) |
+| LLVM flang (*GCC-like*) | [![llvm-flang-macos workflow](https://github.com/luau-project/minpack-builder/actions/workflows/llvm-flang-on-macos.yaml/badge.svg?branch=main)](.github/workflows/llvm-flang-on-macos.yaml) |
 
 > [!IMPORTANT]
 > 
