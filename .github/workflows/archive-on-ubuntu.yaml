@@ -122,9 +122,9 @@ jobs:
         if: ${{ matrix.SOURCE_ARCHIVE.format!='zip' }}
         run: tar -xf $BUILDDIR/$ARCHIVE
 
-      - name: Download minpack sources to extracted source archive
+      - name: Place minpack sources in the directory of the extracted source archive
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} $ARCHIVE_DIR; done
+        run: for current_file in "disclaimer" "chkder.f" "dogleg.f" "dpmpar.f" "enorm.f" "fdjac1.f" "fdjac2.f" "hybrd1.f" "hybrd.f" "hybrj1.f" "hybrj.f" "lmder1.f" "lmder.f" "lmdif1.f" "lmdif.f" "lmpar.f" "lmstr1.f" "lmstr.f" "qform.f" "qrfac.f" "qrsolv.f" "r1mpyq.f" "r1updt.f" "rwupdt.f"; do cp assets-cache/${current_file} $ARCHIVE_DIR; done
 
       - name: Set shell variables to build and install directories
         run: |
