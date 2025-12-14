@@ -45,27 +45,60 @@ jobs:
             echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources" >> $GITHUB_ENV;
           fi
 
+      - name: Restore assets
+        id: restore-assets
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: assets-cache
+          key: minpack-assets
+          enableCrossOsArchive: true
+
       - name: Checkout assets
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
         with:
           ref: assets-ci-v1
           path: assets
+
+      - name: Place minpack sources in the cache directory
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
+        shell: pwsh
+        run: |
+          New-Item "assets-cache" -ItemType Directory | Out-Null;
+          foreach ($current_file in "disclaimer", "chkder.f", "dogleg.f", "dpmpar.f", "enorm.f", "fdjac1.f", "fdjac2.f", "hybrd1.f", "hybrd.f", "hybrj1.f", "hybrj.f", "lmder1.f", "lmder.f", "lmdif1.f", "lmdif.f", "lmpar.f", "lmstr1.f", "lmstr.f", "qform.f", "qrfac.f", "qrsolv.f", "r1mpyq.f", "r1updt.f", "rwupdt.f")
+          {
+            $filePath = Join-Path -Path "assets" -ChildPath $current_file;
+            Copy-Item -Path $filePath -Destination "assets-cache";
+          }
+
+      - name: Save assets
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: assets-cache
+          key: minpack-assets
+          enableCrossOsArchive: true
 
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           path: minpack-builder
 
+      - name: Place minpack sources in the correct directory for minpack-builder
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        shell: pwsh
+        run: |
+          foreach ($current_file in "disclaimer", "chkder.f", "dogleg.f", "dpmpar.f", "enorm.f", "fdjac1.f", "fdjac2.f", "hybrd1.f", "hybrd.f", "hybrj1.f", "hybrj.f", "lmder1.f", "lmder.f", "lmdif1.f", "lmdif.f", "lmpar.f", "lmstr1.f", "lmstr.f", "qform.f", "qrfac.f", "qrsolv.f", "r1mpyq.f", "r1updt.f", "rwupdt.f")
+          {
+            $filePath = Join-Path -Path "assets-cache" -ChildPath $current_file;
+            Copy-Item -Path $filePath -Destination "minpack-builder";
+          }
+
       - name: Set shell variables to build and install directories
         run: |
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
           echo "FC=$(brew --prefix gcc)/bin/gfortran" >> $GITHUB_ENV
-
-      - name: Download minpack sources
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
 
       - name: Configure the build of minpack (with source archive suffix)
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' }}
@@ -225,27 +258,60 @@ jobs:
             echo "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries" >> $GITHUB_ENV;
           fi
 
+      - name: Restore assets
+        id: restore-assets
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: assets-cache
+          key: minpack-assets
+          enableCrossOsArchive: true
+
       - name: Checkout assets
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
         with:
           ref: assets-ci-v1
           path: assets
+
+      - name: Place minpack sources in the cache directory
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
+        shell: pwsh
+        run: |
+          New-Item "assets-cache" -ItemType Directory | Out-Null;
+          foreach ($current_file in "disclaimer", "chkder.f", "dogleg.f", "dpmpar.f", "enorm.f", "fdjac1.f", "fdjac2.f", "hybrd1.f", "hybrd.f", "hybrj1.f", "hybrj.f", "lmder1.f", "lmder.f", "lmdif1.f", "lmdif.f", "lmpar.f", "lmstr1.f", "lmstr.f", "qform.f", "qrfac.f", "qrsolv.f", "r1mpyq.f", "r1updt.f", "rwupdt.f")
+          {
+            $filePath = Join-Path -Path "assets" -ChildPath $current_file;
+            Copy-Item -Path $filePath -Destination "assets-cache";
+          }
+
+      - name: Save assets
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: assets-cache
+          key: minpack-assets
+          enableCrossOsArchive: true
 
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           path: minpack-builder
 
+      - name: Place minpack sources in the correct directory for minpack-builder
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        shell: pwsh
+        run: |
+          foreach ($current_file in "disclaimer", "chkder.f", "dogleg.f", "dpmpar.f", "enorm.f", "fdjac1.f", "fdjac2.f", "hybrd1.f", "hybrd.f", "hybrj1.f", "hybrj.f", "lmder1.f", "lmder.f", "lmdif1.f", "lmdif.f", "lmpar.f", "lmstr1.f", "lmstr.f", "qform.f", "qrfac.f", "qrsolv.f", "r1mpyq.f", "r1updt.f", "rwupdt.f")
+          {
+            $filePath = Join-Path -Path "assets-cache" -ChildPath $current_file;
+            Copy-Item -Path $filePath -Destination "minpack-builder";
+          }
+
       - name: Set shell variables to build and install directories
         run: |
           echo "BUILDDIR=$RUNNER_TEMP/build" >> $GITHUB_ENV
           echo "INSTALLDIR=$RUNNER_TEMP/install-gfortran" >> $GITHUB_ENV
           echo "FC=$(brew --prefix gcc)/bin/gfortran" >> $GITHUB_ENV
-
-      - name: Download minpack sources
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: for current_file in "disclaimer"  "chkder.f"  "dogleg.f"  "dpmpar.f"  "enorm.f"  "fdjac1.f"  "fdjac2.f"  "hybrd1.f"  "hybrd.f"  "hybrj1.f"  "hybrj.f"  "lmder1.f"  "lmder.f"  "lmdif1.f"  "lmdif.f"  "lmpar.f"  "lmstr1.f"  "lmstr.f"  "qform.f"  "qrfac.f"  "qrsolv.f"  "r1mpyq.f"  "r1updt.f"  "rwupdt.f"; do cp assets/${current_file} minpack-builder; done
 
       - name: Configure the build of minpack (with binary archive suffix)
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' }}

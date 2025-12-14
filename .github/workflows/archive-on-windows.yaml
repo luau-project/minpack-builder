@@ -59,43 +59,85 @@ jobs:
             Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-sources";
           }
 
+      - name: Restore assets
+        id: restore-assets
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: assets-cache
+          key: minpack-assets
+          enableCrossOsArchive: true
+
       - name: Checkout assets
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
         with:
           ref: assets-ci-v1
           path: assets
+
+      - name: Place minpack sources in the cache directory
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
+        shell: pwsh
+        run: |
+          New-Item "assets-cache" -ItemType Directory | Out-Null;
+          foreach ($current_file in "disclaimer", "chkder.f", "dogleg.f", "dpmpar.f", "enorm.f", "fdjac1.f", "fdjac2.f", "hybrd1.f", "hybrd.f", "hybrj1.f", "hybrj.f", "lmder1.f", "lmder.f", "lmdif1.f", "lmdif.f", "lmpar.f", "lmstr1.f", "lmstr.f", "qform.f", "qrfac.f", "qrsolv.f", "r1mpyq.f", "r1updt.f", "rwupdt.f")
+          {
+            $filePath = Join-Path -Path "assets" -ChildPath $current_file;
+            Copy-Item -Path $filePath -Destination "assets-cache";
+          }
+
+      - name: Save assets
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: assets-cache
+          key: minpack-assets
+          enableCrossOsArchive: true
 
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           path: minpack-builder
 
-      - name: Set environment variables to build and install directories
-        run: |
-          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
-
-      - name: Download minpack sources
+      - name: Place minpack sources in the correct directory for minpack-builder
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
-
-      - name: Setup Ninja build tool
-        if: ${{ matrix.TOOLCHAIN.CMAKE_GENERATOR=='Ninja' }}
+        shell: pwsh
         run: |
-          choco install ninja;
-          ninja --version;
+          foreach ($current_file in "disclaimer", "chkder.f", "dogleg.f", "dpmpar.f", "enorm.f", "fdjac1.f", "fdjac2.f", "hybrd1.f", "hybrd.f", "hybrj1.f", "hybrj.f", "lmder1.f", "lmder.f", "lmdif1.f", "lmdif.f", "lmpar.f", "lmstr1.f", "lmstr.f", "qform.f", "qrfac.f", "qrsolv.f", "r1mpyq.f", "r1updt.f", "rwupdt.f")
+          {
+            $filePath = Join-Path -Path "assets-cache" -ChildPath $current_file;
+            Copy-Item -Path $filePath -Destination "minpack-builder";
+          }
 
       - name: Setup MSVC
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
-      - name: Setup miniconda, install LLVM flang (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
+      - name: Restore conda environment
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
+        id: restore-conda-env
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: minpack-builder-environment
+          key: flang
+
+      - name: Create conda environment
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' && steps.restore-conda-env.outputs.cache-hit != 'true' }}
+        run: |
+          & "$env:CONDA\shell\condabin\conda-hook.ps1";
+          conda create --yes -c conda-forge -p minpack-builder-environment ninja flang_win-64 flang-rt_win-64;
+
+      - name: Save conda environment
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' && steps.restore-conda-env.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: minpack-builder-environment
+          key: flang
+
+      - name: Setup conda environment and set FC, CC and CXX environment variables.
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
-          conda create --yes -c conda-forge -n minpack-builder flang_win-64 flang-rt_win-64;
-          conda activate minpack-builder;
+          conda activate "${{ github.workspace }}\minpack-builder-environment";
           Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
           Add-Content $env:GITHUB_ENV "FC=flang";
           Add-Content $env:GITHUB_ENV "CC=cl";
@@ -114,6 +156,11 @@ jobs:
         run: |
           Add-Content $env:GITHUB_ENV "CC=cl"
           Add-Content $env:GITHUB_ENV "CXX=cl"
+
+      - name: Set environment variables to build and install directories
+        run: |
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
 
       - name: Configure the build of minpack (with source archive suffix)
         if: ${{ matrix.USE_SOURCE_ARCHIVE_SUFFIX=='ON' }}
@@ -293,43 +340,83 @@ jobs:
             Add-Content $env:GITHUB_ENV "ARCHIVE_DIR=minpack-${{ env.MINPACK_BUILDER_VERSION }}-binaries";
           }
 
+      - name: Restore assets
+        id: restore-assets
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: assets-cache
+          key: minpack-assets
+          enableCrossOsArchive: true
+
       - name: Checkout assets
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
         with:
           ref: assets-ci-v1
           path: assets
+
+      - name: Place minpack sources in the cache directory
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
+        run: |
+          New-Item "assets-cache" -ItemType Directory | Out-Null;
+          foreach ($current_file in "disclaimer", "chkder.f", "dogleg.f", "dpmpar.f", "enorm.f", "fdjac1.f", "fdjac2.f", "hybrd1.f", "hybrd.f", "hybrj1.f", "hybrj.f", "lmder1.f", "lmder.f", "lmdif1.f", "lmdif.f", "lmpar.f", "lmstr1.f", "lmstr.f", "qform.f", "qrfac.f", "qrsolv.f", "r1mpyq.f", "r1updt.f", "rwupdt.f")
+          {
+            $filePath = Join-Path -Path "assets" -ChildPath $current_file;
+            Copy-Item -Path $filePath -Destination "assets-cache";
+          }
+
+      - name: Save assets
+        if: ${{ matrix.USE_DOWNLOAD=='OFF' && steps.restore-assets.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: assets-cache
+          key: minpack-assets
+          enableCrossOsArchive: true
 
       - name: Checkout repository to minpack-builder directory
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           path: minpack-builder
 
-      - name: Set environment variables to build and install directories
-        run: |
-          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
-          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
-
-      - name: Download minpack sources
+      - name: Place minpack sources in the correct directory for minpack-builder
         if: ${{ matrix.USE_DOWNLOAD=='OFF' }}
-        run: foreach ($current_file in "disclaimer",  "chkder.f",  "dogleg.f",  "dpmpar.f",  "enorm.f",  "fdjac1.f",  "fdjac2.f",  "hybrd1.f",  "hybrd.f",  "hybrj1.f",  "hybrj.f",  "lmder1.f",  "lmder.f",  "lmdif1.f",  "lmdif.f",  "lmpar.f",  "lmstr1.f",  "lmstr.f",  "qform.f",  "qrfac.f",  "qrsolv.f",  "r1mpyq.f",  "r1updt.f",  "rwupdt.f") { Copy-Item "assets\$current_file" "minpack-builder"; }
-
-      - name: Setup Ninja build tool
-        if: ${{ matrix.TOOLCHAIN.CMAKE_GENERATOR=='Ninja' }}
         run: |
-          choco install ninja;
-          ninja --version;
+          foreach ($current_file in "disclaimer", "chkder.f", "dogleg.f", "dpmpar.f", "enorm.f", "fdjac1.f", "fdjac2.f", "hybrd1.f", "hybrd.f", "hybrj1.f", "hybrj.f", "lmder1.f", "lmder.f", "lmdif1.f", "lmdif.f", "lmpar.f", "lmstr1.f", "lmstr.f", "qform.f", "qrfac.f", "qrsolv.f", "r1mpyq.f", "r1updt.f", "rwupdt.f")
+          {
+            $filePath = Join-Path -Path "assets-cache" -ChildPath $current_file;
+            Copy-Item -Path $filePath -Destination "minpack-builder";
+          }
 
       - name: Setup MSVC
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
-      - name: Setup miniconda, install LLVM flang (MSVC-like) from conda-forge, and set FC, CC and CXX environment variables.
+      - name: Restore conda environment
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
+        id: restore-conda-env
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: minpack-builder-environment
+          key: flang
+
+      - name: Create conda environment
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' && steps.restore-conda-env.outputs.cache-hit != 'true' }}
+        run: |
+          & "$env:CONDA\shell\condabin\conda-hook.ps1";
+          conda create --yes -c conda-forge -p minpack-builder-environment ninja flang_win-64 flang-rt_win-64;
+
+      - name: Save conda environment
+        if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' && steps.restore-conda-env.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: minpack-builder-environment
+          key: flang
+
+      - name: Setup conda environment and set FC, CC and CXX environment variables.
         if: ${{ matrix.TOOLCHAIN.COMPILER=='flang' }}
         run: |
           & "$env:CONDA\shell\condabin\conda-hook.ps1";
-          conda create --yes -c conda-forge -n minpack-builder flang_win-64 flang-rt_win-64;
-          conda activate minpack-builder;
+          conda activate "${{ github.workspace }}\minpack-builder-environment";
           Get-ChildItem env: | Where-Object { $_.Name.ToLower().Contains("conda") -or $_.Value.ToLower().Contains("conda") } | ForEach-Object { Add-Content $env:GITHUB_ENV ($_.Name + "=" + $_.Value); }
           Add-Content $env:GITHUB_ENV "FC=flang";
           Add-Content $env:GITHUB_ENV "CC=cl";
@@ -348,6 +435,11 @@ jobs:
         run: |
           Add-Content $env:GITHUB_ENV "CC=cl"
           Add-Content $env:GITHUB_ENV "CXX=cl"
+
+      - name: Set environment variables to build and install directories
+        run: |
+          Add-Content $env:GITHUB_ENV "BUILDDIR=$env:RUNNER_TEMP\build"
+          Add-Content $env:GITHUB_ENV "INSTALLDIR=$env:RUNNER_TEMP\install-${{ matrix.TOOLCHAIN.COMPILER }}"
 
       - name: Configure the build of minpack (with binary archive suffix)
         if: ${{ matrix.USE_BINARY_ARCHIVE_SUFFIX=='ON' }}
